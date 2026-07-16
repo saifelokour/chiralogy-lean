@@ -1,0 +1,15 @@
+import Autology.Kernel.Autology
+import Autology.Kernel.Obstructions
+import Autology.Kernel.Hole
+import Autology.Kernel.Trichotomy
+import Autology.Kernel.Swap
+import Autology.Kernel.TargetDynamics
+import Autology.Kernel.Scope
+import Autology.Protocol.Membership
+import Autology.Protocol.Payload
+import Autology.Model.Partiality
+import Autology.Model.Closure
+import Autology.Model.Arrangement
+import Autology.Model.Coherence
+import Autology.Model.Moves
+import Autology.Boundary.Boundary
