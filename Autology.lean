@@ -5,6 +5,7 @@ import Autology.Kernel.Trichotomy
 import Autology.Kernel.Swap
 import Autology.Kernel.TargetDynamics
 import Autology.Kernel.Scope
+import Autology.Kernel.SelfApplication
 import Autology.Protocol.Membership
 import Autology.Protocol.Payload
 import Autology.Model.Partiality

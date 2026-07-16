@@ -1,5 +1,6 @@
 import Autology.Model.Moves
 import Autology.Protocol.Payload
+import Autology.Kernel.SelfApplication
 
 /-! # The boundary: the one prohibition
 
@@ -68,11 +69,12 @@ theorem prohibition_does_not_prescribe_abstention :
    (fun _ _ => true), (fun _ _ => false),
    by decide, ⟨true, by decide, by decide⟩, by decide⟩
 
-/-- **Autology falls under its own prohibition.** As an object of itself it is subject to the same hole:
-it too cannot claim completeness. Nor does it install its register (category theory, type theory, Lean,
-English) as the complete language: that would be the attempt performed on its own medium. The facts are
-register-independent and multiply-verifiable, so no register is the complete one, and claiming otherwise is
-the same prohibited totalization one level up. -/
+/-- **Autology falls under its own prohibition and its own payload.** Represented within itself as the
+object `𝒜` (`Kernel/SelfApplication.lean`), its self-classification carries the hole: `self_account_has_hole`.
+So it too cannot claim completeness, nor install its register (category theory, type theory, Lean, English)
+as the complete language: that would be the attempt performed on its own medium, one level up. The
+representation is not identity: `𝒜 = Autology` is not proven, and that completeness gap is handed back (○)
+as the framework's own hole. -/
 theorem autology_under_its_own_boundary {X : Type} (c : X → X → Option Bool) :
     ¬ Function.Surjective c :=
   completeness_is_unreachable c
