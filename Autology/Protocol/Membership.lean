@@ -29,4 +29,18 @@ theorem fpf_of_canDiffer {B : Type} (h : ∃ a b : B, a ≠ b) : ∃ g : B → B
 theorem nondegenerate_iff_not_degenerate {X B : Type} (c : X → X → B) :
     (∃ x y : X, c x ≠ c y) ↔ NonDegenerate c := Iff.rfl
 
+/-- **Two axes.** Error (a constitutive absence is present) and degeneracy (the self is idle,
+`¬ NonDegenerate`) are orthogonal: all four combinations are realized. -/
+theorem four_quadrants :
+    (∃ c : Fin 2 → Fin 2 → Option Bool, ¬ NonDegenerate c ∧ ∀ x y, c x y ≠ none) ∧
+    (∃ c : Fin 2 → Fin 2 → Option Bool, ¬ NonDegenerate c ∧ ∃ x y, c x y = none) ∧
+    (∃ c : Fin 2 → Fin 2 → Option Bool, NonDegenerate c ∧ ∀ x y, c x y ≠ none) ∧
+    (∃ c : Fin 2 → Fin 2 → Option Bool, NonDegenerate c ∧ ∃ x y, c x y = none) :=
+  ⟨⟨fun _ _ => some true, fun ⟨_, _, h⟩ => h rfl, fun _ _ => by simp⟩,
+   ⟨fun _ _ => none, fun ⟨_, _, h⟩ => h rfl, 0, 0, rfl⟩,
+   ⟨fun x y => some (decide (x = y)), ⟨0, 1, fun h => absurd (congrFun h 0) (by decide)⟩,
+     fun _ _ => by simp⟩,
+   ⟨fun x y => if x = y then some true else none,
+     ⟨0, 1, fun h => absurd (congrFun h 0) (by decide)⟩, 0, 1, by decide⟩⟩
+
 end Autology

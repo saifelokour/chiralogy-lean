@@ -98,4 +98,17 @@ theorem no_right_adjoint
     (pt (down.obj M)).symm.trans ((adj.homEquiv one M).symm.trans eM)
   exact no_small_universe ⟨_, ⟨e⟩⟩
 
+/-- **Independence.** The two obstructions are governed by different data, so neither reduces to the other.
+The reflexive-object obstruction is codomain-relative: it holds on a nontrivial codomain (`Bool`, carrying
+a fixed-point-free endomap) yet fails on a trivial one (`Unit`, where an object surjects onto its
+transpose). The size obstruction holds regardless, at the universe level. So no object factors through
+both: one is a property of the codomain, the other of the universe. -/
+theorem obstructions_independent :
+    (∃ c : Fin 2 → Fin 2 → Bool, ¬ Function.Surjective c) ∧
+    (∃ (X : Type) (c : X → X → Unit), Function.Surjective c) ∧
+    (¬ ∃ U : Type, Nonempty (U ≃ Type)) :=
+  ⟨⟨fun _ _ => true, no_reflexive_object (g := fun b => !b) (by decide) _⟩,
+   ⟨Fin 1, fun _ _ => (), fun g => ⟨0, funext fun _ => Subsingleton.elim _ _⟩⟩,
+   no_small_universe⟩
+
 end Autology

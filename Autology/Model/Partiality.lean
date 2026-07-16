@@ -39,4 +39,16 @@ no-absence pole; a `some ∘ f` value is present, not an absence. -/
 theorem total_never_abstains {X : Type} (f : X → X → Bool) (x y : X) :
     (fun a b => some (f a b)) x y ≠ none := by simp
 
+/-- **Maybe is the free pointed object.** For a point `pt : C` and a map `f : B → C`, there is a unique
+pointed extension `Option B → C` sending `none` to `pt` and `some b` to `f b`. This universal property
+characterizes `B + 1` as the free object with a distinguished point, the canonical codomain extension. -/
+theorem maybe_free_pointed {B C : Type} (pt : C) (f : B → C) :
+    ∃! g : Option B → C, g none = pt ∧ ∀ b, g (some b) = f b := by
+  refine ⟨fun o => o.elim pt f, ⟨rfl, fun _ => rfl⟩, ?_⟩
+  rintro g ⟨hnone, hsome⟩
+  funext o
+  cases o with
+  | none => exact hnone
+  | some b => exact hsome b
+
 end Autology
