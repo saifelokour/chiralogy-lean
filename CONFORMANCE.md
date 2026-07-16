@@ -102,6 +102,22 @@ claimed, and the specification was corrected to match the code. No item is contr
   `every_target_is_defeasible` (Boundary/Boundary.lean); the harm and every magnitude are supplied per
   register and never enter the derived layers.
 
+## Registers
+
+Domain instances, marked READING, defeasible, kept in this chart. A register instantiates the structure by
+membership; it never enters the derived layers, and that a domain has this shape is a reading, not a
+theorem about the domain.
+
+- Physics (GR / QM), READING (Registers/Physics.lean; investigated in Experiments/PhysicsRegister.lean).
+  One object: `phys : Member`, partial (`phys_qm_faithful`, the constitutive `none` = superposition),
+  non-degenerate (the observer enters). GR and QM are not two objects but two demands on the one object:
+  `gr_demand` (totality) and `qm_faithful` (keep the `none`). Inherited by membership, not new:
+  `quantum_gravity_is_the_attempt` is 6.2 verbatim (no object is both total and faithful to the `none`, so
+  a unified physics object is the attempt to fill the empty center, impossible not hard); `gr_qm_boundary`
+  is 6.7, the open seam (toward totality fabricates via `totalization_not_faithful`, keeping the `none`
+  admits no recovery via `no_recovery`, the crossing does not close). All axioms within baseline. Graduates
+  nothing to the derived layers.
+
 ## Changes reconciled during validation
 
 - 3.3, 4.3, and the free-pointed-object part of 5.1 were first unrealized. Each was then proven and added

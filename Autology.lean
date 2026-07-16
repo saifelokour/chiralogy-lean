@@ -18,3 +18,5 @@ import Autology.Boundary.Boundary
 import Autology.Model.Chiasm
 import Autology.Boundary.DoubleChiasm
 import Autology.Boundary.OpenSeam
+import Autology.Registers.Physics
+import Autology.Experiments.PhysicsRegister

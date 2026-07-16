@@ -59,12 +59,13 @@ Kernel/     the category; the two absences; the hole; the three modes; the invol
 Protocol/   membership (the object condition); the payload as a global absence
 Model/      partiality (Kl(Maybe)); the codomain closure; arrangement; coherence; the moves
 Boundary/   the one prohibition
-Registers/  the fork surface (empty; a register is an object in a domain's language)
-Experiments/ new graded work (empty)
+Registers/  the fork surface (a register is an object in a domain's language; physics is the first)
+Experiments/ new graded work (physics is the first probe)
 ```
 
-`Registers/` and `Experiments/` ship empty on purpose: the fork surface, and the formal silence past the
-boundary. See `GRADING.md` for the grades and the discipline.
+`Registers/` is the fork surface and `Experiments/` new graded work; physics is the first of each, and the
+rest is the formal silence past the boundary until it arrives. See `GRADING.md` for the grades and the
+discipline.
 
 Build: `lake exe cache get` then `lake build`. No `sorry`; every theorem's `#print axioms` is within
 `{propext, Classical.choice, Quot.sound}`.

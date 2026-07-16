@@ -1,7 +1,8 @@
 # Experiments
 
-New graded work: probes that test the framework against a domain or extend it. This directory ships empty:
-it is where new results go, and the formal silence past the boundary until they do.
+New graded work: probes that test the framework against a domain or extend it. This is where new results
+go. The first probe is physics, at `Autology/Experiments/PhysicsRegister.lean`; further probes are the
+formal silence past the boundary until they arrive.
 
 Discipline (from `GRADING.md`): no `sorry`, no new axioms, every theorem's `#print axioms` within
 `{propext, Classical.choice, Quot.sound}`. A model member is admitted only if it buys structural content and
@@ -41,7 +42,7 @@ carries it. A result that cannot be stated concisely is not yet understood.
 
 An experiment states, in order and briefly:
   1. hypothesis: the structure or member proposed
-  2. the trap: the failure mode it is most exposed to
+  2. the failure mode: what it is most exposed to
   3. counter-bias: the wanted outcome, named to be distrusted
   4. verdict: per claim, graded (●● / ● / ○ / ✗)
   5. graduation: which layer it passes to, or the residue a refusal leaves

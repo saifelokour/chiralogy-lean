@@ -9,7 +9,8 @@ non-degeneracy) and pass the two tests (the payload fires; non-degeneracy holds)
 A **translation** between registers is a morphism `(f, g)`. A **seam** is where a translation fails to be
 faithful: a morphism whose value map `g` is not injective, losing classification structure.
 
-This directory is the fork surface. It ships empty by design: add objects, not prose.
+This directory is the fork surface. The first register is physics (GR / QM), a READING at
+`Autology/Registers/Physics.lean`. Add objects, not prose.
 
 Registers, and anything that graduates, are precise and concise, not prosy. State the theorem, its grade,
 and its scope. Doc-comments are one or two lines. No narrative, no verbose motivation: the math carries it.
