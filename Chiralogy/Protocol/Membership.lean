@@ -1,4 +1,4 @@
-import Autology.Kernel.Trichotomy
+import Chiralogy.Kernel.Apophatic
 
 /-! # Membership
 
@@ -6,7 +6,7 @@ The object condition, as five data with two tests. The five data: a carrier, a d
 that space can differ, a self-classification, and non-degeneracy. The two tests: the payload fires (the
 classification is not surjective), and non-degeneracy holds: the boundary of `Deg`. -/
 
-namespace Autology
+namespace Chiralogy
 
 /-- A member: the five data of a conformant object. -/
 structure Member where
@@ -43,4 +43,16 @@ theorem four_quadrants :
    ⟨fun x y => if x = y then some true else none,
      ⟨0, 1, fun h => absurd (congrFun h 0) (by decide)⟩, 0, 1, by decide⟩⟩
 
-end Autology
+/-- **The payload.** Every member's self-classification is not surjective: no complete self-account. -/
+theorem payload (M : Member) : ¬ Function.Surjective M.classify := by
+  obtain ⟨g, hg⟩ := fpf_of_canDiffer M.canDiffer
+  exact no_reflexive_object hg M.classify
+
+/-- The payload is inherited uniformly: it holds of any classification whose distinction space can differ,
+independent of the object. -/
+theorem payload_uniform {X B : Type} (hB : ∃ a b : B, a ≠ b) (c : X → X → B) :
+    ¬ Function.Surjective c := by
+  obtain ⟨g, hg⟩ := fpf_of_canDiffer hB
+  exact no_reflexive_object hg c
+
+end Chiralogy

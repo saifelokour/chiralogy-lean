@@ -1,6 +1,6 @@
-import Autology.Registers.Physics
+import Chiralogy.Registers.Physics
 
-/-! # Experiment: does physics instantiate Autology?   [five-step]
+/-! # Experiment: does physics instantiate Chiralogy?   [five-step]
 
 Hypothesis. Physics is one object: `phys : Member`, the measurement classification
 `c(observer, system) = outcome`, partial (it carries the constitutive `none` = superposition),
@@ -30,7 +30,7 @@ Graduation. To Registers, marked READING (`Registers/Physics`): one member, two 
 inherited. Nothing graduates to the derived layers; physics surfaces no new universal result.
 -/
 
-namespace Autology.Physics
+namespace Chiralogy.Physics
 
 -- The experiment's checks, re-verified.
 example : Member := phys
@@ -38,4 +38,4 @@ example : qm_faithful phys.classify := phys_qm_faithful
 example : ¬ ∃ c : Fin 4 → Fin 4 → Option Bool, gr_demand c ∧ c 0 2 = imprecise 0 2 :=
   quantum_gravity_is_the_attempt
 
-end Autology.Physics
+end Chiralogy.Physics

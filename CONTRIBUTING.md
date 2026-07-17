@@ -3,7 +3,7 @@
 There is no master copy. This is not a canonical upstream with derivative
 forks. Any copy may be forked, rewritten, and re-registered: a different
 natural language, a different proof assistant (Coq, Agda, Isabelle), different
-notation, and none is authoritative. All are Autology iff the theorems are
+notation, and none is authoritative. All are Chiralogy iff the theorems are
 preserved structurally. The invariant is the structure, not any repository or
 any register (see INVARIANCE.md).
 

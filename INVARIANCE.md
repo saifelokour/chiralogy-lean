@@ -12,9 +12,9 @@ not confine the truth to one language.
 So "stated in this register" is not a limit on reach. The reach is universal;
 the register is where the proof was written, replaceable by any other.
 
-The one genuine incompleteness is Autology's account of itself. By
+The one genuine incompleteness is Chiralogy's account of itself. By
 `no_complete_self_account`, every self-classifier has a hole in its
-self-account, Autology included, in every register alike. This is not the
+self-account, Chiralogy included, in every register alike. This is not the
 facts being local. It is complete self-account being impossible for every
 self-classifier, this framework among them.
 

@@ -1,23 +1,24 @@
-# Autology
+# Chiralogy
 
 A small, machine-checked framework for **self-classification**: an object is a carrier `X`, a distinction
-space `B`, and a map `c : X → X → B` by which the carrier classifies its own kind. The framework is
-*autological*: it is an object of itself, subject to its own hole, and forbidden by its own boundary from
-claiming completeness.
+space `B`, and a map `c : X → X → B` by which the carrier classifies its own kind. It is **two-ended**
+(chiral): the apophatic hole at the codomain and the cataphatic build at the domain, `op`-related but
+non-superimposable. The framework is *autological*: an object of itself, subject to its own hole, forbidden
+by its own boundary from claiming completeness.
 
 The theorems are structural facts about the form `c : X → X → B`, universal in reach and verified in the
 register of category theory, type theory, Lean, and English: a coordinate system, not a fence, and
-re-verifiable in any adequate register. The only incompleteness is Autology's account of itself, which by
+re-verifiable in any adequate register. The only incompleteness is Chiralogy's account of itself, which by
 its own central theorem has a hole in every register alike (see `INVARIANCE.md`).
 
 ## The object
 
-An object is `(X, B, c)`; a morphism `(f, g)` preserves `c`. These form the category `Autology`
-(`Kernel/Autology.lean`). Everything else is structure of this category.
+An object is `(X, B, c)`; a morphism `(f, g)` preserves `c`. These form the category `Chiralogy`
+(`Kernel/Apophatic.lean`). Everything else is structure of this category.
 
 ## Two absences
 
-The kernel is two structural absences (`Kernel/Obstructions.lean`):
+The kernel is two structural absences (`Kernel/Apophatic.lean`):
 
 - **No reflexive object**: no `c : X → X → B` is surjective onto its own classifier space (the diagonal
   argument). This is the payload: no object has a complete self-account.
@@ -26,14 +27,16 @@ The kernel is two structural absences (`Kernel/Obstructions.lean`):
 
 They are distinct: the first is about a self-map's surjectivity, the second about a functor. The hole is
 arity-1, transports across any distinction space carrying a fixed-point-free endomap, and is uniform -
-present on every object and every mode (`Kernel/Hole.lean`).
+present on every object and every mode (`Kernel/Apophatic.lean`).
 
 ## Derived versus imported
 
-The kernel and its structure are **derived**. The **model** is the canonical extension: partiality, the
-Kleisli category of `Maybe`, characterized by its universal property as the free adjunction of one absence
-(`Model/`). The codomain axis closes there: stochastic and substructural distinction spaces collapse
-through the diagonal in a cartesian base (`Model/Closure.lean`).
+The kernel and its structure are **derived**. The apophatic **model** is the canonical extension: partiality,
+the Kleisli category of `Maybe`, characterized by its universal property as the free adjunction of one absence
+(`Model/Apophatic.lean`). The codomain axis closes there: stochastic and substructural distinction spaces
+collapse through the diagonal in a cartesian base. The cataphatic **model** is the free skeleton
+(`Model/Cataphatic.lean`): the free/forget moves over any ambient with a surplus, with borrowed fillings (a
+field, a metric, an order, a magnitude) as instances.
 
 The only **imported** data are the **target** (no standard certifies itself, so every target is defeasible)
 and every **measure** or magnitude (degree, rate, count). Order is derived; rate and target are imported.
@@ -41,31 +44,33 @@ and every **measure** or magnitude (degree, rate, count). Order is derived; rate
 ## The boundary
 
 The framework hands back the ethics: no target, no valuation. It issues exactly one judgment without a
-target (`Boundary/Boundary.lean`): the attempt to totalize a self-classification into completeness is
+target (`Model/Boundary.lean`): the attempt to totalize a self-classification into completeness is
 **self-defeating**: it aims at a destination the boundary proves empty, and reaches for it by trading a
 true absence for a false verdict, a contradiction by its own goal. The prohibition follows from an
 impossibility, not a value; it attaches only to the claim of completeness; and everything reachable (every
 target, and whether any cost matters) is handed back.
 
-## The autology
+## The chiralogy
 
-Autology is an object of itself. It is subject to its own hole; it cannot claim completeness; it falls under
+Chiralogy is an object of itself. It is subject to its own hole; it cannot claim completeness; it falls under
 its own boundary. That is the point: the framework is not exempt from the structure it describes.
 
 ## Structure
 
 ```
-Kernel/     the category; the two absences; the hole; the three modes; the involution; the dynamics; the scope
-Protocol/   membership (the object condition); the payload as a global absence
-Model/      partiality (Kl(Maybe)); the codomain closure; arrangement; coherence; the moves
-Boundary/   the one prohibition
+Kernel/     Apophatic (the hole, obstructions, modes, dynamics, self-application)
+            Center (the empty center, the two ends of one map)
+            Cataphatic (the free transpose)
+Protocol/   Membership (the object condition and its payload)
+Model/      Apophatic (Kl(Maybe), the none-chiasm)
+            Boundary (the one prohibition, the seam, the one-way channel)
+            Cataphatic (the free skeleton), Cataphatic/Instances (the borrowed fillings)
 Registers/  the fork surface (a register is an object in a domain's language; physics is the first)
-Experiments/ new graded work (physics is the first probe)
+Experiments/archive/  the investigation record, not built
 ```
 
-`Registers/` is the fork surface and `Experiments/` new graded work; physics is the first of each, and the
-rest is the formal silence past the boundary until it arrives. See `GRADING.md` for the grades and the
-discipline.
+`Registers/` is the fork surface; physics is the first, and the rest is the formal silence past the boundary
+until it arrives. See `GRADING.md` for the grades and the discipline.
 
 Build: `lake exe cache get` then `lake build`. No `sorry`; every theorem's `#print axioms` is within
 `{propext, Classical.choice, Quot.sound}`.
