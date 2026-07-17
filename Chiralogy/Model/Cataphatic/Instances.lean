@@ -1,6 +1,8 @@
 import Chiralogy.Model.Cataphatic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Order.Lattice
+import Mathlib.Algebra.Module.Basic
 
 /-! # Model: the borrowed fillings of the cataphatic skeleton
 
@@ -65,14 +67,6 @@ metric, and the order are borrowed: the framework hosts measures, it does not ow
 theorem measure_hosts_magnitude :
     magnitude (measure_register.build true) = 1 ∧ magnitude (measure_register.build false) = 1 := by decide
 
-/-- The three bought-operations side by side: a field, a metric, an order. Three forgetful functors, three
-independent cataphatic models. -/
-theorem three_independent_bought_operations :
-    arithmetic_register_conforms.T = ZMod 3 ∧
-      hamming3 (ecc_register.build false) (ecc_register.build true) = 3 ∧
-      less (order_register.build false) (order_register.build true) = true :=
-  ⟨rfl, ecc_buys_distance, by decide⟩
-
 /-- Level one: a bit into a field. -/
 def tower1 : Bool → ZMod 3 := embed (ZMod 3)
 
@@ -110,5 +104,83 @@ resemblance, not identity. -/
 theorem loop_does_not_close :
     Nonempty (Monad Option) ∧ ¬ Function.Surjective (embed (ZMod 3)) :=
   ⟨⟨inferInstance⟩, embedding_not_iso embedding_buys_in_rich_ambient⟩
+
+/-! ## Witness census: further candidate forgetful steps
+
+Independence is per bought-operation, not per structure: a candidate is a new witness only if its
+bought-operation is genuinely new (not field-arithmetic, distance, comparison, or magnitude, and not a
+refinement of one). Everything conforms (the loose gate); only new bought-operations count. -/
+
+/-- Monoid: the ambient is the free monoid `List Bool`, the build is the generator inclusion. -/
+def monoid_register : CataphaticConformant := ⟨Bool, List Bool, fun b => [b]⟩
+
+/-- The composition the monoid ambient carries: an associative binary op the source lacked. -/
+def compose (a b : List Bool) : List Bool := a ++ b
+
+/-- **Monoid buys composition** (new): two generators compose into a word outside the generator image. -/
+theorem monoid_buys_composition :
+    compose (monoid_register.build true) (monoid_register.build false) = [true, false] := rfl
+
+/-- Group: the ambient `ℤ`, nested above the monoid (a group is a monoid with inverses). -/
+def group_register : CataphaticConformant := ⟨Bool, ℤ, fun b => if b then 1 else 0⟩
+
+/-- The inverse the group ambient carries: `a` composed with its negation. -/
+def groupInverse (a : ℤ) : ℤ := a + -a
+
+/-- **Group buys inverses** (new, the step above composition): every element has an inverse, so a generator
+composed with its negation is the unit. -/
+theorem group_buys_inverses : groupInverse (group_register.build true) = 0 := by decide
+
+/-- Vector: the ambient is the free module `ℤ × ℤ`, the build is the basis inclusion. -/
+def vector_register : CataphaticConformant := ⟨Bool, ℤ × ℤ, fun b => if b then (1, 0) else (0, 1)⟩
+
+/-- The scalar action the module ambient carries. -/
+def scale (v : ℤ × ℤ) : ℤ × ℤ := (2 : ℤ) • v
+
+/-- **Vector buys linearity** (new): scalar multiplication and linear combinations (superposition) exist,
+none of field-arithmetic, distance, comparison, or magnitude. -/
+theorem vector_buys_linearity : scale (vector_register.build true) = (2, 0) := by decide
+
+/-- **Lattice collapses to the order-family.** A meet is inter-definable with comparison
+(`a ≤ b ↔ a ⊓ b = a`): its bought-operation is order in another form, not independent. -/
+theorem lattice_collapses_to_order {L : Type} [SemilatticeInf L] (a b : L) :
+    a ≤ b ↔ a ⊓ b = a := inf_eq_left.symm
+
+/-! ## Excluded and provisional
+
+`continuity_register` (continuity, limits) is PROVISIONAL: limits need nontrivial topology, and a clean
+finite witness on the term is not available (a finite topology is either discrete, buying nothing, or its
+specialization order, which is the order-family). Not forced.
+
+Cofree constructions (right adjoints, comonads) are apophatic-shaped: the fold and observation side, the dual
+of the `Maybe`-monad, not cataphatic build-witnesses. They are not counted here.
+
+## The tower
+
+Nested (the algebraic tower `Set → Monoid → Group`): composition then inverses, each a forgetful step above
+the last (as `tower_nests` and `telescopes` nest). Parallel (different forgetful functors, not one tower):
+field, metric, order, magnitude, linearity. -/
+
+/-- **All independent bought-operations**, side by side: field, metric, order, magnitude, composition,
+inverses, linearity. Seven independent witnesses (was four): lattice collapses to order, continuity is
+provisional, cofree is apophatic-shaped. -/
+theorem all_independent_bought_operations :
+    (∃ a : ZMod 3, a ≠ 0 ∧ a ≠ 1) ∧
+      hamming3 (ecc_register.build false) (ecc_register.build true) = 3 ∧
+      less (order_register.build false) (order_register.build true) = true ∧
+      magnitude (measure_register.build true) = 1 ∧
+      compose (monoid_register.build true) (monoid_register.build false) = [true, false] ∧
+      groupInverse (group_register.build true) = 0 ∧
+      scale (vector_register.build true) = (2, 0) :=
+  ⟨embedding_buys_in_rich_ambient, ecc_buys_distance, order_buys_comparison,
+   measure_hosts_magnitude.1, monoid_buys_composition, group_buys_inverses, vector_buys_linearity⟩
+
+/-! ## The openness principle (● reading)
+
+The witnesses are the forgetful functors, one bought-operation per forgetful step. Freyd's GAFT gives a free
+construction per suitable forgetful functor, and algebraic theories are open-ended, so the list is open, not
+a fixed enumeration: the seven verified are a finite sample of an open family. The apophatic register
+instantiates a domain; the cataphatic witness fills an ambient slot (a forgetful functor). Marked ●, Freyd
+plus open structures, not a formalized enumeration. -/
 
 end Chiralogy
