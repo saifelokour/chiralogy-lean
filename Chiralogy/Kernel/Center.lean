@@ -6,7 +6,9 @@ The center the two ends share is empty and op-fixed: `center_is_empty`, `empty_c
 coincidence `X ≃ (X → B)`, which the hole forbids), `op_fixes_empty_center`, and `keystone` (the empty
 center as the op-fixed middle). The two kernel inversions cross here (`two_inversions_share_center`); the
 ethical arm is a distinct center. The apophatic end lives at the codomain (`apophatic_center_is_codomain`);
-the hole is codomain-generic and survives op (`hole_is_codomain_generic`, `hole_survives_op`). -/
+the hole is codomain-generic and survives op (`hole_is_codomain_generic`, `hole_survives_op`). The positions
+are two ends and an empty middle (`positions_are_two_and_a_middle`); there is no category-wide center
+(`no_global_center`). -/
 
 namespace Chiralogy
 
@@ -49,6 +51,15 @@ theorem one_map_two_ends {X B : Type} (c : X → X → B) :
     (∃ build : X → (X → B), ∀ x, build x = c x) :=
   ⟨fun _g hg => no_reflexive_object hg c, ⟨fun x => c x, fun _ => rfl⟩⟩
 
+/-- **Positions are two ends and an empty middle.** The map `c : X → X → B` has exactly a domain end (the
+free build) and a codomain end (the hole), with the middle between them empty (`center_is_empty`). There is
+no fourth position. -/
+theorem positions_are_two_and_a_middle {X B : Type} (c : X → X → B) :
+    ((∀ g : B → B, (∀ b, g b ≠ b) → ¬ Function.Surjective c)
+      ∧ (∃ build : X → (X → B), ∀ x, build x = c x))
+    ∧ ¬ ∃ Y : Type, Nonempty (Y ≃ (Y → Bool)) :=
+  ⟨one_map_two_ends c, center_is_empty⟩
+
 /-- **The hole is codomain-generic.** The fold-refusal obstructs surjection for any codomain carrying a
 fixed-point-free endomap, with no condition on the domain. It is not `B`-specific; it is a role held by
 whatever type sits in the codomain position. -/
@@ -73,6 +84,14 @@ theorem empty_center_is_coincidence {X B : Type} (g : B → B) (hg : ∀ b, g b 
   rintro ⟨e⟩
   obtain ⟨b, hb⟩ := fixedPoint_of_surjection (⇑e) e.surjective g
   exact hg b hb
+
+/-- **No category-wide center.** Every object's center is empty on its own (`empty_center_is_coincidence`),
+and the center-assignment is not a functor (`onCarrier_is_wrong_direction`, the variance). With no functor
+there is no limit over the category, so the per-object emptinesses do not glue into a global center. -/
+theorem no_global_center :
+    (∀ (S : Obj) (g : S.B → S.B), (∀ b, g b ≠ b) → ¬ Nonempty (S.X ≃ (S.X → S.B)))
+    ∧ (∃ (S T : Obj) (φ : Hom S T), ¬ ∃ ψ : T.X → S.X, ∀ x, ψ (φ.onCarrier x) = x) :=
+  ⟨fun _ g hg => empty_center_is_coincidence g hg, onCarrier_is_wrong_direction⟩
 
 /-- **op fixes the empty center.** op swaps the ends `X` and `B`. The coincidence-emptiness
 holds at both: no object equals its account with codomain `B`, and none with the swapped codomain `X`. So

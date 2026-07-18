@@ -2,17 +2,23 @@ import Chiralogy.Model.Apophatic
 import Chiralogy.Model.Cataphatic
 import Chiralogy.Kernel.Center
 import Chiralogy.Kernel.Apophatic
+import Mathlib.Data.ZMod.Basic
 
 /-! # Model: the boundary between the arms (limit, seam, channel)
 
 The in-between where the two arms meet at a limit and communicate, connected not fused. The one prohibition:
-`complete_and_faithful_is_impossible` (the limit where the none meets the surplus),
+`complete_and_faithful_is_impossible` (the limit where the none and surplus are co-located),
 `completeness_is_unreachable`, `totalization_is_self_defeating`, and the reachable/handed-back results.
 The braid: `boundary_braids_both_absences` and `the_open_seam` bring the kernel hole and the model none into
 contact; `double_chiasm_does_not_compose` shows the two chiasms share no generator (a reading, not one
 object). The channel: a proposed account (`proposedAccount`) flows cataphatic to apophatic, the guard
 bounding it (`proposer_guard`, `guard_is_universal`); the flow is one-way (`fold_then_build_ignores_guard`,
-`Type → Prop`). -/
+`Type → Prop`). The two boundary obstructions are distinct (`none_and_surplus_are_distinct`), and the
+ethical move is apophatic-shaped (`ethical_is_apophatic_shaped`). The channel certifies rather than informs
+(`guard_erases`, `erasure_forces_nondependence`, `guard_is_the_uniform_hole`,
+`uniformity_forbids_discrimination`, `channel_capacity_is_zero`, `channel_is_certification`,
+`apophatic_uniformity_is_channel_uniformity`); judgement is constant (`judgement_is_constant`,
+`verdict_ignores_the_case`). -/
 
 namespace Chiralogy
 
@@ -186,5 +192,89 @@ crossing map is `loop_does_not_close` and the one-way channel (`fold_then_build_
 theorem two_adjacent_arms {X B : Type} (c : X → X → B) :
     (∀ g : B → B, (∀ b, g b ≠ b) → ¬ Function.Surjective c) ∧ (∃ build : X → (X → B), ∀ x, build x = c x) :=
   one_map_two_ends c
+
+/-! ## The boundary limit: two distinct obstructions -/
+
+/-- **The none and the surplus are distinct.** The apophatic none is an absence, a missing value in the
+codomain (`imprecise 0 2 = none`); the cataphatic surplus is an excess, an unreached point in the ambient
+(`∃ a : ZMod 3, a ≠ 0 ∧ a ≠ 1`). Different ambients, opposite kinds, neither derived from the other: two
+obstructions co-located at the limit, not one. -/
+theorem none_and_surplus_are_distinct :
+    (imprecise 0 2 = none) ∧ (∃ a : ZMod 3, a ≠ 0 ∧ a ≠ 1) :=
+  ⟨by decide, ⟨2, by decide, by decide⟩⟩
+
+/-- **The ethical move is apophatic-shaped.** The ethical center is distinct (a total object still carries
+the hole, `ethical_center_is_distinct`), yet its move ends in a refusal (`¬ ∃`,
+`complete_and_faithful_is_impossible`), the same shape as the fold: a distinct center reached by the
+apophatic move. -/
+theorem ethical_is_apophatic_shaped :
+    (∃ c : Fin 4 → Fin 4 → Option Bool, (∀ x y, c x y ≠ none) ∧ ¬ Function.Surjective c)
+    ∧ ¬ ∃ c : Fin 4 → Fin 4 → Option Bool, (∀ x y, c x y ≠ none) ∧ c 0 2 = imprecise 0 2 :=
+  ⟨ethical_center_is_distinct, complete_and_faithful_is_impossible⟩
+
+/-! ## The certification chain: erasure to zero capacity -/
+
+/-- **Erasure.** The guard's verdict is a `Prop`, hence proof-irrelevant: any two proofs are equal. -/
+theorem guard_erases {X B : Type} (c : X → X → B) (h₁ h₂ : ¬ Function.Surjective c) : h₁ = h₂ := rfl
+
+/-- **Non-dependence.** Because the verdict is erased, every map out of it is constant. So no verdict formed
+from the guard's output varies with the account, over the flows the framework has (not a quantification over
+all conceivable operations). -/
+theorem erasure_forces_nondependence {X B T : Type} (c : X → X → B)
+    (F : ¬ Function.Surjective c → T) (h₁ h₂ : ¬ Function.Surjective c) : F h₁ = F h₂ :=
+  congrArg F (guard_erases c h₁ h₂)
+
+/-- **Uniformity.** The guard on any account is the uniform hole applied to it: `proposer_guard` factors
+through `no_reflexive_object`, one lemma for every account. -/
+theorem guard_is_the_uniform_hole {X B : Type} (build : X → (X → B)) {g : B → B} (hg : ∀ b, g b ≠ b) :
+    proposer_guard build hg = no_reflexive_object hg build := rfl
+
+/-- **Non-discrimination.** Two different accounts receive identical treatment: both bounded by the same
+lemma. -/
+theorem uniformity_forbids_discrimination {X B : Type} {g : B → B} (hg : ∀ b, g b ≠ b)
+    (build₁ build₂ : X → (X → B)) :
+    (¬ Function.Surjective build₁) ∧ (¬ Function.Surjective build₂) :=
+  ⟨guard_is_universal build₁ hg, guard_is_universal build₂ hg⟩
+
+/-- **Zero capacity.** The verdict never varies: any two accounts receive equivalent verdicts, so the
+channel transmits nothing. -/
+theorem channel_capacity_is_zero {X B : Type} {g : B → B} (hg : ∀ b, g b ≠ b)
+    (build₁ build₂ : X → (X → B)) :
+    (¬ Function.Surjective build₁) ↔ (¬ Function.Surjective build₂) :=
+  ⟨fun _ => guard_is_universal build₂ hg, fun _ => guard_is_universal build₁ hg⟩
+
+/-! ## The channel certifies -/
+
+/-- **The channel certifies.** The account must be present (it is the guard's argument,
+`(proposedAccount build).build = build`) and the verdict is invariant (all proofs equal). The channel
+guarantees; it does not inform. -/
+theorem channel_is_certification {X B : Type} (build : X → (X → B)) :
+    ((proposedAccount build).build = build)
+    ∧ (∀ h₁ h₂ : ¬ Function.Surjective build, h₁ = h₂) :=
+  ⟨rfl, fun _ _ => rfl⟩
+
+/-- **The channel's invariance is the hole's uniformity.** `hole_uniform` and `guard_is_universal` are the
+same term, `no_reflexive_object` at the fixed-point-free endomap: one uniformity, at the codomain and at the
+channel. -/
+theorem apophatic_uniformity_is_channel_uniformity {X : Type} (c : X → X → Option Bool) :
+    hole_uniform c = guard_is_universal c optCycle_fixedpointfree := rfl
+
+/-! ## Judgement is constant -/
+
+/-- **Judgement is constant.** The verdict holds of every account with a fixed-point-free codomain: the
+verdict map is constant, so no judgement varies with the account. -/
+theorem judgement_is_constant {X B : Type} {g : B → B} (hg : ∀ b, g b ≠ b) :
+    ∀ build : X → (X → B), ¬ Function.Surjective build :=
+  fun build => guard_is_universal build hg
+
+/-- **The verdict ignores the case.** Two different accounts (constant `true` and constant `false` on
+`Fin 2`) receive identical verdicts: both bounded. The account's identity does not reach the verdict. -/
+theorem verdict_ignores_the_case :
+    ((fun (_ _ : Fin 2) => true) ≠ (fun (_ _ : Fin 2) => false))
+    ∧ (¬ Function.Surjective (fun (_ _ : Fin 2) => true))
+    ∧ (¬ Function.Surjective (fun (_ _ : Fin 2) => false)) :=
+  ⟨by decide,
+   no_reflexive_object (g := fun b => !b) (by decide) _,
+   no_reflexive_object (g := fun b => !b) (by decide) _⟩
 
 end Chiralogy

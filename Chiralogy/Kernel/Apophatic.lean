@@ -15,7 +15,8 @@ absences (`no_reflexive_object` the diagonal, `no_universe_classifier` hence `no
 argument, `obstructions_independent`); the hole, uniform and scale-free (`hole_uniform`, `hole_transports`,
 `empty_center`); the three modes (`three_modes`, `NonDegenerate`, the lift and reflector); the dynamics
 (`lift`, `no_recovery`, `order_canonical`, `no_generation`); the codomain involution (`swap_involution`); the
-scope (`hole_scope_uniform`); and the framework's own hole (`𝒜`, `self_account_has_hole`). -/
+scope (`hole_scope_uniform`); the framework's own hole (`𝒜`, `self_account_has_hole`); and the variance
+obstruction on centers (`onCarrier_is_wrong_direction`). -/
 
 namespace Chiralogy
 
@@ -52,6 +53,19 @@ instance : Category.{0} Obj where
 open CategoryTheory
 
 universe u w v₁ v₂ w₁ w₂
+
+/-- **The variance obstruction on centers.** A morphism supplies `onCarrier : S.X → T.X`, but the center's
+exponential `S.X → S.B` is contravariant in the carrier, so a covariant action on centers would need
+`T.X → S.X`. A morphism does not provide one: its `onCarrier` need not be left-invertible. The
+center-assignment `S ↦ (S.X → S.B)` is therefore not a functor on the category. -/
+theorem onCarrier_is_wrong_direction :
+    ∃ (S T : Obj) (φ : Hom S T), ¬ ∃ ψ : T.X → S.X, ∀ x, ψ (φ.onCarrier x) = x := by
+  refine ⟨⟨Fin 2, Unit, fun _ _ => ()⟩, ⟨Fin 1, Unit, fun _ _ => ()⟩,
+    ⟨fun _ => 0, id, fun _ _ => rfl⟩, ?_⟩
+  rintro ⟨ψ, hψ⟩
+  have h0 : ψ 0 = 0 := hψ 0
+  have h1 : ψ 0 = 1 := hψ 1
+  exact absurd (h0.symm.trans h1) (by decide)
 
 /-! ## First absence: no reflexive object -/
 

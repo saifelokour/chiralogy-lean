@@ -1,9 +1,9 @@
 # Experiments
 
 New graded work: probes that test the framework against a domain or extend it. This is where new results go;
-graduated probes are archived under `archive/` (physics at `archive/PhysicsRegister.lean`, and the heterology
-arc that graduated the cataphatic arm). Further probes are the formal silence past the boundary until they
-arrive.
+graduated probes are archived under `archive/` (physics at `archive/PhysicsRegister.lean`, the heterology
+arc that graduated the cataphatic arm, and the boundary probes that graduated the channel, judgement, and
+position extensions). Further probes are the formal silence past the boundary until they arrive.
 
 Discipline (from `GRADING.md`): no `sorry`, no new axioms, every theorem's `#print axioms` within
 `{propext, Classical.choice, Quot.sound}`. A model member is admitted only if it buys structural content and
