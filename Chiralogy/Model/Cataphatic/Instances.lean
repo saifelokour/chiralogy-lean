@@ -3,6 +3,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Order.Lattice
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Topology.MetricSpace.Basic
 
 /-! # Model: the borrowed fillings of the cataphatic skeleton
 
@@ -146,11 +147,21 @@ theorem vector_buys_linearity : scale (vector_register.build true) = (2, 0) := b
 theorem lattice_collapses_to_order {L : Type} [SemilatticeInf L] (a b : L) :
     a ≤ b ↔ a ⊓ b = a := inf_eq_left.symm
 
-/-! ## Excluded and provisional
+/-- **Continuity collapses to the metric-family.** In a metric space, sequence convergence is distance
+convergence, `u → L` iff `dist (u n) L → 0`: the limit is carried by distance, already witnessed by the
+metric register, so continuity via a metric buys nothing new. -/
+theorem continuity_collapses_to_metric {X : Type} [MetricSpace X] (u : ℕ → X) (L : X) :
+    Filter.Tendsto u Filter.atTop (nhds L) ↔
+      Filter.Tendsto (fun n => dist (u n) L) Filter.atTop (nhds 0) :=
+  tendsto_iff_dist_tendsto_zero
 
-`continuity_register` (continuity, limits) is PROVISIONAL: limits need nontrivial topology, and a clean
-finite witness on the term is not available (a finite topology is either discrete, buying nothing, or its
-specialization order, which is the order-family). Not forced.
+/-! ## Collapses and exclusions
+
+Continuity has no independent witness. A genuine (unique) limit needs the clean metric case, where
+convergence is distance convergence (`continuity_collapses_to_metric`): metric-family. The non-metric routes
+fail too: a finite topology is its specialization order (order-family), and a non-metric infinite topology
+(cofinite) gives non-unique convergence, not a genuine limit. So continuity is distance or comparison in
+another form, recorded, not counted. Nothing provisional remains.
 
 Cofree constructions (right adjoints, comonads) are apophatic-shaped: the fold and observation side, the dual
 of the `Maybe`-monad, not cataphatic build-witnesses. They are not counted here.
@@ -162,8 +173,8 @@ the last (as `tower_nests` and `telescopes` nest). Parallel (different forgetful
 field, metric, order, magnitude, linearity. -/
 
 /-- **All independent bought-operations**, side by side: field, metric, order, magnitude, composition,
-inverses, linearity. Seven independent witnesses (was four): lattice collapses to order, continuity is
-provisional, cofree is apophatic-shaped. -/
+inverses, linearity. Seven independent witnesses (was four): lattice collapses to order, continuity collapses
+to metric, cofree is apophatic-shaped. -/
 theorem all_independent_bought_operations :
     (∃ a : ZMod 3, a ≠ 0 ∧ a ≠ 1) ∧
       hamming3 (ecc_register.build false) (ecc_register.build true) = 3 ∧

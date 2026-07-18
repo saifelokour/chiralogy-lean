@@ -178,4 +178,13 @@ flows into Prop (build-then-fold), Prop cannot flow back into Type (fold-then-bu
 theorem fold_then_build_ignores_guard {X B : Type} (c : X → X → B)
     (F : ¬ Function.Surjective c → CataphaticConformant) (h₁ h₂ : ¬ Function.Surjective c) :
     F h₁ = F h₂ := rfl
+
+/-- **The two arms are adjacent, not crossed.** The apophatic arm (the hole at the codomain) and the
+cataphatic arm (the free transpose at the domain) hold together from one `c`, joined by `∧`, not by a
+between-arms function: bicameral, not chiastic. The conjunction is `one_map_two_ends`; that it is not a
+crossing map is `loop_does_not_close` and the one-way channel (`fold_then_build_ignores_guard`). -/
+theorem two_adjacent_arms {X B : Type} (c : X → X → B) :
+    (∀ g : B → B, (∀ b, g b ≠ b) → ¬ Function.Surjective c) ∧ (∃ build : X → (X → B), ∀ x, build x = c x) :=
+  one_map_two_ends c
+
 end Chiralogy
