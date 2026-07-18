@@ -17,9 +17,14 @@ GR is the totality demand the one partial object cannot meet without fabricating
 demand that it keep the `none`. The GR/QM boundary is the open seam: approachable from either side, never
 closing, because closing it is complete-and-faithful.
 
-This is a READING, defeasible: that physics has this shape is a domain reading, not a theorem about
-physics. A different physics register may map differently and is equally Chiralogy. The register stays in
-this chart and never enters the derived layers.
+The register is layered, three strata, three statuses. Stratum 1 (THEOREM): the measurement schema entails
+`quantum_gravity_is_the_attempt`, by `complete_and_faithful_is_impossible`. Stratum 2 (IMPORTED): the literal
+GR determinism and QM superposition demands, stated as domain content. Stratum 3 (READING, defeasible): the
+fidelity, that the imported demands instantiate the schema. The entailment is entailed given the schema, the
+equations are imported, and only the identification is the reading, the hinge a physicist's objection lands
+on. `quantum_gravity_is_the_attempt` is asserted as entailment-given-schema, never as QG impossible
+simpliciter, and its carrier is the schema, not the equations. A different physics register may map
+differently and is equally Chiralogy; the register stays in this chart and never enters the derived layers.
 -/
 
 namespace Chiralogy.Physics
@@ -72,5 +77,54 @@ theorem phys_conforms_to_both :
     (phys.classify = phys.classify) ∧
       phys_has_cataphatic_half.build = fun s => phys.classify s :=
   ⟨rfl, rfl⟩
+
+/-! ## Stratum 1: the measurement schema and the entailment (THEOREM) -/
+
+/-- **The measurement schema** (register-native): one measurement classification
+`c(observer, system) = outcome` under both demands, GR totality (`gr_demand c`, reused) and QM a kept none at
+the measurement pair (`c 0 2 = imprecise 0 2`, `qm_faithful` at that pair). -/
+structure MeasurementSchema (c : Fin 4 → Fin 4 → Option Bool) : Prop where
+  gr : gr_demand c
+  qm : c 0 2 = imprecise 0 2
+
+/-- **The schema entails the attempt.** Given the measurement schema on one classification, QG as posed is
+impossible: `complete_and_faithful_is_impossible` applied to the schema's two demands. The schema is the
+antecedent, and appears in the proof. -/
+theorem measurement_entails_attempt (c : Fin 4 → Fin 4 → Option Bool) : ¬ MeasurementSchema c :=
+  fun s => complete_and_faithful_is_impossible ⟨c, s.gr, s.qm⟩
+
+/-! ## Stratum 2: the literal demands as IMPORTED witnesses
+
+Domain content, imported not derived. Physlib (PhysLean) is not added here: it requires a mathlib revision
+incompatible with this project's pinned `v4.31.0`, so the demands stay bare unit-free imports. They are
+opaque predicates, so Stratum 2 alone is consistent; the tension appears only under the Stratum 3 reading. -/
+
+/-- IMPORTED: GR's determinism demand, as a domain predicate on the measurement classification. -/
+axiom GRDeterminism : (Fin 4 → Fin 4 → Option Bool) → Prop
+
+/-- IMPORTED: QM's superposition demand, as a domain predicate on the measurement classification. -/
+axiom QMSuperposition : (Fin 4 → Fin 4 → Option Bool) → Prop
+
+/-- IMPORTED: GR demands determinism of the measurement classification (a definite outcome everywhere). -/
+axiom gr_determinism_demand : GRDeterminism phys.classify
+
+/-- IMPORTED: QM demands superposition of the measurement classification (a kept none until measurement). -/
+axiom qm_superposition_demand : QMSuperposition phys.classify
+
+/-! ## Stratum 3: the fidelity claim (READING, the defeasible hinge) -/
+
+/-- **The fidelity reading**, ●: the imported demands are the schema's demands, GR determinism is totality
+and QM superposition is the kept none. This is the defeasible hinge, stated not asserted. Disputing it
+denies that GR and QM are demands on one classification (holding, say, that they are different theories on
+different domains, so no single map bears both). All the register's defeasibility lives here: Stratum 1 is
+entailed, Stratum 2 is imported. -/
+def schema_is_physics_reading : Prop :=
+  (∀ c, GRDeterminism c ↔ gr_demand c) ∧ (∀ c, QMSuperposition c ↔ c 0 2 = imprecise 0 2)
+
+/-! ## Provisional
+
+When Physlib formalizes the field equations and the measurement postulate as theorems, `GRDeterminism` and
+`QMSuperposition` can be replaced by derived statements in physical units, upgrading Stratum 2 from
+stated-import to formalized-import. Carried for coverage, not asserted. -/
 
 end Chiralogy.Physics
