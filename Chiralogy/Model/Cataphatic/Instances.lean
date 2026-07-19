@@ -194,4 +194,37 @@ a fixed enumeration: the seven verified are a finite sample of an open family. T
 instantiates a domain; the cataphatic witness fills an ambient slot (a forgetful functor). Marked ●, Freyd
 plus open structures, not a formalized enumeration. -/
 
+/-! ## The arity split: which witnesses are signature operations
+
+Checked at the instances, not proven as a general signature theorem. -/
+
+/-- **The witnesses split by algebraicity.** Four buy plain-signature operations into the carrier: monoid
+composition (binary, `compose` associative on `List Bool`), group inverses (`groupInverse` into `ℤ`), vector
+linearity (`scale` into `ℤ × ℤ`), and field ring operations. Three buy maps into external valued or relational
+structures: metric distance (`hamming3` into `ℕ`), measure magnitude (`magnitude` into `ℕ`), order comparison
+(`less` into `Bool`), which are operations `X^n → X` only under enrichment. -/
+theorem witnesses_split_by_algebraicity :
+    (compose (compose [true] [false]) [true] = compose [true] (compose [false] [true]))
+    ∧ (groupInverse 1 = 0)
+    ∧ (scale (1, 0) = (2, 0))
+    ∧ (hamming3 (false, false, false) (true, true, true) = 3)
+    ∧ (magnitude (-1 : ℤ) = 1)
+    ∧ (less 0 1 = true) := by
+  refine ⟨by decide, by decide, by decide, by decide, by decide, by decide⟩
+
+/-- Append on a list-with-failure: the zero absorbs, the monoid operates on the present part. -/
+def mzAppend : Option (List Bool) → Option (List Bool) → Option (List Bool)
+  | none, _ => none
+  | _, none => none
+  | some a, some b => some (a ++ b)
+
+/-- **One signature at two arities.** For the algebraic witnesses the apophatic reason and the cataphatic
+operation inhabit one signature. The list-with-failure level is a monoid-with-zero: the absorbing constant
+`none` (arity 0, the reason) and the binary `mzAppend` (the bought operation) live on one value space, not two
+theories compared. -/
+theorem same_signature_different_arity :
+    (∀ x : Option (List Bool), mzAppend none x = none)
+    ∧ mzAppend (some [true]) (some [false]) = some [true, false] :=
+  ⟨fun _ => rfl, rfl⟩
+
 end Chiralogy

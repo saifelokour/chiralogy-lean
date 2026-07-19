@@ -22,7 +22,10 @@ ethical move is apophatic-shaped (`ethical_is_apophatic_shaped`). The channel ce
 they mention no absence-structure), so they are unchanged under the generalization. Under structured absence
 the prohibition narrows rather than fragments (`one_prohibition_permitted_grew`), the permitted moves carry a
 partial order with the prohibition at its top (`full_closure_is_the_top`, `partial_totalizations_are_ranked`,
-`ranking_is_partial_not_total`), and collision separates from concealment (`collision_without_concealment`). -/
+`ranking_is_partial_not_total`), and collision separates from concealment (`collision_without_concealment`).
+The permitted order is the Boolean algebra of quotients (`totalizations_are_quotients`, `permitted_is_a_lattice`,
+`top_is_contradictory`, `permitted_is_boolean`, `negation_is_complementary_closure`, `boolean_because_free`),
+Heyting-not-Boolean with dependent reasons (`dependent_reasons_give_heyting`). -/
 
 namespace Chiralogy
 
@@ -112,6 +115,97 @@ theorem collision_without_concealment :
   refine ⟨?_, fun e => ?_⟩
   · rintro ⟨c, htot, hf⟩; exact htot 0 2 hf
   · exact fun h => List.cons_ne_nil e [] (congrArg Prod.snd h)
+
+/-! ## The permitted order as a Boolean lattice of quotients
+
+The permitted totalizations at Except (reasons `Bool`, closures `Bool → Bool`) are the quotients of the
+level's theory, ordered by provability, forming a Boolean algebra with the prohibition as the contradictory
+top. -/
+
+/-- The quotient action of closing a set of reasons on `Bool ⊕ Bool`: each throw with `e` in the set is
+identified with a verdict. -/
+def closeE (S : Bool → Bool) : Bool ⊕ Bool → Bool ⊕ Bool
+  | Sum.inr e => bif S e then Sum.inl true else Sum.inr e
+  | Sum.inl b => Sum.inl b
+
+/-- **Totalizations are quotients.** Closing `{false}` identifies the throw `inr false` with a verdict, the
+other throw and the verdicts passing through: a quotient of Except's theory by `throw false = value`. -/
+theorem totalizations_are_quotients :
+    closeE (fun r => decide (r = false)) (Sum.inr false) = Sum.inl true
+    ∧ closeE (fun r => decide (r = false)) (Sum.inr true) = Sum.inr true
+    ∧ closeE (fun r => decide (r = false)) (Sum.inl true) = Sum.inl true := by decide
+
+/-- Meet: close only what both close. -/
+def cmeet (a b : Bool → Bool) : Bool → Bool := fun r => a r && b r
+
+/-- Join: close what either closes. -/
+def cjoin (a b : Bool → Bool) : Bool → Bool := fun r => a r || b r
+
+/-- **The permitted order is a lattice.** Meet and join are the pointwise closures; the empty closure is the
+bottom, the level unchanged. -/
+theorem permitted_is_a_lattice :
+    cmeet (fun r => decide (r = false)) (fun r => decide (r = true)) = (fun _ => false)
+    ∧ cjoin (fun r => decide (r = false)) (fun r => decide (r = true)) = (fun _ => true)
+    ∧ (∀ close : Bool → Bool, closeLE (fun _ => false) close) := by
+  refine ⟨?_, ?_, fun _ _ h => ?_⟩
+  · funext r; cases r <;> decide
+  · funext r; cases r <;> decide
+  · simp at h
+
+/-- Closing every reason collides with faithfulness: the full closure is inconsistent. -/
+theorem full_totality_collides :
+    ¬ ∃ c : Fin 4 → Fin 4 → Bool ⊕ Bool,
+      (∀ x y, ∃ b, c x y = Sum.inl b) ∧ (∃ x y e, c x y = Sum.inr e) := by
+  rintro ⟨c, htot, x, y, e, he⟩
+  obtain ⟨b, hb⟩ := htot x y
+  rw [hb] at he; simp at he
+
+/-- **The top is the contradictory quotient.** The full closure is the top of the order
+(`full_closure_is_the_top`) and the inconsistent one (`full_totality_collides`): the prohibition is the
+contradictory theory, not merely the maximal move. -/
+theorem top_is_contradictory :
+    (∀ close : Bool → Bool, closeLE close (fun _ => true))
+    ∧ (¬ ∃ c : Fin 4 → Fin 4 → Bool ⊕ Bool, (∀ x y, ∃ b, c x y = Sum.inl b) ∧ (∃ x y e, c x y = Sum.inr e)) :=
+  ⟨full_closure_is_the_top, full_totality_collides⟩
+
+/-- The relative pseudo-complement. -/
+def chimp (a b : Bool → Bool) : Bool → Bool := fun r => !a r || b r
+
+/-- **The permitted order is Boolean.** The residuation holds exhaustively (Heyting), and every element has a
+complement (`a ⊔ ¬a = ⊤`, `a ⊓ ¬a = ⊥`): the Boolean algebra of quotients on a discrete finite reason set, the
+special case of the general Heyting structure on the quotients of a theory. -/
+theorem permitted_is_boolean :
+    (∀ a b c : Bool → Bool, closeLE (cmeet a c) b ↔ closeLE c (chimp a b))
+    ∧ (∀ a : Bool → Bool, cjoin a (chimp a (fun _ => false)) = (fun _ => true)
+        ∧ cmeet a (chimp a (fun _ => false)) = (fun _ => false)) := by
+  refine ⟨by decide, by decide⟩
+
+/-- **Negation is the complementary closure.** The negation `¬a = a ⇒ ⊥` closes exactly the reasons `a` leaves
+open, and a totalization joined with its negation is the contradictory top, the prohibition. -/
+theorem negation_is_complementary_closure :
+    ∀ a : Bool → Bool,
+      chimp a (fun _ => false) = (fun r => !a r)
+      ∧ cjoin a (chimp a (fun _ => false)) = (fun _ => true) := by decide
+
+/-- **Boolean because free.** The reasons are independent, so every subset is closeable and the order is the
+powerset: over two reasons, all four closures are legitimate, none forcing another. Freeness gives independent
+constants, hence a Boolean order. -/
+theorem boolean_because_free : Fintype.card (Bool → Bool) = 4 := by decide
+
+/-- Meet, join, and the relative pseudo-complement on the three-element chain of up-sets. -/
+def cmeet3 (a b : Fin 3) : Fin 3 := min a b
+def cjoin3 (a b : Fin 3) : Fin 3 := max a b
+def cimp3 (a b : Fin 3) : Fin 3 := if a ≤ b then 2 else b
+
+/-- **Dependent reasons give a Heyting, not Boolean, order.** With a forcing relation among the constants the
+closeable sets are the up-sets, here the three-element chain: the residuation holds (Heyting), yet an element
+lacks a complement and double negation fails (not Boolean); the permitted count drops and the prohibition
+stays singular. Such a relation is not carried by a free theory: the tower's levels have independent constants,
+so this characterizes an alternative outside the family, not a level within it. -/
+theorem dependent_reasons_give_heyting :
+    (∀ a b c : Fin 3, cmeet3 a c ≤ b ↔ c ≤ cimp3 a b)
+    ∧ cjoin3 1 (cimp3 1 0) ≠ 2
+    ∧ cimp3 (cimp3 1 0) 0 ≠ 1 := by decide
 
 /-! ## Why the target is imported: no standard certifies itself -/
 

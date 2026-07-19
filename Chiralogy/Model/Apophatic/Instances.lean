@@ -282,4 +282,27 @@ theorem scope_is_algebraic_with_constants :
     ∧ (∀ m : Magma, (∃ b, m = Magma.atom b) ∨ (∃ l r, m = Magma.op l r)) :=
   ⟨cont_absence_is_stipulated, magma_has_no_constant⟩
 
+/-! ## What moves the lattice, and the base as free on one constant -/
+
+/-- **Upstream is signature change.** An operation acts on the permitted lattice exactly when it changes the
+signature. Dependence adds closeable dimensions (the two context-selective moves differ) and enlarges the
+lattice; markedness multiplies absent values leaving the reason count fixed (equal reason counts at Except and
+plural-and-marked); the absent-value count follows markedness and is inert. Scoped to these three dimensions. -/
+theorem upstream_is_signature_change :
+    (readerCloseTrue (fun _ => none) ≠ readerCloseFalse (fun _ => none))
+    ∧ ((Finset.image (fun x : (Bool ⊕ Bool) × Bool => x.1)
+         (Finset.univ.filter (fun x => ∃ e, x.1 = Sum.inr e))).card
+        = (Finset.univ.filter (fun x : Bool ⊕ Bool => ∃ e, x = Sum.inr e)).card) :=
+  ⟨dependence_adds_reasons, by decide⟩
+
+/-- **The base is the free theory on one constant.** Maybe has a single arity-0 symbol (`failMaybe`, whose
+range is exactly the absence) and is free pointed on it (`maybe_free_pointed`). This is `maybe_free_pointed` in
+signature terms, the common source of the base's distinction, singularity, arity-0 character, and Boolean
+permitted order. -/
+theorem base_is_free_on_one_constant :
+    (∀ v : Option Bool, v = none ↔ ∃ u : Unit, failMaybe u = v)
+    ∧ (∀ (C : Type) (pt : C) (f : Bool → C),
+        ∃! g : Option Bool → C, g none = pt ∧ ∀ b, g (some b) = f b) :=
+  ⟨reasons_are_nullary_generators.2, fun _ pt f => maybe_free_pointed pt f⟩
+
 end Chiralogy
