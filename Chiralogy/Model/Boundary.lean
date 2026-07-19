@@ -277,7 +277,9 @@ sets the up-sets, here the three-element chain `∅ < {hi} < {lo,hi}`, three whe
 drops): the residuation holds (Heyting) yet an element lacks a complement and double negation fails (not
 Boolean), and the prohibition stays singular (the one full closure). Such a relation is not carried by a free
 theory: the tower's levels have independent constants, so this characterizes an alternative outside the family,
-not a level within it. -/
+not a level within it. The forcing may be domain-supplied: where a domain's grounds of absence carry
+prerequisite structure, closing a later ground presupposes an earlier one, so the level it presents is forced
+and its permitted family is the up-sets, the Heyting case realized rather than merely alternative. -/
 theorem forcing_gives_heyting :
     (∀ a b c : Fin 3, cmeet3 a c ≤ b ↔ c ≤ cimp3 a b)
     ∧ cjoin3 1 (cimp3 1 0) ≠ 2

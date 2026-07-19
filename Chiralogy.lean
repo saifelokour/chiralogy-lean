@@ -8,6 +8,7 @@ import Chiralogy.Model.Cataphatic.Instances
 import Chiralogy.Model.Boundary
 import Chiralogy.Protocol.Membership
 import Chiralogy.Registers.Physics
+import Chiralogy.Registers.TypeSystem
 
 /-! # Chiralogy
 
@@ -28,6 +29,7 @@ the payload's hypothesis) and its only dependent is a register.
 - `Model/Cataphatic/Instances` the borrowed fillings.
 - `Model/Boundary` the in-between.
 - `Protocol/Membership` the conformance interface a domain submits to.
-- `Registers/Physics` a domain entering through the protocol.
+- `Registers/Physics` a domain entering through the protocol, at the base.
+- `Registers/TypeSystem` a second domain entering, at a level.
 
 `Experiments/` is the record, not built. Renamed from Autology. -/
