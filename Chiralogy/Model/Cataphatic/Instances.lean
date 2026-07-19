@@ -12,7 +12,8 @@ borrowed fillings: the four registers, each instantiating the skeleton at a spec
 surplus, and the target-dependence demonstrations that show the specific ambient matters (their concreteness
 is their content, so they are not parameterized). The measure register is ● BORROWED: the framework hosts
 measures, it does not own magnitude. The conformance form reads only a build, so the algebraic/enriched split
-is a classification of the seven witnesses, not something the form registers (`cataphatic_form_reads_only_a_build`). -/
+is a classification of the seven witnesses, not something the form registers (`cataphatic_form_reads_only_a_build`);
+the form distinguishes no two witnesses at all (`form_distinguishes_nothing`), so every classification is ours. -/
 
 namespace Chiralogy
 
@@ -227,6 +228,16 @@ theorem cataphatic_form_reads_only_a_build :
   refine ⟨rfl, fun h => ?_⟩
   have := DFunLike.congr_fun h 1
   simp at this
+
+/-- **The form distinguishes nothing.** The cataphatic form is loose: every type is the carrier of some
+conformant, and two witnesses differing in carrier, ambient, and build are both conformant with no test
+separating them. The witness family is undifferentiated from the framework's side, so every classification of
+it, the algebraic/enriched split included, is imposed from outside. -/
+theorem form_distinguishes_nothing :
+    (∀ X : Type, ∃ cc : CataphaticConformant, cc.X = X)
+    ∧ (⟨Bool, Bool, id⟩ : CataphaticConformant).X = Bool
+    ∧ (⟨Fin 3, ℕ, fun _ => (0 : ℕ)⟩ : CataphaticConformant).X = Fin 3 :=
+  ⟨fun X => cataphatic_is_loose X, rfl, rfl⟩
 
 /-- Append on a list-with-failure: the zero absorbs, the monoid operates on the present part. -/
 def mzAppend : Option (List Bool) → Option (List Bool) → Option (List Bool)

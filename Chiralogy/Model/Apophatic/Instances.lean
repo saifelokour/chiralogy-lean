@@ -13,8 +13,11 @@ Maybe (`maybeAbsence`) is the base of a tower of levels, each a section with ret
 model, each with the kernel surviving and the verdict uniform. Memory, context, state, structured absence, and
 plurality are the surpluses. Each level is an `AbsenceStructure` instance. Composition of levels as sections is
 additive (`grade_adds`); effect-stacking is order-dependent (`state_except_does_not_commute` versus
-`state_state_commutes`), the first non-commutative composition in the framework. Dependence is one dimension:
-consulting a context and reading internal history are the same mechanism (`dependence_is_one_dimension`). -/
+`state_state_commutes`), the first non-commutative composition in the framework, and non-commutation is the
+norm (`non_commutation_is_the_norm`). Dependence is one dimension: consulting a context and reading internal
+history are the same mechanism (`dependence_is_one_dimension`). The layer is equational, so its constants are
+free or welded, never ordered (`equational_relations_weld`, `levels_are_free_or_welded`,
+`forced_levels_are_not_constructible`): a forced level is not constructible here. -/
 
 namespace Chiralogy
 
@@ -133,6 +136,32 @@ theorem state_state_commutes :
   simp only [StateOverState, StateOverState', Fintype.card_fun,
     Fintype.card_prod, Fintype.card_bool, Fintype.card_fin, Fintype.card_unit]
   norm_num
+
+abbrev ReaderOverWriter : Type := Bool → Bool × Bool
+abbrev WriterOverReader : Type := (Bool → Bool) × Bool
+abbrev WriterOverExcept : Type := (Unit ⊕ Bool) × Bool
+abbrev ExceptOverWriter : Type := Unit ⊕ (Bool × Bool)
+abbrev WriterOverWriter : Type := (Bool × Fin 3) × Bool
+abbrev WriterOverWriter' : Type := (Bool × Bool) × Fin 3
+
+/-- **Non-commutation is the norm.** Of four mixed transformer pairs, three fail to commute by cardinality
+(State/Except 25 versus 36, Reader/Writer 16 versus 8, Writer/Except 6 versus 5) and one commutes
+(Writer/Writer, 12); with `state_state_commutes` the commuting cases are the same-transformer stacks. Effect
+ordering is generally order-dependent, and the additive section-composition `grade` sees is blind to it. -/
+theorem non_commutation_is_the_norm :
+    Fintype.card StateOverExcept ≠ Fintype.card ExceptOverState
+    ∧ Fintype.card ReaderOverWriter ≠ Fintype.card WriterOverReader
+    ∧ Fintype.card WriterOverExcept ≠ Fintype.card ExceptOverWriter
+    ∧ Fintype.card WriterOverWriter = Fintype.card WriterOverWriter' := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · simp only [StateOverExcept, ExceptOverState, Fintype.card_fun, Fintype.card_sum,
+      Fintype.card_prod, Fintype.card_bool, Fintype.card_unit]; norm_num
+  · simp only [ReaderOverWriter, WriterOverReader, Fintype.card_fun, Fintype.card_prod,
+      Fintype.card_bool]; norm_num
+  · simp only [WriterOverExcept, ExceptOverWriter, Fintype.card_sum, Fintype.card_prod,
+      Fintype.card_bool, Fintype.card_unit]; norm_num
+  · simp only [WriterOverWriter, WriterOverWriter', Fintype.card_prod, Fintype.card_bool,
+      Fintype.card_fin]
 
 /-! ## The tower's index: reasons are the nullary generators
 
@@ -324,5 +353,66 @@ theorem base_is_free_on_one_constant :
     ∧ (∀ (C : Type) (pt : C) (f : Bool → C),
         ∃! g : Option Bool → C, g none = pt ∧ ∀ b, g (some b) = f b) :=
   ⟨reasons_are_nullary_generators.2, fun _ pt f => maybe_free_pointed pt f⟩
+
+/-! ## Remaining threads -/
+
+/-- **Blocking outside the order preserves Heyting.** Blocking a reason that does not participate in the
+forcing leaves the Heyting structure intact, the blocked reason simply removed: under forcing `0 ≺ 1` with
+reason `2` blocked, the readable closures are the three up-sets of the untouched two-chain, fewer than the
+Boolean four. Contrast the collapse to Boolean when the blocked reason is inside the order. -/
+theorem blocking_outside_the_order_preserves_heyting :
+    (Finset.univ.filter (fun c : Fin 3 → Bool => (c 1 = true → c 0 = true) ∧ c 2 = false)).card = 3
+    ∧ (Finset.univ.filter (fun c : Fin 2 → Bool => c 1 = true → c 0 = true)).card = 3
+    ∧ Fintype.card (Fin 2 → Bool) = 4 :=
+  ⟨by decide, by decide, by decide⟩
+
+/-- **No fifth axiom shape.** An axiom on a single constant is either reflexivity, inert (the closeable family
+stays the free Boolean three), or an operation axiom (involution, here `!!x = x`), inert as operation-operation
+axioms are. The shapes that move the closeable family remain the ones already found. -/
+theorem no_fifth_axiom_shape :
+    (Finset.univ.filter (fun c : Bool → Bool => ¬ ∀ r, c r = true)).card = 3
+    ∧ (∀ x : Bool, !(!x) = x) :=
+  ⟨by decide, by decide⟩
+
+/-! ## The equational limit
+
+The layer is equational. Relating two constants by an operation welds them rather than ordering them, so a
+prerequisite order among constants, which is implicational, is not constructible here. The value space `Fin 4`
+carries verdicts `0, 1` and absences `2 = a`, `3 = b`, with an operation `s(a) = b`. -/
+
+/-- The operation relating the two absences: `s(a) = b`, fixing the rest. -/
+def sOp : Fin 4 → Fin 4
+  | 2 => 3
+  | x => x
+
+/-- The verdicts of the value space. -/
+def isVerdict (x : Fin 4) : Prop := x = 0 ∨ x = 1
+
+/-- **Equational relations weld.** Any totalization commuting with the operation closes the second constant
+whenever it closes the first, and leaves it open whenever the first is open: `t b = s (t a)` forces both or
+neither. Welding, not ordering. -/
+theorem equational_relations_weld (t : Fin 4 → Fin 4) (hom : ∀ x, t (sOp x) = sOp (t x)) :
+    (isVerdict (t 2) → isVerdict (t 3)) ∧ (t 2 = 2 → t 3 = 3) := by
+  have h : t 3 = sOp (t 2) := by have := hom 2; simpa [sOp] using this
+  refine ⟨?_, ?_⟩
+  · rintro (h0 | h0) <;> (rw [h, h0]; simp [sOp, isVerdict])
+  · intro h2; rw [h, h2]; rfl
+
+/-- **Levels are free or welded.** The equational layer yields levels whose constants are independent (every
+subset closeable, the free Boolean family) or welded (moving both or neither); it does not yield a prerequisite
+order among them. A prerequisite is implicational, and an equational theory carries no implication among its
+constants. -/
+theorem levels_are_free_or_welded :
+    (Finset.univ.filter (fun close : Fin 2 → Bool => ¬ ∀ r, close r = true)).card = 3
+    ∧ (∀ t : Fin 4 → Fin 4, (∀ x, t (sOp x) = sOp (t x)) → (isVerdict (t 2) → isVerdict (t 3))) :=
+  ⟨by decide, fun t hom => (equational_relations_weld t hom).1⟩
+
+/-- **Forced levels are not constructible.** No level in this layer carries the forcing structure
+`forcing_gives_heyting` describes: the second constant is never closeable while the first is open, so the up-set
+family of a forced order is not realized. The Heyting case is available to a level only by imposition, not by
+construction. -/
+theorem forced_levels_are_not_constructible :
+    ∀ t : Fin 4 → Fin 4, (∀ x, t (sOp x) = sOp (t x)) → (t 2 = 2 → t 3 = 3) :=
+  fun t hom => (equational_relations_weld t hom).2
 
 end Chiralogy

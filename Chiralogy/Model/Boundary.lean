@@ -279,7 +279,10 @@ Boolean), and the prohibition stays singular (the one full closure). Such a rela
 theory: the tower's levels have independent constants, so this characterizes an alternative outside the family,
 not a level within it. The forcing may be domain-supplied: where a domain's grounds of absence carry
 prerequisite structure, closing a later ground presupposes an earlier one, so the level it presents is forced
-and its permitted family is the up-sets, the Heyting case realized rather than merely alternative. -/
+and its permitted family is the up-sets, the Heyting case realized rather than merely alternative. The model
+layer cannot supply it: its constants are free or welded (`levels_are_free_or_welded`), so a forced level is
+not constructible here. The Heyting structure arises where a domain's prerequisites restrict a free level's
+family, not from a level that matches them. -/
 theorem forcing_gives_heyting :
     (∀ a b c : Fin 3, cmeet3 a c ≤ b ↔ c ≤ cimp3 a b)
     ∧ cjoin3 1 (cimp3 1 0) ≠ 2

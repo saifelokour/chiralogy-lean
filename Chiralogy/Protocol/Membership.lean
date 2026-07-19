@@ -70,7 +70,9 @@ def leveledMember : Member where
 /-- **A register conforms at a level.** A classification landing in a structured-absence level enters through
 the unchanged protocol: only can-differ and non-degeneracy are asked, and the payload fires. The level's
 permitted lattice, fragmented center, and per-reason totalizations are then inherited below the payload; the
-interface stayed fixed through the model layer's elaboration, demanding nothing of the level. -/
+interface stayed fixed through the model layer's elaboration, demanding nothing of the level. The inherited
+lattice is the level's, which is free; the readable positions are the domain's, cut out of that lattice by
+prerequisites the level does not carry. Conformance supplies the family; the domain supplies the order. -/
 theorem register_at_a_level : ¬ Function.Surjective leveledMember.classify :=
   payload leveledMember
 
