@@ -2,9 +2,12 @@ import Chiralogy.Kernel.Apophatic
 
 /-! # Membership
 
-The object condition, as five data with two tests. The five data: a carrier, a distinction space, a proof
-that space can differ, a self-classification, and non-degeneracy. The two tests: the payload fires (the
-classification is not surjective), and non-degeneracy holds: the boundary of `Deg`. -/
+The conformance interface: the object condition a domain submits to in order to enter, invoking the kernel's
+payload. Not a stage of the derivation but the entry point beside the spine, its only dependency the kernel
+(for the payload's hypothesis) and its only dependent a register. A domain presents itself as five data with
+two tests. The five data: a carrier, a distinction space, a proof that space can differ, a self-classification,
+and non-degeneracy. The two tests: the payload fires (the classification is not surjective), and non-degeneracy
+holds: the boundary of `Deg`. -/
 
 namespace Chiralogy
 
