@@ -54,6 +54,15 @@ theorem singular_absence :
     ∀ v v' : Option Bool, maybeAbsence.absent v → maybeAbsence.absent v' → v = v' :=
   fun _ _ h h' => h.trans h'.symm
 
+/-- **The base is minimal on every coordinate.** Maybe has one absent value (all absent values equal) and one
+nullary generator (the absence is the single constant `none`, the range of `fun _ => none`), hence unmarked
+with reason count equal to value count, no dependence, and no grouping choice: at one absence the partition is
+forced. This is `maybe_free_pointed` seen from the index, the free theory on exactly one constant. -/
+theorem base_is_minimal :
+    (∀ v v' : Option Bool, v = none → v' = none → v = v')
+    ∧ (∀ v : Option Bool, v = none ↔ ∃ _ : Unit, (none : Option Bool) = v) :=
+  ⟨fun _ _ h h' => h.trans h'.symm, fun _ => ⟨fun h => ⟨(), h.symm⟩, fun ⟨_, h⟩ => h.symm⟩⟩
+
 /-- **The base collision recovers the current form.** The base's total-versus-absent collision is
 `boundary_collision` at `maybeAbsence`; `complete_and_faithful_is_impossible` is its specific instance with
 `imprecise`. -/
