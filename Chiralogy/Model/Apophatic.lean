@@ -1,7 +1,13 @@
 import Chiralogy.Kernel.Apophatic
 import Chiralogy.Kernel.Center
 
-/-! # Model: the apophatic model (unique)
+/-! # Model: the apophatic model (skeleton and base)
+
+Generic over an `AbsenceStructure` (a value space with an `absent` predicate): the collision
+(`boundary_collision`) and the two moves (`totalization_exists`, `partialization_exists`) hold from the
+predicate alone, the moves crossing at the absence-locus whose cardinality is an instance fact. Maybe is the
+distinguished base (`maybeAbsence`, `singular_absence`, `base_embeds_out`), free by `maybe_free_pointed`, out
+of which the tower levels (`Model/Apophatic/Instances.lean`) embed. The base's concrete facts follow.
 
 The canonical extension `Kl(Maybe)`: keep-the-none. `Option` is the monad; `payload_survives` and
 `maybe_free_pointed` characterize the free adjunction of one absence; `imprecise_is_partial_mode` occupies
@@ -11,6 +17,49 @@ none-chiasm: the two arms invert at the none (`model_arms_invert`), whose center
 hole (`model_center_is_the_none`). -/
 
 namespace Chiralogy
+
+/-! ## The generic skeleton: absence-structure -/
+
+/-- An absence-structure: a value space with a distinguished absent predicate. A classification is
+`c : X → X → A.V`. -/
+structure AbsenceStructure where
+  V : Type
+  absent : V → Prop
+
+/-- **The boundary collision, generic.** No classification is both everywhere-defined and somewhere-absent;
+it follows from the existence of the predicate alone, nothing about the value space. -/
+theorem boundary_collision (A : AbsenceStructure) {X : Type} :
+    ¬ ∃ c : X → X → A.V, (∀ x y, ¬ A.absent (c x y)) ∧ (∃ x y, A.absent (c x y)) := by
+  rintro ⟨c, htot, x, y, hf⟩; exact htot x y hf
+
+/-- **Totalization, generic.** A non-absent value makes a classification everywhere-defined (close every
+absence). -/
+theorem totalization_exists (A : AbsenceStructure) (d : A.V) (hd : ¬ A.absent d) {X : Type} :
+    ∃ c : X → X → A.V, ∀ x y, ¬ A.absent (c x y) :=
+  ⟨fun _ _ => d, fun _ _ => hd⟩
+
+/-- **Partialization, generic.** An absent value lets a classification keep an absence (open one). The moves
+cross at the absence-locus `{v | A.absent v}`; its cardinality is an instance fact, not fixed here. -/
+theorem partialization_exists (A : AbsenceStructure) (a : A.V) (ha : A.absent a) {X : Type} (x₀ : X) :
+    ∃ c : X → X → A.V, ∃ x y, A.absent (c x y) :=
+  ⟨fun _ _ => a, x₀, x₀, ha⟩
+
+/-- Maybe as an absence-structure: the absent value is `none`. The distinguished base. -/
+def maybeAbsence : AbsenceStructure := ⟨Option Bool, fun v => v = none⟩
+
+/-- **Singular absence: the base's structural property.** Maybe has one absence, all absent values equal. The
+tower's shape-claims (singular center, binary boundary, no ranking) rest on this; structured absence breaks
+it. -/
+theorem singular_absence :
+    ∀ v v' : Option Bool, maybeAbsence.absent v → maybeAbsence.absent v' → v = v' :=
+  fun _ _ h h' => h.trans h'.symm
+
+/-- **The base collision recovers the current form.** The base's total-versus-absent collision is
+`boundary_collision` at `maybeAbsence`; `complete_and_faithful_is_impossible` is its specific instance with
+`imprecise`. -/
+theorem base_collision_is_generic {X : Type} :
+    ¬ ∃ c : X → X → Option Bool, (∀ x y, c x y ≠ none) ∧ (∃ x y, c x y = none) :=
+  boundary_collision maybeAbsence
 
 /-- The extension is the Kleisli category of `Maybe` on the distinction space. -/
 example : Monad Option := inferInstance
@@ -40,7 +89,8 @@ theorem total_never_abstains {X : Type} (f : X → X → Bool) (x y : X) :
 
 /-- **Maybe is the free pointed object.** For a point `pt : C` and a map `f : B → C`, there is a unique
 pointed extension `Option B → C` sending `none` to `pt` and `some b` to `f b`. This universal property
-characterizes `B + 1` as the free object with a distinguished point, the canonical codomain extension. -/
+characterizes `B + 1` as the free object with a distinguished point. It is the distinguished base of the
+tower, not a terminus: levels embed out of it (`base_embeds_out`). -/
 theorem maybe_free_pointed {B C : Type} (pt : C) (f : B → C) :
     ∃! g : Option B → C, g none = pt ∧ ∀ b, g (some b) = f b := by
   refine ⟨fun o => o.elim pt f, ⟨rfl, fun _ => rfl⟩, ?_⟩
@@ -49,6 +99,13 @@ theorem maybe_free_pointed {B C : Type} (pt : C) (f : B → C) :
   cases o with
   | none => exact hnone
   | some b => exact hsome b
+
+/-- **The base embeds out (freeness, initiality).** The base injects into a level (here with an empty log): a
+map out of the free pointed object. Maybe is the distinguished base by freeness, not convention; the
+cataphatic side has no such base, its ambients all on equal footing. -/
+theorem base_embeds_out {E : Type} :
+    Function.Injective (fun v : Option Bool => (v, ([] : List E))) :=
+  fun _ _ h => congrArg Prod.fst h
 
 
 /-- Totalization: fill each absence with a scale verdict, keeping the present ones. -/
@@ -115,7 +172,9 @@ theorem totalization_falsifies_against_every_target (t : Fin 4 → Fin 4 → Boo
 /-- **The model's two arms invert at the none.** Totalization fills a none (none ↦ some) and partialization
 opens one (some ↦ none): opposite directions on the none-axis, exhibited on one object. Their costs invert:
 totalization falsifies against every target (target-free), partialization asserts no falsehood against any
-target (target-dependent). Two distinct arms, not one move twice. -/
+target (target-dependent). Two distinct arms, not one move twice. Instance-bound to Maybe: the cost asymmetry
+does not generalize, and concealment is contingent on unmarked absence (a level that records fabrication does
+not conceal); only the collision is structural. -/
 theorem model_arms_invert :
     (∃ (s : Fin 4 → Nat) (w : Fin 4 → Fin 4 → Bool),
         (imprecise 0 2 = none ∧ totalization s imprecise 0 2 ≠ none) ∧
@@ -133,7 +192,8 @@ theorem model_arms_invert :
 
 /-- **The model center is the none.** Both arms pivot on the constitutive absence: totalization changes
 only the none entries (present verdicts pass through), and partialization's product is a none. This center
-is distinct from the kernel hole: a total object carries the hole with no none (`ethical_center_is_distinct`). -/
+is distinct from the kernel hole: a total object carries the hole with no none (`ethical_center_is_distinct`).
+The center is a single point only under `singular_absence`; with structured absence it is a family (Except). -/
 theorem model_center_is_the_none :
     (∀ (X : Type) (s : X → Nat) (c : X → X → Option Bool) (x y : X) (b : Bool),
         c x y = some b → totalization s c x y = some b) ∧

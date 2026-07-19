@@ -3,6 +3,7 @@ import Chiralogy.Kernel.Center
 import Chiralogy.Kernel.Cataphatic
 import Chiralogy.Protocol.Membership
 import Chiralogy.Model.Apophatic
+import Chiralogy.Model.Apophatic.Instances
 import Chiralogy.Model.Boundary
 import Chiralogy.Model.Cataphatic
 import Chiralogy.Model.Cataphatic.Instances
@@ -18,7 +19,8 @@ cataphatic build is free.
 - `Kernel/Center` the empty center between the ends.
 - `Kernel/Cataphatic` the build at the domain.
 - `Protocol/Membership` the object condition.
-- `Model/Apophatic` `Kl(Maybe)`, keep-the-none.
+- `Model/Apophatic` the absence-structure skeleton and the Maybe base.
+- `Model/Apophatic/Instances` the tower of levels over Kl(Maybe).
 - `Model/Boundary` the in-between.
 - `Model/Cataphatic` the free skeleton.
 - `Model/Cataphatic/Instances` the borrowed fillings.

@@ -18,7 +18,11 @@ ethical move is apophatic-shaped (`ethical_is_apophatic_shaped`). The channel ce
 (`guard_erases`, `erasure_forces_nondependence`, `guard_is_the_uniform_hole`,
 `uniformity_forbids_discrimination`, `channel_capacity_is_zero`, `channel_is_certification`,
 `apophatic_uniformity_is_channel_uniformity`); judgement is constant (`judgement_is_constant`,
-`verdict_ignores_the_case`). -/
+`verdict_ignores_the_case`). These channel and arm results are absence-agnostic (over any distinction space,
+they mention no absence-structure), so they are unchanged under the generalization. Under structured absence
+the prohibition narrows rather than fragments (`one_prohibition_permitted_grew`), the permitted moves carry a
+partial order with the prohibition at its top (`full_closure_is_the_top`, `partial_totalizations_are_ranked`,
+`ranking_is_partial_not_total`), and collision separates from concealment (`collision_without_concealment`). -/
 
 namespace Chiralogy
 
@@ -30,7 +34,9 @@ theorem completeness_is_unreachable {X : Type} (c : X → X → Option Bool) :
 
 /-- **The internal contradiction.** A total map that is also faithful to a constitutive absence is
 impossible: totality needs a verdict where faithfulness needs the absence. The self-defeat is by the
-move's own goal: no external standard, no imported value, only the map's own absence against totality. -/
+move's own goal: no external standard, no imported value, only the map's own absence against totality. This is
+the base instance of the generic `boundary_collision` (`base_collision_is_generic`); binary at the base, it
+becomes a spectrum above, where only full totality collides (see the prohibition order below). -/
 theorem complete_and_faithful_is_impossible :
     ¬ ∃ c : Fin 4 → Fin 4 → Option Bool, (∀ x y, c x y ≠ none) ∧ c 0 2 = imprecise 0 2 := by
   rintro ⟨c, htotal, hfaithful⟩
@@ -42,6 +48,70 @@ theorem complete_and_faithful_is_impossible :
 theorem totalization_is_self_defeating {X : Type} (s : X → Nat) (c : X → X → Option Bool) :
     (∀ x y, totalization s c x y ≠ none) ∧ ¬ Function.Surjective (totalization s c) :=
   ⟨totalization_totalizes s c, totalization_hole s c⟩
+
+/-! ## The prohibition under structured absence
+
+Above the base the prohibition changes shape without splitting. A totalization is given by which reasons it
+closes, `close : Bool → Bool`; the collision is structural, concealment contingent. -/
+
+/-- A totalization is full when it closes every reason. -/
+abbrev isFull (close : Bool → Bool) : Prop := close false = true ∧ close true = true
+
+/-- A totalization keeps some reason (does not collide) when it leaves one open. -/
+abbrev keepsSome (close : Bool → Bool) : Prop := close false = false ∨ close true = false
+
+/-- **Permitted iff not full.** A move avoids the collision exactly when it is not the full closure. -/
+theorem permitted_iff_not_full (close : Bool → Bool) : keepsSome close ↔ ¬ isFull close := by
+  cases h0 : close false <;> cases h1 : close true <;> simp [isFull, keepsSome, h0, h1]
+
+/-- **Exactly one prohibited move.** Only the full closure collides: the prohibited totalization is unique. -/
+theorem exactly_one_prohibited (close : Bool → Bool) : isFull close ↔ close = fun _ => true := by
+  constructor
+  · rintro ⟨h0, h1⟩; funext r; cases r <;> assumption
+  · rintro rfl; exact ⟨rfl, rfl⟩
+
+/-- **The prohibition narrows, it does not fragment.** Of the four totalization moves, exactly one, the full
+closure, is prohibited and three are permitted: structured absence forbids the same one move and permits more
+than the binary base. -/
+theorem one_prohibition_permitted_grew :
+    (Finset.univ.filter (fun close : Bool → Bool => isFull close)).card = 1
+    ∧ (Finset.univ.filter (fun close : Bool → Bool => ¬ isFull close)).card = 3 := by decide
+
+/-- The inclusion order on closures: closing a subset of the reasons. -/
+abbrev closeLE (close close' : Bool → Bool) : Prop := ∀ r, close r = true → close' r = true
+
+/-- **The prohibited move is the top.** Every totalization is below the full closure in the inclusion order:
+the prohibition sits at the top, with the base as the degenerate one-element case. -/
+theorem full_closure_is_the_top (close : Bool → Bool) : closeLE close (fun _ => true) :=
+  fun _ _ => rfl
+
+/-- **The permitted moves are ranked by inclusion.** A strict chain of closures exists, so 6.a.4's "nothing
+reachable ranked" holds only at the base; above it the reachable partial totalizations carry an order. -/
+theorem partial_totalizations_are_ranked :
+    closeLE (fun _ => false) (fun r => decide (r = false))
+    ∧ closeLE (fun r => decide (r = false)) (fun _ => true)
+    ∧ ¬ closeLE (fun _ => true) (fun r => decide (r = false)) := by decide
+
+/-- **The order is partial, not total.** Closing only `false` and closing only `true` are incomparable: a
+lattice of closures, not a total ranking. -/
+theorem ranking_is_partial_not_total :
+    ¬ closeLE (fun r => decide (r = false)) (fun r => decide (r = true))
+    ∧ ¬ closeLE (fun r => decide (r = true)) (fun r => decide (r = false)) := by decide
+
+/-- A recording totalization at the Writer value space: fabricate, and log the fabrication. -/
+def recordingTotalize (e : Bool) : Option Bool × List Bool → Option Bool × List Bool
+  | (none, l) => (some true, e :: l)
+  | (some b, l) => (some b, l)
+
+/-- **Collision without concealment.** The collision is structural: total and faithful are incompatible at
+the memoryful value space regardless of the log. Concealment is contingent: the recording variant marks the
+fabrication, so it does not conceal. The base bundles collision and concealment; a level separates them. -/
+theorem collision_without_concealment :
+    (¬ ∃ c : Fin 4 → Fin 4 → Option Bool × List Bool, (∀ x y, (c x y).1 ≠ none) ∧ (c 0 2).1 = none)
+    ∧ (∀ e : Bool, recordingTotalize e (none, []) ≠ recordingTotalize e (some true, ([] : List Bool))) := by
+  refine ⟨?_, fun e => ?_⟩
+  · rintro ⟨c, htot, hf⟩; exact htot 0 2 hf
+  · exact fun h => List.cons_ne_nil e [] (congrArg Prod.snd h)
 
 /-! ## Why the target is imported: no standard certifies itself -/
 
