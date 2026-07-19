@@ -3,10 +3,12 @@ import Chiralogy.Kernel.Center
 import Chiralogy.Kernel.Cataphatic
 import Chiralogy.Model.Apophatic
 import Chiralogy.Model.Apophatic.Instances
+import Chiralogy.Model.Grounds
 import Chiralogy.Model.Cataphatic
 import Chiralogy.Model.Cataphatic.Instances
 import Chiralogy.Model.Boundary
 import Chiralogy.Protocol.Membership
+import Chiralogy.Protocol.GroundTemplates
 import Chiralogy.Registers.Physics
 import Chiralogy.Registers.TypeSystem
 
@@ -25,10 +27,12 @@ the payload's hypothesis) and its only dependent is a register.
 - `Kernel/Cataphatic` the build at the domain.
 - `Model/Apophatic` the absence-structure skeleton and the Maybe base.
 - `Model/Apophatic/Instances` the tower of levels over Kl(Maybe).
+- `Model/Grounds` the ground-structures a domain's prerequisites present.
 - `Model/Cataphatic` the free skeleton.
 - `Model/Cataphatic/Instances` the borrowed fillings.
 - `Model/Boundary` the in-between.
 - `Protocol/Membership` the conformance interface a domain submits to.
+- `Protocol/GroundTemplates` the occupancy specifications, model-free.
 - `Registers/Physics` a domain entering through the protocol, at the base.
 - `Registers/TypeSystem` a second domain entering, at a level.
 

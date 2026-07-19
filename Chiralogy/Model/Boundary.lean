@@ -388,6 +388,72 @@ theorem absorbing_reaches_the_lattice :
   refine ⟨fun a => ?_, by decide⟩
   simp [mzAppend]
 
+/-! ## What the lattice operations mean
+
+The closures act as quotients of the level's theory through `closeE`, identifying each closed throw with a
+verdict. The operations read on that action, not as set operations relabelled. -/
+
+/-- A closure imposes throw `e` when its quotient collapses `inr e` to a verdict. -/
+private theorem closeE_imposes (S : Bool → Bool) (e : Bool) :
+    closeE S (Sum.inr e) = Sum.inl true ↔ S e = true := by
+  cases h : S e <;> simp [closeE, h]
+
+/-- **Join is joint imposition.** The join of two closures is the smallest theory imposing both: it imposes
+everything either imposes, and imposes a throw only if one of them does. -/
+theorem join_is_joint_imposition (a b : Bool → Bool) :
+    (∀ e, closeE a (Sum.inr e) = Sum.inl true → closeE (cjoin a b) (Sum.inr e) = Sum.inl true)
+    ∧ (∀ e, closeE b (Sum.inr e) = Sum.inl true → closeE (cjoin a b) (Sum.inr e) = Sum.inl true)
+    ∧ (∀ e, closeE (cjoin a b) (Sum.inr e) = Sum.inl true →
+        closeE a (Sum.inr e) = Sum.inl true ∨ closeE b (Sum.inr e) = Sum.inl true) := by
+  refine ⟨fun e h => ?_, fun e h => ?_, fun e h => ?_⟩
+  · rw [closeE_imposes a e] at h; rw [closeE_imposes (cjoin a b) e]; simp [cjoin, h]
+  · rw [closeE_imposes b e] at h; rw [closeE_imposes (cjoin a b) e]; simp [cjoin, h]
+  · rw [closeE_imposes (cjoin a b) e] at h; rw [closeE_imposes a e, closeE_imposes b e]
+    simpa [cjoin, Bool.or_eq_true] using h
+
+/-- **Meet is common ground.** The meet of two closures is the largest theory both extend: it imposes a throw
+exactly when both do. -/
+theorem meet_is_common_ground (a b : Bool → Bool) :
+    (∀ e, closeE (cmeet a b) (Sum.inr e) = Sum.inl true →
+        closeE a (Sum.inr e) = Sum.inl true ∧ closeE b (Sum.inr e) = Sum.inl true)
+    ∧ (∀ e, closeE a (Sum.inr e) = Sum.inl true → closeE b (Sum.inr e) = Sum.inl true →
+        closeE (cmeet a b) (Sum.inr e) = Sum.inl true) := by
+  refine ⟨fun e h => ?_, fun e ha hb => ?_⟩
+  · rw [closeE_imposes (cmeet a b) e] at h; rw [closeE_imposes a e, closeE_imposes b e]
+    simpa [cmeet, Bool.and_eq_true] using h
+  · rw [closeE_imposes a e] at ha; rw [closeE_imposes b e] at hb; rw [closeE_imposes (cmeet a b) e]
+    simp [cmeet, ha, hb]
+
+/-- **The top is self-defeating.** The full closure is inconsistent in itself, arising from one map that is
+total and yet keeps an absence (`full_totality_collides` needs a single `c`), and it is the unique full closure
+(`exactly_one_prohibited`): an obligation for the contradictory, not two individually coherent demands in
+conflict. This sharpens `top_is_contradictory`. -/
+theorem top_is_self_defeating :
+    (¬ ∃ c : Fin 4 → Fin 4 → Bool ⊕ Bool, (∀ x y, ∃ b, c x y = Sum.inl b) ∧ (∃ x y e, c x y = Sum.inr e))
+    ∧ (∀ close : Bool → Bool, isFull close → close = fun _ => true) :=
+  ⟨full_totality_collides, fun close h => (exactly_one_prohibited close).1 h⟩
+
+/-- **Reaching the top is generic.** A closure joined with its complement is the top, but so are many
+non-complementary pairs: of the sixteen ordered pairs, nine join to the top and only four are complementary. So
+the identity `a ⊔ ¬a = ⊤` is a lattice fact and carries no special content about imposing a stance together with
+what it omits. -/
+theorem reaching_the_top_is_generic :
+    (∀ a : Bool → Bool, cjoin a (fun r => !a r) = fun _ => true)
+    ∧ (Finset.univ.filter (fun p : (Bool → Bool) × (Bool → Bool) =>
+          cjoin p.1 p.2 = fun _ => true)).card = 9
+    ∧ (Finset.univ.filter (fun p : (Bool → Bool) × (Bool → Bool) =>
+          p.2 = fun r => !p.1 r)).card = 4 := by
+  refine ⟨fun a => ?_, by decide, by decide⟩
+  funext r; simp only [cjoin]; cases a r <;> rfl
+
+/-- **The operations split under forcing.** Join and meet of readable positions (up-sets) are readable; the
+complement of a readable position need not be. Positions combine but do not complement. -/
+theorem operations_split_under_forcing :
+    (∀ a b : Bool → Bool, isUpSet a → isUpSet b → isUpSet (cjoin a b))
+    ∧ (∀ a b : Bool → Bool, isUpSet a → isUpSet b → isUpSet (cmeet a b))
+    ∧ (∃ a : Bool → Bool, isUpSet a ∧ ¬ isUpSet (fun r => !a r)) :=
+  ⟨by decide, by decide, ⟨fun r => r, by decide, by decide⟩⟩
+
 /-! ## Why the target is imported: no standard certifies itself -/
 
 /-- **Every target is defeasible.** A target is itself a self-classification, subject to the same hole:
