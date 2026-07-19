@@ -11,7 +11,8 @@ The free skeleton (`Model/Cataphatic.lean`) is parameterized over any ambient wi
 borrowed fillings: the four registers, each instantiating the skeleton at a specific ambient with its own
 surplus, and the target-dependence demonstrations that show the specific ambient matters (their concreteness
 is their content, so they are not parameterized). The measure register is ● BORROWED: the framework hosts
-measures, it does not own magnitude. -/
+measures, it does not own magnitude. The conformance form reads only a build, so the algebraic/enriched split
+is a classification of the seven witnesses, not something the form registers (`cataphatic_form_reads_only_a_build`). -/
 
 namespace Chiralogy
 
@@ -211,6 +212,21 @@ theorem witnesses_split_by_algebraicity :
     ∧ (magnitude (-1 : ℤ) = 1)
     ∧ (less 0 1 = true) := by
   refine ⟨by decide, by decide, by decide, by decide, by decide, by decide⟩
+
+/-- A register valued in a non-posetal hom-object: the `ℤ`-module endomorphisms, an object of `Ab`. -/
+def homValuedRegister : CataphaticConformant :=
+  ⟨Bool, ℤ →+ ℤ, fun b => if b then AddMonoidHom.id ℤ else 0⟩
+
+/-- **The cataphatic form reads only a build.** The form asks for a carrier, an ambient, and a build; it
+distinguishes neither signature operations from enriched homs nor posetal bases from others. A witness valued
+in a non-posetal hom-object conforms (the base `ℤ →+ ℤ` is not thin, two distinct parallel maps `id`, `0`), so
+the algebraic/enriched split of `witnesses_split_by_algebraicity` is a classification of the seven exhibited,
+invisible to the gate. -/
+theorem cataphatic_form_reads_only_a_build :
+    homValuedRegister.X = Bool ∧ (AddMonoidHom.id ℤ ≠ (0 : ℤ →+ ℤ)) := by
+  refine ⟨rfl, fun h => ?_⟩
+  have := DFunLike.congr_fun h 1
+  simp at this
 
 /-- Append on a list-with-failure: the zero absorbs, the monoid operates on the present part. -/
 def mzAppend : Option (List Bool) → Option (List Bool) → Option (List Bool)

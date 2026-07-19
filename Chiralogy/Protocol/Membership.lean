@@ -7,7 +7,8 @@ payload. Not a stage of the derivation but the entry point beside the spine, its
 (for the payload's hypothesis) and its only dependent a register. A domain presents itself as five data with
 two tests. The five data: a carrier, a distinction space, a proof that space can differ, a self-classification,
 and non-degeneracy. The two tests: the payload fires (the classification is not surjective), and non-degeneracy
-holds: the boundary of `Deg`. -/
+holds: the boundary of `Deg`. A register may classify into a level with structured absence; it enters through
+this same fixed interface (`register_at_a_level`). -/
 
 namespace Chiralogy
 
@@ -57,5 +58,20 @@ theorem payload_uniform {X B : Type} (hB : ∃ a b : B, a ≠ b) (c : X → X �
     ¬ Function.Surjective c := by
   obtain ⟨g, hg⟩ := fpf_of_canDiffer hB
   exact no_reflexive_object hg c
+
+/-- A register whose classification lands in a structured-absence level (Except, `Bool ⊕ Bool`, two reasons). -/
+def leveledMember : Member where
+  X := Fin 2
+  B := Bool ⊕ Bool
+  canDiffer := ⟨Sum.inl true, Sum.inr false, by decide⟩
+  classify := fun x y => if x = y then Sum.inl true else Sum.inr false
+  nondegenerate := ⟨0, 1, fun h => absurd (congrFun h 0) (by decide)⟩
+
+/-- **A register conforms at a level.** A classification landing in a structured-absence level enters through
+the unchanged protocol: only can-differ and non-degeneracy are asked, and the payload fires. The level's
+permitted lattice, fragmented center, and per-reason totalizations are then inherited below the payload; the
+interface stayed fixed through the model layer's elaboration, demanding nothing of the level. -/
+theorem register_at_a_level : ¬ Function.Surjective leveledMember.classify :=
+  payload leveledMember
 
 end Chiralogy

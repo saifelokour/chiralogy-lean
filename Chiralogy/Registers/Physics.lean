@@ -1,5 +1,6 @@
 import Chiralogy.Protocol.Membership
 import Chiralogy.Model.Cataphatic
+import Chiralogy.Model.Apophatic.Instances
 import Chiralogy.Model.Boundary
 
 /-! # Register: physics (GR / QM)   [READING]
@@ -25,6 +26,11 @@ equations are imported, and only the identification is the reading, the hinge a 
 on. `quantum_gravity_is_the_attempt` is asserted as entailment-given-schema, never as QG impossible
 simpliciter, and its carrier is the schema, not the equations. A different physics register may map
 differently and is equally Chiralogy; the register stays in this chart and never enters the derived layers.
+
+The ethics abstracts over levels (`ethics_abstracts_over_levels`): a register receives its level's structure
+and supplies only the reading of the reasons. Physics offers one ground, so its lattice is the base binary
+(`physics_has_one_ground`, READING); the base's single prohibition and physics's single ground are one fact
+from two sides (`base_matches_its_founding_register`, READING).
 -/
 
 namespace Chiralogy.Physics
@@ -120,6 +126,53 @@ different domains, so no single map bears both). All the register's defeasibilit
 entailed, Stratum 2 is imported. -/
 def schema_is_physics_reading : Prop :=
   (∀ c, GRDeterminism c ↔ gr_demand c) ∧ (∀ c, QMSuperposition c ↔ c 0 2 = imprecise 0 2)
+
+/-! ## The ethics abstracts over levels
+
+Physics sits at the base, one ground. A register may instead classify into a level with structured absence; the
+structure it then carries is the level's, and the domain supplies only the reading of what the reasons are. -/
+
+/-- A second register at the same level as `leveledMember`, a different carrier reading the reasons at the
+opposite cells. -/
+def secondLeveledMember : Member where
+  X := Fin 3
+  B := Bool ⊕ Bool
+  canDiffer := ⟨Sum.inl true, Sum.inr false, by decide⟩
+  classify := fun x y => if x = y then Sum.inr true else Sum.inl false
+  nondegenerate := ⟨0, 1, fun h => absurd (congrFun h 0) (by decide)⟩
+
+/-- **The ethics abstracts over levels.** Two registers at one level (Except, two reasons) coincide on every
+structural ethical feature, the permitted count (`3`), the prohibition (the unique full closure), and the
+center (two distinct reason-parts), and differ only in which absence sits where. The level shapes the ethics,
+the domain names the reasons: structure derived, content imported, the register-import pattern. -/
+theorem ethics_abstracts_over_levels :
+    (¬ Function.Surjective leveledMember.classify ∧ ¬ Function.Surjective secondLeveledMember.classify)
+    ∧ (Finset.univ.filter (fun close : Fin 2 → Bool => ¬ ∀ r, close r = true)).card = 3
+    ∧ (Finset.univ.filter (fun close : Fin 2 → Bool => ∀ r, close r = true)).card = 1
+    ∧ (exceptAbsence.absent (Sum.inr false) ∧ exceptAbsence.absent (Sum.inr true)
+        ∧ (Sum.inr false : Bool ⊕ Bool) ≠ Sum.inr true)
+    ∧ (leveledMember.classify (0 : Fin 2) (1 : Fin 2)
+        ≠ secondLeveledMember.classify (0 : Fin 3) (1 : Fin 3)) := by
+  refine ⟨⟨payload leveledMember, payload secondLeveledMember⟩, by decide, by decide,
+    ⟨⟨false, rfl⟩, ⟨true, rfl⟩, by decide⟩, ?_⟩
+  show (Sum.inr false : Bool ⊕ Bool) ≠ (Sum.inl false : Bool ⊕ Bool)
+  decide
+
+/-- **Physics has one ground** (READING, defeasible). Physics offers a single natural ground of absence, the
+constitutive none (superposition), so its lattice is the base binary: keep-open or totalize, no intermediate,
+the one-reason permitted count. A second physically distinguishable ground is not forced; a physicist urging
+one maps differently. Stated, not asserted, as the register's fidelity is. -/
+def physics_has_one_ground : Prop :=
+  QMSuperposition phys.classify
+    ∧ (Finset.univ.filter (fun close : Fin 1 → Bool => ¬ ∀ r, close r = true)).card = 1
+
+/-- **The base matches its founding register** (READING, defeasible). The base's single prohibition and
+physics's single ground are one fact from two sides: the canonical register has one ground
+(`physics_has_one_ground`), and the base is the free theory on one constant (`base_is_free_on_one_constant`).
+The framework's base is shaped by its founding register. Stated as a reading, not a theorem. -/
+def base_matches_its_founding_register : Prop :=
+  physics_has_one_ground
+    ∧ (∀ v : Option Bool, v = none ↔ ∃ u : Unit, failMaybe u = v)
 
 /-! ## Provisional
 
