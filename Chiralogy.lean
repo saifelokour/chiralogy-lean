@@ -9,10 +9,12 @@ import Chiralogy.Model.Cataphatic.Instances
 import Chiralogy.Model.Boundary
 import Chiralogy.Model.Permitted
 import Chiralogy.Model.Tower
+import Chiralogy.Model.GroundForensics
 import Chiralogy.Protocol.Membership
 import Chiralogy.Protocol.GroundTemplates
 import Chiralogy.Registers.Physics
 import Chiralogy.Registers.TypeSystem
+import Chiralogy.Registers.GroundStructures
 
 /-! # Chiralogy
 
