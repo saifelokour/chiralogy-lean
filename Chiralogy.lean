@@ -10,6 +10,7 @@ import Chiralogy.Model.Boundary
 import Chiralogy.Model.Permitted
 import Chiralogy.Model.Tower
 import Chiralogy.Model.GroundForensics
+import Chiralogy.Model.Assemblage
 import Chiralogy.Protocol.Membership
 import Chiralogy.Protocol.GroundTemplates
 import Chiralogy.Registers.Physics
@@ -25,8 +26,10 @@ cataphatic build is free.
 The spine is kernel, model, boundary. `Model/` is two pairs, each one layer of the same question. Tower and
 Grounds, what there is: the categories of objects, and the structures those objects can present. Boundary and
 Permitted, the interface and its ethics: where the arms meet and the limit sits, and what may be done there. The
-arms sit between. The protocol is the conformance interface a domain enters through, beside the spine rather than
-between its parts: its only dependency is the kernel and its only dependent a register.
+arms sit between. Assemblage is lateral to the tower: the tower relates an object to itself with more or less
+structure, an assemblage relates several objects to a new one alongside them. The protocol is the conformance
+interface a domain enters through, beside the spine rather than between its parts: its only dependency is the
+kernel and its only dependent a register.
 
 The hole's no-final-coalgebra reading is a theorem: `no_final_coalgebra_for_the_classifier`, no `X ≅ X → B`, so
 that functor has no final coalgebra as powerset has none by Cantor, which selects the available dynamics. READING
@@ -44,6 +47,7 @@ produce, the guard as an observation seeing one bit (`guard_uniformity_is_observ
 - `Model/Apophatic/Instances` the levels over Kl(Maybe).
 - `Model/Grounds` the ground-structures a domain's prerequisites present.
 - `Model/Tower` the categories of objects and their forgetful functors.
+- `Model/Assemblage` the construction relating several objects to a new one alongside them.
 - `Model/Cataphatic` the free skeleton.
 - `Model/Cataphatic/Instances` the borrowed fillings.
 - `Model/Boundary` the interface where the arms meet.
