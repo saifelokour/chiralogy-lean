@@ -14,7 +14,12 @@ The canonical extension `Kl(Maybe)`: keep-the-none. `Option` is the monad; `payl
 the partial pole. The two cost-inverted moves are `totalization` (fill the none, target-free cost) and
 `partialization` (open one, target-dependent), with `totalization_irreversible` the non-invertible move. The
 none-chiasm: the two arms invert at the none (`model_arms_invert`), whose center is distinct from the kernel
-hole (`model_center_is_the_none`). -/
+hole (`model_center_is_the_none`).
+
+READING (a reading, not a theorem): the model reads coalgebraically, keeping a none as a way of failing to
+produce rather than a value returned; the algebra presents an observational content, the arm's dress not its
+substance. This is the arm's flavour, a characterization; the algebra/coalgebra duality for a shared functor is
+refuted, the cataphatic arm being no single `Alg F` and `F X = X → B` contravariant. -/
 
 namespace Chiralogy
 

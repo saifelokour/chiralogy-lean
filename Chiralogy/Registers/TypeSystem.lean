@@ -1,5 +1,5 @@
 import Chiralogy.Protocol.Membership
-import Chiralogy.Model.Boundary
+import Chiralogy.Model.Permitted
 import Mathlib.Tactic.DeriveFintype
 
 /-! # Register: a type system (at a level)   [READING]

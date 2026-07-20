@@ -16,7 +16,11 @@ argument, `obstructions_independent`); the hole, uniform and scale-free (`hole_u
 `empty_center`); the three modes (`three_modes`, `NonDegenerate`, the lift and reflector); the dynamics
 (`lift`, `no_recovery`, `order_canonical`, `no_generation`); the codomain involution (`swap_involution`); the
 scope (`hole_scope_uniform`); the framework's own hole (`𝒜`, `self_account_has_hole`); and the variance
-obstruction on centers (`onCarrier_is_wrong_direction`). -/
+obstruction on centers (`onCarrier_is_wrong_direction`).
+
+The no-final-coalgebra reading is a theorem (`no_final_coalgebra_for_the_classifier`): the hole is a Lambek-style
+non-existence, no `X ≅ X → B`, so that functor has no final coalgebra as powerset has none by Cantor, the
+selection principle for the available dynamics. -/
 
 namespace Chiralogy
 
@@ -414,5 +418,11 @@ theorem 𝒜_nondegenerate : NonDegenerate 𝒜.classify := selfClassify_nondege
 /-- **Self-application (the payload, internally).** The internal representation of Chiralogy's own
 self-classification is not surjective onto its rows: it carries the hole. -/
 theorem self_account_has_hole : ¬ Function.Surjective 𝒜.classify := selfClassify_hole
+
+/-- **No final coalgebra for the classifier.** A final coalgebra of `F X = X → B` is a fixed point `C ≅ F C`
+(Lambek); `empty_center` forbids `C ≅ (C → Bool)`, as Cantor forbids it for powerset. A theorem, not a reading:
+the selection principle for the available dynamics, this behaviour functor carries none. -/
+theorem no_final_coalgebra_for_the_classifier : ¬ ∃ C : Type, Nonempty (C ≃ (C → Bool)) :=
+  empty_center
 
 end Chiralogy
