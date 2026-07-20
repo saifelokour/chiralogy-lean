@@ -21,7 +21,16 @@ account (`proposedAccount`) flows cataphatic to apophatic, the guard bounding it
 (`guard_erases`, `channel_capacity_is_zero`, `channel_is_certification`), judgement constant
 (`judgement_is_constant`). The two obstructions are distinct (`none_and_surplus_are_distinct`) and the ethical
 move is apophatic-shaped (`ethical_is_apophatic_shaped`); the arms are related by the absorbing axiom, not a map
-(`axiom_relates_the_arms`, `not_a_morphism`). -/
+(`axiom_relates_the_arms`, `not_a_morphism`).
+
+The two bounds: the ceiling collides (`complete_and_faithful_is_impossible`, a kernel theorem), the floor empties
+(`floor_is_a_protocol_condition`: the total opening satisfies every kernel result and fails only non-degeneracy);
+they differ in kind and status (`bounds_differ_in_kind_and_status`), one a contradiction the kernel proves, the
+other a condition the protocol requires. A present verdict never firing is generic on the codomain and bites above
+non-degeneracy (`a_verdict_never_firing_is_generic`); the present verdicts are symmetric
+(`present_verdicts_are_symmetric`), the framework's only polarity being absence against presence
+(`the_frameworks_polarity_is_absence_against_presence`), a domain naming one present verdict success supplying a
+label, not a structure. -/
 
 namespace Chiralogy
 
@@ -316,5 +325,91 @@ given marking; unmarked, honest and coordinated present identically. -/
 theorem lie_fragility_is_boundary_derived (c : Fin 4 → Fin 4 → Option Bool) :
     c 0 2 = some true → c 0 2 ≠ imprecise 0 2 :=
   fun h => by rw [h]; decide
+
+/-! ## The two bounds
+
+The viable region is bounded above by the prohibition and below by non-degeneracy, but the two bounds differ in
+kind and status: the ceiling is a collision the kernel proves, the floor a condition the protocol requires. -/
+
+/-- Relabelling the codomain: swap the two present verdicts, fix the absence. -/
+def verdictSwap : Option Bool → Option Bool := fun o => Option.map not o
+
+/-- **The total opening is the limit of partialization.** Opening every pair returns an absence everywhere, and it
+is what repeated partialization reaches: the full partialization of any classification is the total opening. -/
+theorem total_opening_is_the_limit_of_partialization {X : Type} (c : X → X → Option Bool) :
+    partialization (fun _ _ => true) c = (fun _ _ => none) := by
+  funext x y; simp [partialization]
+
+/-- **The total opening satisfies the kernel.** Its transpose is constant, no element distinguished, yet
+two-endedness holds, a constant transpose still having a domain and a codomain, and the hole fires. No kernel
+theorem fails at the floor. -/
+theorem total_opening_satisfies_the_kernel {X : Type} :
+    (∀ x y : X, (fun _ _ => none : X → X → Option Bool) x = (fun _ _ => none : X → X → Option Bool) y)
+    ∧ ((∀ g : Option Bool → Option Bool, (∀ b, g b ≠ b) →
+          ¬ Function.Surjective (fun _ _ => none : X → X → Option Bool))
+        ∧ (∃ build : X → (X → Option Bool), ∀ x, build x = (fun _ _ => none : X → X → Option Bool) x))
+    ∧ (¬ Function.Surjective (fun _ _ => none : X → X → Option Bool)) :=
+  ⟨fun _ _ => rfl, one_map_two_ends _, hole_uniform _⟩
+
+/-- **The floor is a protocol condition.** At the total opening every kernel theorem holds, yet non-degeneracy
+fails: the lower bound is imposed, not derived. The ceiling, by contrast, is a kernel theorem
+(`complete_and_faithful_is_impossible`), so the two bounds differ in status. -/
+theorem floor_is_a_protocol_condition {X : Type} :
+    ((∀ g : Option Bool → Option Bool, (∀ b, g b ≠ b) →
+        ¬ Function.Surjective (fun _ _ => none : X → X → Option Bool))
+      ∧ ¬ Function.Surjective (fun _ _ => none : X → X → Option Bool))
+    ∧ (¬ NonDegenerate (fun _ _ => none : X → X → Option Bool)) := by
+  refine ⟨⟨fun _ _ => hole_uniform _, hole_uniform _⟩, ?_⟩
+  rintro ⟨x, x', h⟩; exact h rfl
+
+/-- **The bounds differ in kind and status.** The ceiling collides, a contradiction the kernel proves, forbidden;
+the floor empties, permitted, asserting no falsehood against any target, yet failing membership. Above, you are
+stopped; below, you pass out of membership. -/
+theorem bounds_differ_in_kind_and_status {X : Type} :
+    (¬ ∃ c : Fin 4 → Fin 4 → Option Bool, (∀ x y, c x y ≠ none) ∧ c 0 2 = imprecise 0 2)
+    ∧ (∀ (t : X → X → Bool) (x y : X), ¬ assertsFalse (fun _ _ => none) t x y)
+    ∧ (¬ NonDegenerate (fun _ _ => none : X → X → Option Bool)) := by
+  refine ⟨complete_and_faithful_is_impossible, fun t x y => ?_, ?_⟩
+  · simp [assertsFalse]
+  · rintro ⟨x, x', h⟩; exact h rfl
+
+/-- **A verdict never firing is generic.** For any present verdict, with no domain content, a classification can
+avoid it or fire it; and it bites above non-degeneracy, a classification distinguishing something while never
+firing a given verdict. -/
+theorem a_verdict_never_firing_is_generic (v : Option Bool) :
+    (∃ c : Fin 2 → Fin 2 → Option Bool, ∀ x y, c x y ≠ v)
+    ∧ (∃ c : Fin 2 → Fin 2 → Option Bool, ¬ ∀ x y, c x y ≠ v)
+    ∧ (NonDegenerate (fun x _ : Fin 2 => if x = 0 then some false else none)
+        ∧ (∀ x y, (fun x _ : Fin 2 => if x = 0 then some false else none) x y ≠ some true)) := by
+  refine ⟨⟨fun _ _ => if v = some true then some false else some true, ?_⟩,
+          ⟨fun _ _ => v, fun h => h 0 0 rfl⟩, ?_, ?_⟩
+  · intro x y
+    by_cases h : v = some true
+    · simp only [h]; decide
+    · simp only [if_neg h]; exact fun heq => h heq.symm
+  · unfold NonDegenerate; decide
+  · decide
+
+/-- **The present verdicts are symmetric.** Swapping the two present verdicts is an involution fixing the absence;
+and totalization's fill is scale-dependent, two scales landing either way at one absence. Nothing in the kernel,
+the protocol, or the moves distinguishes them. -/
+theorem present_verdicts_are_symmetric :
+    (verdictSwap (some true) = some false ∧ verdictSwap (some false) = some true
+      ∧ verdictSwap none = none ∧ ∀ o, verdictSwap (verdictSwap o) = o)
+    ∧ (∃ (s s' : Fin 2 → Nat) (c : Fin 2 → Fin 2 → Option Bool) (x y : Fin 2),
+        totalization s c x y = some true ∧ totalization s' c x y = some false) :=
+  ⟨⟨by decide, by decide, by decide, by decide⟩,
+   ⟨fun _ => 0, fun i => (i : Nat), fun _ _ => none, 0, 1, by decide, by decide⟩⟩
+
+/-- **The framework's polarity is absence against presence.** The relabelling fixes the absence and exchanges the
+present verdicts, so the floor at one verdict is the floor at the other: a domain naming one present verdict
+success contributes a label, not a structure. The only asymmetry the framework owns is absence against presence. -/
+theorem the_frameworks_polarity_is_absence_against_presence :
+    (∀ o, verdictSwap o = none ↔ o = none)
+    ∧ (∀ c : Fin 2 → Fin 2 → Option Bool,
+        (∀ x y, c x y ≠ some true) ↔ (∀ x y, verdictSwap (c x y) ≠ some false)) := by
+  refine ⟨by decide, fun c => ?_⟩
+  have key : ∀ o : Option Bool, (o ≠ some true) ↔ (verdictSwap o ≠ some false) := by decide
+  exact ⟨fun h x y => (key (c x y)).mp (h x y), fun h x y => (key (c x y)).mpr (h x y)⟩
 
 end Chiralogy
