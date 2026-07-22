@@ -13,3 +13,12 @@ require mathlib from git
 
 @[default_target]
 lean_lib «Chiralogy»
+
+lean_lib «GraphCore» where
+  roots := #[`GraphCore]
+
+lean_exe depgraph where
+  root := `DepGraph
+
+lean_exe «depgraph-preview» where
+  root := `DepGraphPreview

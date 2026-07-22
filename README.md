@@ -75,6 +75,32 @@ until it arrives. See `GRADING.md` for the grades and the discipline.
 Build: `lake exe cache get` then `lake build`. No `sorry`; every theorem's `#print axioms` is within
 `{propext, Classical.choice, Quot.sound}`.
 
+## Dependency graph
+
+The declaration dependency graph is extracted from the built environment, never hand maintained. Run
+`lake exe depgraph` to regenerate `graph/depgraph.json` (nodes with stratum, kind, modality, axis; and
+edges), `graph/depgraph.dot`, and `graph/depgraph.svg` (the full 557 node reference, colour = modality,
+shape = kind, clusters = stratum and axis). The `.json`/`.dot` are the byte-deterministic source of truth;
+the `.svg` is a structural render. `lake exe depgraph-preview <Experiment>` previews the joint an
+un-graduated experiment would form (see `graph/experiment-set.txt`).
+
+The architectural spine, the strata and their cross-stratum joint counts (dependency arrows, so kernel is
+the shared base at the bottom and the protocol is lateral):
+
+```mermaid
+graph TD
+  register["register · 41"] -->|19| model["model · 419"]
+  register -->|12| protocol["protocol · 15"]
+  register -->|5| kernel["kernel · 82"]
+  model -->|40| kernel["kernel · 82"]
+  protocol -->|3| kernel
+  model -. "0 · lateral" .-> protocol
+```
+
+The model depends on the kernel through a narrow waist (40 edges into 9 kernel nodes: `Obj`, `Hom`,
+`NonDegenerate`, and the diagonal facts) and never on the protocol (`model → protocol = 0`): the protocol is
+the lateral entry point beside the spine, its only dependency the kernel and its only dependent a register.
+
 ## License
 
 Released under CC BY-SA 4.0: fork it, rewrite it, re-register it in any language or proof assistant; the
