@@ -77,15 +77,17 @@ Build: `lake exe cache get` then `lake build`. No `sorry`; every theorem's `#pri
 
 ## Dependency graph
 
-The declaration dependency graph is extracted from the built environment, never hand maintained. Run
-`lake exe depgraph` to regenerate `graph/depgraph.json` (nodes with stratum, kind, modality, axis; and
-edges), `graph/depgraph.dot`, and `graph/depgraph.svg` (the full 557 node reference, colour = modality,
-shape = kind, clusters = stratum and axis). The `.json`/`.dot` are the byte-deterministic source of truth;
-the `.svg` is a structural render. `graph/interactive/index.html` is a Cytoscape.js viewer over the
-same JSON (open it directly, no server needed): click a node for its dependency and dependent cones,
-filter by modality and axis, trace a node down to the axioms it rests on, and overlay a preview.
-`lake exe depgraph-preview <Experiment>` previews the joint an un-graduated experiment would form
-(see `graph/experiment-set.txt`).
+The declaration dependency graph is extracted from the built environment, never hand maintained.
+`lake exe depgraph-proof` extracts the proof-level graph (edges from proof terms, the real structure)
+to `graph/depgraph-proof.json`/`.dot` and renders **`graph/depgraph-proof.svg`, the self-image**: the
+picture the structure was measured to be (see `graph/ANALYSIS.md`). Its base is the two kernel absences
+and the diagonal-argument taproot; colour is character, the two hands (apophatic the larger); the empty
+center sits peripheral, where it structurally is. `lake exe depgraph` emits the statement-level
+`graph/depgraph.json`/`.dot`/`-data.js` that feed `graph/interactive/index.html`, a Cytoscape.js viewer
+(open it directly, no server): click a node for its dependency and dependent cones, filter by modality
+and axis, trace a node down to the axioms it rests on, and overlay a preview. `lake exe depgraph-preview
+<Experiment>` previews the joint an un-graduated experiment would form (see `graph/experiment-set.txt`).
+The `.json`/`.dot` are the byte-deterministic source of truth; the `.svg` is a force-directed render.
 
 The architectural spine, the strata and their cross-stratum joint counts (dependency arrows, so kernel is
 the shared base at the bottom and the protocol is lateral):
