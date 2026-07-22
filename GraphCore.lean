@@ -161,6 +161,15 @@ def axisOf (ci : ConstantInfo) : String :=
   else if classif then "intra"
   else "na"
 
+/-- The declaration's defining term, INCLUDING theorem proofs. `ConstantInfo.value?` excludes
+theorems by design (proofs are irrelevant for unfolding), so proof-level extraction needs this.
+`importModules` does carry the proofs; only the accessor differs. -/
+def declValue : ConstantInfo → Option Expr
+  | .defnInfo v => some v.value
+  | .thmInfo v => some v.value
+  | .opaqueInfo v => some v.value
+  | _ => none
+
 /-- A node carrying both the assemblage and the categorical senses. -/
 def axisBothSenses (ci : ConstantInfo) : Bool :=
   let uc := axisConsts ci
@@ -240,7 +249,8 @@ def nodeAttrs (kind modality stratum : String) : String :=
 
 /-- Extract the graph from `env` over the imported modules, emit `{outBase}.dot` and
 `{outBase}.json`, and print a report. -/
-def run (imports : Array Name) (outBase : String) : IO Unit := do
+def run (imports : Array Name) (outBase : String)
+    (proofLevel : Bool := false) (render : Bool := true) : IO Unit := do
   initSearchPath (← findSysroot)
   let env ← importModules (imports.map (fun m => { module := m })) {} (trustLevel := 1024)
   -- Pass 1: classify Chiralogy constants.
@@ -276,7 +286,8 @@ def run (imports : Array Name) (outBase : String) : IO Unit := do
   -- Pass 2: edges, re-pointed and filtered to kept targets, deduped, no self loops.
   let mut edges : Array (Name × Name) := #[]
   for (n, ci) in kept do
-    let used := ci.type.getUsedConstants ++ (ci.value?.map (·.getUsedConstants)).getD #[]
+    let val := if proofLevel then declValue ci else ci.value?
+    let used := ci.type.getUsedConstants ++ (val.map (·.getUsedConstants)).getD #[]
     let deps : NameSet := used.foldl
       (fun s d => match resolveDep env keptSet n d with | some t => s.insert t | none => s) {}
     for d in deps.toList do
@@ -339,23 +350,23 @@ def run (imports : Array Name) (outBase : String) : IO Unit := do
   IO.FS.createDirAll "graph"
   IO.FS.writeFile (outBase ++ ".dot") (String.intercalate "\n" dot.toList ++ "\n")
   IO.FS.writeFile (outBase ++ ".json") json
-  -- A JS wrapped copy of the same data so the interactive viewer loads on file:// without a
-  -- server (script tags are not CORS blocked). Regenerated from the JSON, do not hand edit.
-  IO.FS.writeFile (outBase ++ "-data.js") ("window.DEPGRAPH = " ++ json ++ ";\n")
-  -- Render with Graphviz if available; otherwise document the one line command. At 557 nodes the
-  -- flat strata make strict `dot` ranking a 60:1 strip, so the committed raster uses `fdp`
-  -- (force-directed, cluster preserving), which keeps the stratum and axis clusters as distinct
-  -- regions. The byte-deterministic source of truth is the `.dot` and `.json`; the `.svg` is a
-  -- structural render (its encoding is fixed by the `.dot`, exact coordinates may vary by platform).
-  -- `.dot` also retains the bottom-up dependency direction for `dot` if wanted.
-  let renderArgs := #["-Tsvg", "-Goverlap=prism", "-Gstart=self", outBase ++ ".dot", "-o", outBase ++ ".svg"]
-  let rendered ← (IO.Process.output { cmd := "fdp", args := renderArgs }).toBaseIO
-  match rendered with
-  | Except.ok r =>
-    if r.exitCode == 0 then IO.println s!"RENDERED {outBase}.svg"
-    else IO.println s!"RENDER_FAILED fdp exit {r.exitCode}; run: fdp -Tsvg -Goverlap=prism {outBase}.dot -o {outBase}.svg"
-  | Except.error _ =>
-    IO.println s!"RENDER_SKIPPED graphviz not found; run: fdp -Tsvg -Goverlap=prism {outBase}.dot -o {outBase}.svg"
+  if render then
+    -- A JS wrapped copy of the same data so the interactive viewer loads on file:// without a
+    -- server (script tags are not CORS blocked). Regenerated from the JSON, do not hand edit.
+    IO.FS.writeFile (outBase ++ "-data.js") ("window.DEPGRAPH = " ++ json ++ ";\n")
+    -- Render with Graphviz if available; otherwise document the one line command. At 557 nodes the
+    -- flat strata make strict `dot` ranking a 60:1 strip, so the committed raster uses `fdp`
+    -- (force-directed, cluster preserving), which keeps the stratum and axis clusters as distinct
+    -- regions. The byte-deterministic source of truth is the `.dot` and `.json`; the `.svg` is a
+    -- structural render (its encoding is fixed by the `.dot`, exact coordinates may vary by platform).
+    let renderArgs := #["-Tsvg", "-Goverlap=prism", "-Gstart=self", outBase ++ ".dot", "-o", outBase ++ ".svg"]
+    let rendered ← (IO.Process.output { cmd := "fdp", args := renderArgs }).toBaseIO
+    match rendered with
+    | Except.ok r =>
+      if r.exitCode == 0 then IO.println s!"RENDERED {outBase}.svg"
+      else IO.println s!"RENDER_FAILED fdp exit {r.exitCode}; run: fdp -Tsvg -Goverlap=prism {outBase}.dot -o {outBase}.svg"
+    | Except.error _ =>
+      IO.println s!"RENDER_SKIPPED graphviz not found; run: fdp -Tsvg -Goverlap=prism {outBase}.dot -o {outBase}.svg"
   -- Report.
   let targets : NameSet := edges.foldl (fun s (_, t) => s.insert t) {}
   IO.println s!"NODES {nodes.size}"

@@ -22,3 +22,6 @@ lean_exe depgraph where
 
 lean_exe «depgraph-preview» where
   root := `DepGraphPreview
+
+lean_exe «depgraph-proof» where
+  root := `DepGraphProof
