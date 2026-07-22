@@ -196,6 +196,33 @@ theorem empty_center : ¬ ∃ X : Type u, Nonempty (X ≃ (X → Bool)) := by
   obtain ⟨b, hb⟩ := fixedPoint_of_surjection (⇑e) e.surjective (fun b => !b)
   exact absurd hb (by cases b <;> decide)
 
+/-! ### No total internal self-description
+
+`empty_center` read as self-description. A description of a carrier `D` is an element of its classifier space
+`D → Bool`; a self-classification `desc : D → D → Bool` is, curried, a `D`-indexed family of descriptions, each
+`d` giving the row `desc d : D → Bool`, its view of the whole. A TOTAL internal self-description is such a `desc`
+surjective onto `D → Bool`: every description realized as some element's view, or equivalently a reflexive
+`D ≃ (D → Bool)`. The diagonal (`no_reflexive_object`, `fixedPoint_of_surjection`) forbids it. So the framework
+cannot totally self-describe internally, for the same reason its objects cannot totally self-classify: one cause,
+the empty center. It can still self-apply (application is an internal predicate, `Member`, in
+`Protocol/Membership`); it cannot totally self-describe. The bound is within-language: a statement about what
+`D → Bool` can contain, not a claim about every possible formalization. -/
+
+/-- **No total internal self-description.** For any descriptive carrier `D`, no self-classification
+`desc : D → D → Bool` is surjective onto the description space `D → Bool`: no `D`-indexed family of Boolean
+descriptions realizes every description. This is `no_reflexive_object` (the diagonal) read as self-description:
+`Bool` carries the fixed-point-free `not`. -/
+theorem no_total_internal_self_description {D : Type u} (desc : D → D → Bool) :
+    ¬ Function.Surjective desc :=
+  no_reflexive_object (g := fun b => !b) (by decide) desc
+
+/-- **The equivalence form.** No carrier is equivalent to its own description space `D → Bool`: the reflexive
+equivalence a total self-description would need does not exist. The content of `empty_center`, here as
+self-description, derived from the surjection form (an equivalence would give a surjective self-description). -/
+theorem no_self_description_equiv {D : Type u} : ¬ Nonempty (D ≃ (D → Bool)) := by
+  rintro ⟨e⟩
+  exact no_total_internal_self_description (fun a => e a) e.surjective
+
 /-- Non-degeneracy: the self enters the map: two carrier elements induce different classification rows. -/
 def NonDegenerate {X B : Type} (c : X → X → B) : Prop := ∃ x x', c x ≠ c x'
 

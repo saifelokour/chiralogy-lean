@@ -86,4 +86,23 @@ prerequisites the level does not carry. Conformance supplies the family; the dom
 theorem register_at_a_level : ¬ Function.Surjective leveledMember.classify :=
   payload leveledMember
 
+/-- **Membership requires a kernel condition (within-language necessity).** Every member's classification is not
+surjective (`payload`), so a fortiori it satisfies the hole or is non-degenerate. Membership in fact entails
+BOTH: the hole by `payload`, non-degeneracy by the `nondegenerate` field (`NonDegenerate M.classify` by
+`nondegenerate_iff_not_degenerate`); this disjunctive form is the stated weakening. Within-language: the content
+of `Member` entails a kernel condition, not a claim about all conceivable proofs. -/
+theorem member_requires_a_kernel_condition (M : Member) :
+    ¬ Function.Surjective M.classify ∨ NonDegenerate M.classify :=
+  Or.inl (payload M)
+
+/-- **No total internal self-description of the object condition.** The founding hole (`no_reflexive_object`, the
+diagonal) applied to `Member`, the framework's own object condition: no `desc : Member → Member → Bool` is
+surjective onto `Member → Bool`. The framework proves the empty center governs itself, at the very predicate by
+which its application is internal. Member lives above the kernel, so this instance cannot sit beside
+`no_total_internal_self_description` in `Kernel/Apophatic`; the dependency on `Member` places it here. Within-
+language (about `Member → Bool`), not about all formalizations. -/
+theorem no_total_self_description_of_the_object_condition (desc : Member → Member → Bool) :
+    ¬ Function.Surjective desc :=
+  no_reflexive_object (g := fun b => !b) (by decide) desc
+
 end Chiralogy

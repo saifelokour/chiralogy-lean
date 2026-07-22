@@ -11,7 +11,7 @@ digraph SelfImage {
     "L_proof" [label="red dashed edge = proof-only (implicit)", shape=plaintext, fontcolor="#CC3311"];
     "L_root" -> "L_spine" [style=invis];
   }
-  subgraph cluster_root0 { label="fixedPoint_of_surjection (69)"; color="#4477AA"; style=rounded; fontsize=13;
+  subgraph cluster_root0 { label="fixedPoint_of_surjection (73)"; color="#4477AA"; style=rounded; fontsize=13;
     "Chiralogy.apophatic_center_is_codomain" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.center_is_empty" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.channel_capacity_is_zero" [shape=point, width=0.07, color="#4477AA"];
@@ -27,6 +27,8 @@ digraph SelfImage {
     "Chiralogy.keystone" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.no_final_coalgebra_for_the_classifier" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.no_reflexive_object" [shape=point, width=0.07, color="#4477AA"];
+    "Chiralogy.no_self_description_equiv" [shape=point, width=0.07, color="#4477AA"];
+    "Chiralogy.no_total_internal_self_description" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.obstructions_independent" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.one_map_two_ends" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.op_fixes_empty_center" [shape=point, width=0.07, color="#4477AA"];
@@ -219,7 +221,7 @@ digraph SelfImage {
     "Chiralogy.totalization_exists" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.writerAbsence" [shape=point, width=0.07, color="#0077BB"];
   }
-  subgraph cluster_root10 { label="NonDegenerate (19)"; color="#EE3377"; style=rounded; fontsize=13;
+  subgraph cluster_root10 { label="NonDegenerate (20)"; color="#EE3377"; style=rounded; fontsize=13;
     "Chiralogy.NonDegenerate" [shape=ellipse, fillcolor="#EE3377", penwidth=1.8, color="#222222", fontsize=12, label="NonDegenerate"];
     "Chiralogy.a_verdict_never_firing_is_generic" [shape=point, width=0.07, color="#EE3377"];
     "Chiralogy.assemblage_conforms" [shape=box, fillcolor="#EE3377", penwidth=3, color="#886600", fontsize=8, label="assemblage_conforms"];
@@ -238,7 +240,7 @@ digraph SelfImage {
     "Chiralogy.three_modes" [shape=point, width=0.07, color="#EE3377"];
     "Chiralogy.trust_register" [shape=box, fillcolor="#EE3377", penwidth=3, color="#886600", fontsize=8, label="trust_register"];
   }
-  subgraph cluster_root11 { label="Member (17)"; color="#009988"; style=rounded; fontsize=13;
+  subgraph cluster_root11 { label="Member (19)"; color="#009988"; style=rounded; fontsize=13;
     "Chiralogy.Member" [shape=ellipse, fillcolor="#009988", penwidth=1.8, color="#222222", fontsize=12, label="Member"];
     "Chiralogy.Physics.base_matches_its_founding_register" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.Physics.ethics_abstracts_over_levels" [shape=box, fillcolor="#009988", penwidth=3, color="#886600", fontsize=8, label="Physics.ethics_abstracts_over_levels"];
@@ -252,6 +254,8 @@ digraph SelfImage {
     "Chiralogy.Physics.secondLeveledMember" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.Presents" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.leveledMember" [shape=point, width=0.07, color="#009988"];
+    "Chiralogy.member_requires_a_kernel_condition" [shape=box, fillcolor="#009988", penwidth=3, color="#886600", fontsize=8, label="member_requires_a_kernel_condition"];
+    "Chiralogy.no_total_self_description_of_the_object_condition" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.payload" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.presents_needs_no_closure" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.register_at_a_level" [shape=point, width=0.07, color="#009988"];
@@ -1147,6 +1151,9 @@ digraph SelfImage {
   "Chiralogy.measure_register" -> "Chiralogy.CataphaticConformant" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.meet_is_common_ground" -> "Chiralogy.closeE" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.meet_is_common_ground" -> "Chiralogy.cmeet" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.member_requires_a_kernel_condition" -> "Chiralogy.Member" [color="#997700", penwidth=0.9];
+  "Chiralogy.member_requires_a_kernel_condition" -> "Chiralogy.NonDegenerate" [color="#997700", penwidth=0.9];
+  "Chiralogy.member_requires_a_kernel_condition" -> "Chiralogy.payload" [color="#997700", penwidth=0.9];
   "Chiralogy.model_arms_invert" -> "Chiralogy.assertsFalse" [color="#997700", penwidth=0.9];
   "Chiralogy.model_arms_invert" -> "Chiralogy.imprecise" [color="#997700", penwidth=0.9];
   "Chiralogy.model_arms_invert" -> "Chiralogy.partialization" [color="#997700", penwidth=0.9];
@@ -1182,9 +1189,13 @@ digraph SelfImage {
   "Chiralogy.no_reflexive_object" -> "Chiralogy.fixedPoint_of_surjection" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.no_right_adjoint" -> "Chiralogy.IsUniverseClassifier" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.no_right_adjoint" -> "Chiralogy.no_small_universe" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.no_self_description_equiv" -> "Chiralogy.no_total_internal_self_description" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.no_small_universe" -> "Chiralogy.UniverseClassifier" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.no_small_universe" -> "Chiralogy.no_universe_classifier" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.no_small_universe" -> "Chiralogy.universeClassifier_ofEquiv" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.no_total_internal_self_description" -> "Chiralogy.no_reflexive_object" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.no_total_self_description_of_the_object_condition" -> "Chiralogy.Member" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.no_total_self_description_of_the_object_condition" -> "Chiralogy.no_reflexive_object" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.no_universe_classifier" -> "Chiralogy.UniverseClassifier" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.no_universe_classifier" -> "Chiralogy.paradox" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.non_commutation_is_the_norm" -> "Chiralogy.ExceptOverState" [color="#E4E4E4", penwidth=0.25];
