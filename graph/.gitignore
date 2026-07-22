@@ -1,3 +1,5 @@
 preview-*.dot
 preview-*.json
 preview-*.svg
+preview-*-data.js
+.playwright-mcp/

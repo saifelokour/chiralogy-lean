@@ -81,8 +81,11 @@ The declaration dependency graph is extracted from the built environment, never 
 `lake exe depgraph` to regenerate `graph/depgraph.json` (nodes with stratum, kind, modality, axis; and
 edges), `graph/depgraph.dot`, and `graph/depgraph.svg` (the full 557 node reference, colour = modality,
 shape = kind, clusters = stratum and axis). The `.json`/`.dot` are the byte-deterministic source of truth;
-the `.svg` is a structural render. `lake exe depgraph-preview <Experiment>` previews the joint an
-un-graduated experiment would form (see `graph/experiment-set.txt`).
+the `.svg` is a structural render. `graph/interactive/index.html` is a Cytoscape.js viewer over the
+same JSON (open it directly, no server needed): click a node for its dependency and dependent cones,
+filter by modality and axis, trace a node down to the axioms it rests on, and overlay a preview.
+`lake exe depgraph-preview <Experiment>` previews the joint an un-graduated experiment would form
+(see `graph/experiment-set.txt`).
 
 The architectural spine, the strata and their cross-stratum joint counts (dependency arrows, so kernel is
 the shared base at the bottom and the protocol is lateral):

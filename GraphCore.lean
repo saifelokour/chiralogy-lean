@@ -339,6 +339,9 @@ def run (imports : Array Name) (outBase : String) : IO Unit := do
   IO.FS.createDirAll "graph"
   IO.FS.writeFile (outBase ++ ".dot") (String.intercalate "\n" dot.toList ++ "\n")
   IO.FS.writeFile (outBase ++ ".json") json
+  -- A JS wrapped copy of the same data so the interactive viewer loads on file:// without a
+  -- server (script tags are not CORS blocked). Regenerated from the JSON, do not hand edit.
+  IO.FS.writeFile (outBase ++ "-data.js") ("window.DEPGRAPH = " ++ json ++ ";\n")
   -- Render with Graphviz if available; otherwise document the one line command. At 557 nodes the
   -- flat strata make strict `dot` ranking a 60:1 strip, so the committed raster uses `fdp`
   -- (force-directed, cluster preserving), which keeps the stratum and axis clusters as distinct

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<!--
+  Chiralogy dependency graph, interactive viewer (Cytoscape.js).
+  Regenerated from ../depgraph-data.js (a JS wrapped copy of depgraph.json). Do not hand edit
+  the data. This page is a viewer over the committed JSON, the same source the static SVG renders.
+  Open with no server: double click this file (file://). It loads ../depgraph-data.js via a script
+  tag, so no CORS or server is needed. Cytoscape and fcose are pinned CDN builds (needs internet on
+  first open); to run fully offline, vendor those four scripts next to this file.
+  Encoding matches the static render: colour = modality, shape = kind, groups = stratum then axis.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chiralogy dependency graph</title>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/layout-base@2.0.1/layout-base.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cose-base@2.2.0/cose-base.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
+<script src="../depgraph-data.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; font-family: Helvetica, Arial, sans-serif; }
+  #cy { position: absolute; left: 320px; right: 0; top: 0; bottom: 0; }
+  #panel { position: absolute; left: 0; top: 0; bottom: 0; width: 320px; overflow-y: auto;
+    box-sizing: border-box; padding: 12px; background: #f7f7f7; border-right: 1px solid #ccc;
+    font-size: 13px; }
+  h1 { font-size: 15px; margin: 0 0 8px; }
+  h2 { font-size: 13px; margin: 14px 0 4px; }
+  .swatch { display: inline-block; width: 12px; height: 12px; margin-right: 5px; vertical-align: middle; border: 1px solid #999; }
+  label { display: block; margin: 2px 0; cursor: pointer; }
+  button { font-size: 12px; margin: 3px 3px 3px 0; cursor: pointer; }
+  #info { margin-top: 8px; padding: 8px; background: #fff; border: 1px solid #ddd; min-height: 60px;
+    word-break: break-all; }
+  #info b { font-weight: 600; }
+  .k { color: #666; }
+  .legend div { margin: 2px 0; }
+  #axlist { margin: 4px 0 0; padding-left: 16px; }
+  small { color: #777; }
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Chiralogy dependency graph</h1>
+  <small>557 nodes over one source of truth. Click a node for its cones and stipulations.</small>
+
+  <h2>Interactions</h2>
+  <button id="btnAxioms">Trace to axioms</button>
+  <button id="btnClear">Clear</button>
+  <div><small>Click a node: teal = it depends on (down to kernel), purple = depends on it (up to leaves). Trace to axioms marks the stipulations beneath a node.</small></div>
+
+  <h2>Filter (modality)</h2>
+  <label><input type="checkbox" class="fmod" value="forced" checked><span class="swatch" style="background:#4477AA"></span>forced</label>
+  <label><input type="checkbox" class="fmod" value="conditional" checked><span class="swatch" style="background:#EE7733"></span>conditional</label>
+  <label><input type="checkbox" class="fmod" value="na" checked><span class="swatch" style="background:#DDDDDD"></span>na</label>
+  <h2>Filter (axis)</h2>
+  <label><input type="checkbox" class="faxis" value="intra" checked>intra</label>
+  <label><input type="checkbox" class="faxis" value="inter-cross" checked>inter-cross</label>
+  <label><input type="checkbox" class="faxis" value="inter-categorical" checked>inter-categorical</label>
+  <label><input type="checkbox" class="faxis" value="na" checked>na</label>
+
+  <h2>Preview an experiment</h2>
+  <small>Load a preview-&lt;Experiment&gt;.json from depgraph-preview to overlay its candidate joint.</small>
+  <input type="file" id="previewFile" accept=".json">
+
+  <h2>Legend</h2>
+  <div class="legend">
+    <div><span class="swatch" style="background:#4477AA"></span>forced &nbsp; <span class="swatch" style="background:#EE7733"></span>conditional &nbsp; <span class="swatch" style="background:#DDDDDD"></span>na</div>
+    <div>diamond = axiom, ellipse = theorem, box = def/structure</div>
+    <div>groups: stratum, then axis; dashed = un-graduated (preview)</div>
+  </div>
+
+  <div id="info">Click a node.</div>
+</div>
+<div id="cy"></div>
+
+<script>
+"use strict";
+var TOL = { forced: "#4477AA", conditional: "#EE7733", na: "#DDDDDD" };
+function shortName(n) { return n.replace(/^Chiralogy\./, ""); }
+
+// Build Cytoscape elements from window.DEPGRAPH: compound parents stratum -> axis -> node.
+function buildElements(data, isPreview) {
+  var els = [];
+  var strata = {}, axes = {};
+  data.nodes.forEach(function (n) {
+    var sid = "s::" + n.stratum;
+    var aid = "a::" + n.stratum + "::" + n.axis;
+    if (!strata[sid]) { strata[sid] = true;
+      els.push({ data: { id: sid, label: n.stratum }, classes: "stratum" }); }
+    if (!axes[aid]) { axes[aid] = true;
+      els.push({ data: { id: aid, label: n.axis, parent: sid }, classes: "axis" }); }
+    els.push({ data: {
+      id: n.name, label: shortName(n.name), parent: aid,
+      kind: n.kind, stratum: n.stratum, modality: n.modality, axis: n.axis
+    }, classes: isPreview ? "previewnode" : "" });
+  });
+  data.edges.forEach(function (e) {
+    els.push({ data: { id: e.source + " >> " + e.target, source: e.source, target: e.target } });
+  });
+  return els;
+}
+
+var cy = cytoscape({
+  container: document.getElementById("cy"),
+  elements: buildElements(window.DEPGRAPH, false),
+  style: [
+    { selector: "node", style: {
+      "label": "data(label)", "font-size": 7, "text-valign": "center", "color": "#111",
+      "width": "label", "height": "label", "padding": "3px", "border-width": 0.5,
+      "border-color": "#888", "background-color": "#DDDDDD" } },
+    { selector: 'node[modality="forced"]', style: { "background-color": TOL.forced, "color": "#fff" } },
+    { selector: 'node[modality="conditional"]', style: { "background-color": TOL.conditional } },
+    { selector: 'node[modality="na"]', style: { "background-color": TOL.na } },
+    { selector: 'node[kind="axiom"]', style: { "shape": "diamond", "border-width": 1.5, "border-color": "#000" } },
+    { selector: 'node[kind="theorem"]', style: { "shape": "ellipse" } },
+    { selector: 'node[kind="def"]', style: { "shape": "round-rectangle" } },
+    { selector: 'node[kind="abbrev"]', style: { "shape": "round-rectangle" } },
+    { selector: 'node[kind="structure"]', style: { "shape": "round-rectangle" } },
+    { selector: 'node[kind="inductive"]', style: { "shape": "round-rectangle" } },
+    { selector: 'node[kind="instance"]', style: { "shape": "round-rectangle" } },
+    { selector: ".stratum", style: { "background-opacity": 0.06, "background-color": "#4477AA",
+      "border-width": 1, "border-color": "#888", "label": "data(label)", "font-size": 22,
+      "text-valign": "top", "text-halign": "center", "color": "#444", "shape": "round-rectangle" } },
+    { selector: ".axis", style: { "background-opacity": 0.05, "background-color": "#999",
+      "border-width": 1, "border-style": "dashed", "border-color": "#bbb", "label": "data(label)",
+      "font-size": 13, "text-valign": "top", "color": "#777" } },
+    { selector: ".previewnode", style: { "border-width": 2, "border-style": "dashed", "border-color": "#111" } },
+    { selector: "edge", style: { "width": 0.5, "line-color": "#cfcfcf", "curve-style": "straight",
+      "target-arrow-shape": "triangle", "target-arrow-color": "#cfcfcf", "arrow-scale": 0.4 } },
+    { selector: "edge.joint", style: { "line-color": "#888", "target-arrow-color": "#888" } },
+    { selector: ".dimmed", style: { "opacity": 0.08 } },
+    { selector: ".down", style: { "border-width": 2.5, "border-color": "#009988",
+      "line-color": "#009988", "target-arrow-color": "#009988", "width": 1.5, "opacity": 1 } },
+    { selector: ".up", style: { "border-width": 2.5, "border-color": "#AA4499",
+      "line-color": "#AA4499", "target-arrow-color": "#AA4499", "width": 1.5, "opacity": 1 } },
+    { selector: ".axpath", style: { "line-color": "#CC3311", "target-arrow-color": "#CC3311",
+      "width": 2, "border-width": 3, "border-color": "#CC3311", "opacity": 1 } },
+    { selector: ".focus", style: { "border-width": 4, "border-color": "#000" } }
+  ],
+  layout: { name: "grid" },
+  wheelSensitivity: 0.2
+});
+
+// Colour cross-stratum edges (the joints) a touch darker, matching the static render.
+cy.edges().forEach(function (e) {
+  if (e.source().data("stratum") !== e.target().data("stratum")) e.addClass("joint");
+});
+
+function realNodes() { return cy.nodes().filter(function (n) { return !n.isParent() && !n.hasClass("stratum") && !n.hasClass("axis"); }); }
+
+function runLayout() {
+  cy.layout({ name: "fcose", quality: "default", randomize: false, animate: false,
+    nodeSeparation: 75, packComponents: true, nodeRepulsion: 6000,
+    idealEdgeLength: 55, gravity: 0.25 }).run();
+}
+runLayout();
+
+// ---- clearing ----
+function clearHighlight() {
+  cy.elements().removeClass("dimmed down up axpath focus");
+}
+
+// ---- cone highlighting ----
+function showCones(node) {
+  clearHighlight();
+  var down = node.successors();       // everything it depends on, to the kernel
+  var up = node.predecessors();       // everything that depends on it, to the leaves
+  cy.elements().addClass("dimmed");
+  down.removeClass("dimmed").addClass("down");
+  up.removeClass("dimmed").addClass("up");
+  node.removeClass("dimmed").addClass("focus");
+  node.ancestors().removeClass("dimmed");
+  showInfo(node, down.nodes().filter(realNode), up.nodes().filter(realNode));
+}
+function realNode(n) { return !n.isParent() && !n.hasClass("stratum") && !n.hasClass("axis"); }
+
+// ---- reachability to axioms (the honesty query) ----
+function traceToAxioms(node) {
+  clearHighlight();
+  var down = node.successors();
+  var axioms = down.nodes('[kind="axiom"]');
+  cy.elements().addClass("dimmed");
+  node.removeClass("dimmed").addClass("focus");
+  node.ancestors().removeClass("dimmed");
+  var pathEles = cy.collection();
+  axioms.forEach(function (ax) {
+    // nodes on a path node -> ax: down-reachable from node AND can reach ax
+    var toAx = ax.predecessors().intersection(down);
+    pathEles = pathEles.union(toAx).union(ax);
+  });
+  // include edges among path nodes plus the clicked node
+  var pnodes = pathEles.nodes().union(node);
+  var pedges = pnodes.edgesWith(pnodes);
+  pnodes.union(pedges).removeClass("dimmed").addClass("axpath");
+  node.addClass("focus");
+  var names = axioms.map(function (a) { return shortName(a.id()); });
+  var el = document.getElementById("axlist");
+  var msg = axioms.length
+    ? "rests on " + axioms.length + " axiom(s): " + names.join(", ")
+    : "rests on no axiom (fully proved beneath).";
+  document.getElementById("info").innerHTML =
+    "<b>" + shortName(node.id()) + "</b><br><span class='k'>reachability to axioms</span><br>" + msg;
+}
+
+// ---- info panel ----
+function showInfo(node, downNodes, upNodes) {
+  var d = node.data();
+  var down = node.successors().nodes().filter(realNode);
+  var up = node.predecessors().nodes().filter(realNode);
+  var ax = node.successors().nodes('[kind="axiom"]');
+  document.getElementById("info").innerHTML =
+    "<b>" + shortName(node.id()) + "</b><br>" +
+    "<span class='k'>kind</span> " + d.kind + " &nbsp; <span class='k'>stratum</span> " + d.stratum + "<br>" +
+    "<span class='k'>modality</span> " + (d.modality || "na") + " &nbsp; <span class='k'>axis</span> " + (d.axis || "na") + "<br>" +
+    "<span class='k'>depends on</span> " + down.length + " &nbsp; <span class='k'>depended by</span> " + up.length + "<br>" +
+    "<span class='k'>axioms beneath</span> " + ax.length +
+    "<div id='axlist'></div>";
+}
+
+// ---- events ----
+cy.on("tap", "node", function (evt) {
+  var n = evt.target;
+  if (n.hasClass("stratum") || n.hasClass("axis")) return;
+  if (n.hasClass("previewnode")) { showPreviewJoint(n); return; }
+  window.__selected = n;
+  showCones(n);
+});
+cy.on("tap", function (evt) { if (evt.target === cy) { clearHighlight();
+  document.getElementById("info").innerHTML = "Click a node."; window.__selected = null; } });
+
+document.getElementById("btnAxioms").onclick = function () {
+  if (window.__selected) traceToAxioms(window.__selected);
+};
+document.getElementById("btnClear").onclick = function () {
+  clearHighlight(); document.getElementById("info").innerHTML = "Click a node."; window.__selected = null;
+};
+
+// ---- filters ----
+function applyFilters() {
+  var mods = {}, axes = {};
+  document.querySelectorAll(".fmod").forEach(function (c) { mods[c.value] = c.checked; });
+  document.querySelectorAll(".faxis").forEach(function (c) { axes[c.value] = c.checked; });
+  realNodes().forEach(function (n) {
+    var ok = mods[n.data("modality") || "na"] && axes[n.data("axis") || "na"];
+    n.style("display", ok ? "element" : "none");
+  });
+  // hide axis/stratum parents with no visible descendant
+  cy.nodes(".axis, .stratum").forEach(function (p) {
+    var vis = p.descendants().filter(function (d) { return realNode(d) && d.style("display") !== "none"; });
+    p.style("display", vis.length ? "element" : "none");
+  });
+}
+document.querySelectorAll(".fmod, .faxis").forEach(function (c) { c.onchange = applyFilters; });
+
+// ---- preview mode ----
+function showPreviewJoint(node) {
+  clearHighlight();
+  cy.elements().addClass("dimmed");
+  node.removeClass("dimmed").addClass("focus");
+  // candidate joint: this experiment node's outgoing edges into canonical (different stratum)
+  var joint = node.outgoers().filter(function (e) {
+    return e.isEdge() && e.target().data("stratum") !== "experiment";
+  });
+  joint.removeClass("dimmed").addClass("axpath");
+  joint.targets().removeClass("dimmed");
+  var targets = joint.targets().map(function (t) { return shortName(t.id()); });
+  document.getElementById("info").innerHTML =
+    "<b>" + shortName(node.id()) + "</b> <span class='k'>(preview)</span><br>candidate joint into canonical: " +
+    (targets.length ? targets.join(", ") : "none");
+}
+document.getElementById("previewFile").onchange = function (evt) {
+  var f = evt.target.files[0]; if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function () {
+    var data = JSON.parse(reader.result);
+    // add only nodes/edges not already present (the experiment overlay)
+    var have = {}; cy.nodes().forEach(function (n) { have[n.id()] = true; });
+    var add = buildElements(data, true).filter(function (el) {
+      if (el.data.source) return true;              // edges
+      if (el.data.id.indexOf("::") === 0) return !have[el.data.id]; // parents
+      return !have[el.data.id];
+    });
+    cy.add(add);
+    cy.edges().forEach(function (e) {
+      if (e.source().data("stratum") !== e.target().data("stratum")) e.addClass("joint");
+    });
+    runLayout();
+    document.getElementById("info").innerHTML = "Preview loaded. Click a dashed experiment node to see its joint.";
+  };
+  reader.readAsText(f);
+};
+</script>
+</body>
+</html>
