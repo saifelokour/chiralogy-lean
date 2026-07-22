@@ -80,14 +80,18 @@ Build: `lake exe cache get` then `lake build`. No `sorry`; every theorem's `#pri
 The declaration dependency graph is extracted from the built environment, never hand maintained.
 `lake exe depgraph-proof` extracts the proof-level graph (edges from proof terms, the real structure)
 to `graph/depgraph-proof.json`/`.dot` and renders **`graph/depgraph-proof.svg`, the self-image**: the
-picture the structure was measured to be (see `graph/ANALYSIS.md`). Its base is the two kernel absences
-and the diagonal-argument taproot; colour is character, the two hands (apophatic the larger); the empty
-center sits peripheral, where it structurally is. `lake exe depgraph` emits the statement-level
-`graph/depgraph.json`/`.dot`/`-data.js` that feed `graph/interactive/index.html`, a Cytoscape.js viewer
-(open it directly, no server): click a node for its dependency and dependent cones, filter by modality
-and axis, trace a node down to the axioms it rests on, and overlay a preview. `lake exe depgraph-preview
-<Experiment>` previews the joint an un-graduated experiment would form (see `graph/experiment-set.txt`).
-The `.json`/`.dot` are the byte-deterministic source of truth; the `.svg` is a force-directed render.
+picture the structure was measured to be (see `graph/ANALYSIS.md`). It is an acentric rhizome, a forest
+of ~19 co-equal roots (each a distinct territory tint, no single base), laterally stitched by a shared
+spine (gold: the chiasm statements and the register applications) that threads the otherwise disjoint
+trees. The absences are the largest territory but one among many, not central; the framework is modular
+by repetition, not fractal, not centred. `lake exe depgraph` emits the statement-level
+`graph/depgraph.json`/`.dot`/`-data.js`, and `depgraph-proof` also emits `-data.js`, which feed
+`graph/interactive/index.html`, a Cytoscape.js viewer (open it directly, no server): it defaults to the
+bare-topology grouping by root territory, with character, modality, and axis as optional colour lenses;
+click a node for its cones, trace it to the axioms it rests on, overlay a preview. `lake exe
+depgraph-preview <Experiment>` previews the joint an un-graduated experiment would form (see
+`graph/experiment-set.txt`). The `.json`/`.dot` are the byte-deterministic source of truth; the `.svg`
+is a force-directed render.
 
 The architectural spine, the strata and their cross-stratum joint counts (dependency arrows, so kernel is
 the shared base at the bottom and the protocol is lateral):

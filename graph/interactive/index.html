@@ -38,7 +38,7 @@
 <body>
 <div id="panel">
   <h1>Chiralogy dependency graph</h1>
-  <small>Proof-level, 557 nodes. Two levels: region = character (the two hands), inner dashed box = sub-machinery (module). Click a node for its cones.</small>
+  <small>Proof-level, 557 nodes. The acentric rhizome: ~19 co-equal root territories, laterally stitched by a shared spine (gold). Default groups/colours by root territory; semantic tags are optional lenses. Click a node for its cones.</small>
 
   <h2>Find node</h2>
   <input type="text" id="search" placeholder="filter by name" autocomplete="off">
@@ -49,10 +49,11 @@
   <button id="btnClear">Clear</button>
   <div><small>Teal = it depends on (down to the absences), purple = depends on it.</small></div>
 
-  <h2>Colour by (lens)</h2>
-  <label><input type="radio" name="cmode" value="character" checked> character (the two hands, default)</label>
-  <label><input type="radio" name="cmode" value="modality"> modality (forced / conditional)</label>
-  <label><input type="radio" name="cmode" value="axis"> axis (intra / inter)</label>
+  <h2>Colour by</h2>
+  <label><input type="radio" name="cmode" value="root" checked> root territory (topology, default)</label>
+  <label><input type="radio" name="cmode" value="character"> character (the two hands, lens)</label>
+  <label><input type="radio" name="cmode" value="modality"> modality (lens)</label>
+  <label><input type="radio" name="cmode" value="axis"> axis (lens)</label>
 
   <h2>Filter (character)</h2>
   <label><input type="checkbox" class="fchar" value="apophatic" checked><span class="swatch" style="background:#4477AA"></span>apophatic</label>
@@ -75,10 +76,10 @@
 
   <h2>Legend</h2>
   <div class="legend">
-    <div><span class="swatch" style="background:#4477AA"></span>apophatic (larger hand) &nbsp; <span class="swatch" style="background:#EE7733"></span>cataphatic</div>
-    <div><span class="swatch" style="background:#CCCCCC"></span>scaffolding &nbsp; <span class="swatch" style="background:#AA4499"></span>seam</div>
-    <div>region = character; dashed inner box = sub-machinery (module)</div>
-    <div><span style="color:#CC3311">red dashed edge</span> = proof-only (implicit); thick border = base</div>
+    <div>each region = one root territory (~19); colour = territory</div>
+    <div><span class="swatch" style="border:2px solid #886600;background:#CCBB44"></span>gold box = lateral spine (chiasm + registers)</div>
+    <div>large bordered node = a root; largest label = base absences</div>
+    <div><span style="color:#CC3311">red dashed edge</span> = proof-only (implicit); <span style="color:#997700">gold edge</span> = spine runner</div>
   </div>
   <div id="info">Click a node.</div>
 </div>
@@ -91,22 +92,34 @@ var MOD = { forced: "#4477AA", conditional: "#EE7733", na: "#DDDDDD" };
 var AX = { "intra": "#4477AA", "inter-cross": "#EE7733", "inter-categorical": "#AA4499", "na": "#DDDDDD" };
 var BASE = { "Chiralogy.no_reflexive_object": 1, "Chiralogy.hole_uniform": 1, "Chiralogy.fixedPoint_of_surjection": 1 };
 function shortName(n) { return n.replace(/^Chiralogy\./, ""); }
-function charOf(n) { return n.character || "neutral"; }  // proof data carries character
+function charOf(n) { return n.character || "neutral"; }
+// A categorical palette; each root territory gets a distinct tint (the topology-first default).
+var PAL = ["#4477AA","#EE7733","#228833","#AA4499","#CCBB44","#66CCEE","#EE6677","#997700",
+  "#BBBBBB","#0077BB","#EE3377","#009988","#CC6677","#88CCEE","#DDCC77","#117733","#882255",
+  "#44AA99","#999933","#AA4466"];
+var ROOTCOLOR = {};  // root name -> colour, assigned in territory-size order at load
+(function () {
+  var seen = {};
+  window.DEPGRAPH.nodes.forEach(function (n) { if (n.isRoot) seen[n.root] = 1; });
+  Object.keys(seen).sort().forEach(function (r, i) { ROOTCOLOR[r] = PAL[i % PAL.length]; });
+})();
+function rootColor(n) { return ROOTCOLOR[n.root] || "#DDDDDD"; }
 
-// Two-level compounds: level 1 = character region, level 2 = module sub-machinery (the measured
-// grouping, community-vs-module purity 0.82 to 1.0). Edges carry their kind (type or proofOnly).
+// Default grouping = root territory (the bare topology). One compound per root; nodes shared across
+// >=3 territories (data.shared) are the lateral spine, marked distinct.
 function buildElements(data, isPreview) {
-  var els = [], seenC = {}, seenM = {};
+  var els = [], seen = {};
   data.nodes.forEach(function (n) {
-    var c = isPreview ? "experiment" : charOf(n);
-    var m = (n.module || "").replace(/^Chiralogy\./, "") || c;
-    var cid = "grp::" + c, mid = "mod::" + c + "::" + m;
-    if (!seenC[cid]) { seenC[cid] = 1; els.push({ data: { id: cid, label: c }, classes: "group region" }); }
-    if (!seenM[mid]) { seenM[mid] = 1; els.push({ data: { id: mid, label: m, parent: cid }, classes: "group submach" }); }
+    var g = isPreview ? "experiment" : (n.root || "unrooted");
+    var gid = "grp::" + g;
+    if (!seen[gid]) { seen[gid] = 1; els.push({ data: { id: gid, label: g }, classes: "group region" }); }
     els.push({ data: {
-      id: n.name, label: shortName(n.name), parent: mid, kind: n.kind, stratum: n.stratum,
-      character: c, submach: m, modality: n.modality, axis: n.axis, base: BASE[n.name] ? 1 : 0
-    }, classes: (isPreview ? "previewnode " : "") + (BASE[n.name] ? "basenode" : "") });
+      id: n.name, label: shortName(n.name), parent: gid, kind: n.kind, stratum: n.stratum,
+      character: charOf(n), module: (n.module || "").replace(/^Chiralogy\./, ""), modality: n.modality,
+      axis: n.axis, root: n.root, shared: n.shared || 0, isRoot: n.isRoot ? 1 : 0,
+      base: BASE[n.name] ? 1 : 0, spine: (n.shared || 0) >= 3 ? 1 : 0
+    }, classes: (isPreview ? "previewnode " : "") + (BASE[n.name] ? "basenode " : "")
+      + ((n.shared || 0) >= 3 ? "spine " : "") + (n.isRoot ? "rootnode" : "") });
   });
   data.edges.forEach(function (e) {
     els.push({ data: { id: e.source + " >> " + e.target, source: e.source, target: e.target,
@@ -129,17 +142,18 @@ var cy = cytoscape({
     { selector: 'node[kind="axiom"]', style: { "shape": "diamond" } },
     { selector: 'node[kind="theorem"]', style: { "shape": "ellipse" } },
     { selector: 'node[kind="def"],node[kind="abbrev"],node[kind="structure"],node[kind="inductive"],node[kind="instance"]', style: { "shape": "round-rectangle" } },
-    { selector: ".basenode", style: { "border-width": 3, "border-color": "#000", "font-size": 10, "z-index": 99 } },
-    { selector: ".region", style: { "background-opacity": 0.04, "border-width": 1.5, "border-color": "#999",
-      "label": "data(label)", "font-size": 26, "text-valign": "top", "color": "#555", "shape": "round-rectangle" } },
-    { selector: ".submach", style: { "background-opacity": 0.03, "border-width": 1, "border-style": "dashed",
-      "border-color": "#bbb", "label": "data(label)", "font-size": 12, "text-valign": "top", "color": "#888",
-      "shape": "round-rectangle" } },
+    { selector: ".rootnode", style: { "border-width": 2, "border-color": "#222", "font-size": 11, "z-index": 90 } },
+    { selector: ".basenode", style: { "font-size": 13, "z-index": 99 } },
+    { selector: ".spine", style: { "shape": "round-rectangle", "border-width": 3, "border-color": "#886600",
+      "font-size": 9, "z-index": 95 } },
+    { selector: ".region", style: { "background-opacity": 0.05, "border-width": 1, "border-color": "#aaa",
+      "label": "data(label)", "font-size": 20, "text-valign": "top", "color": "#666", "shape": "round-rectangle" } },
     { selector: ".previewnode", style: { "border-width": 2, "border-style": "dashed", "border-color": "#111" } },
-    { selector: "edge", style: { "width": 0.4, "line-color": "#e0e0e0", "curve-style": "straight",
-      "target-arrow-shape": "triangle", "target-arrow-color": "#e0e0e0", "arrow-scale": 0.35 } },
+    { selector: "edge", style: { "width": 0.4, "line-color": "#e6e6e6", "curve-style": "straight",
+      "target-arrow-shape": "triangle", "target-arrow-color": "#e6e6e6", "arrow-scale": 0.35 } },
     { selector: 'edge[ekind="proofOnly"]', style: { "line-color": "#CC3311", "line-style": "dashed",
-      "target-arrow-color": "#CC3311", "width": 0.7 } },
+      "target-arrow-color": "#CC3311", "width": 0.6 } },
+    { selector: "edge.spine-edge", style: { "line-color": "#997700", "target-arrow-color": "#997700", "width": 1 } },
     { selector: ".dimmed", style: { "opacity": 0.07 } },
     { selector: ".down", style: { "border-width": 2.5, "border-color": "#009988", "line-color": "#009988",
       "target-arrow-color": "#009988", "width": 1.5, "opacity": 1 } },
@@ -154,36 +168,30 @@ var cy = cytoscape({
 
 function realNodes() { return cy.nodes().filter(function (n) { return !n.hasClass("group"); }); }
 function realNode(n) { return !n.hasClass("group"); }
-// Pin one high-degree anchor per character to a distinct quadrant so the two hands and the
-// scaffolding settle as separated regions (character edges keep each mass near its anchor).
-var ANCHORS = { apophatic: { x: -420, y: 300 }, cataphatic: { x: 420, y: 300 },
-  neutral: { x: 0, y: -360 }, seam: { x: -420, y: -160 } };
-function fixedConstraints() {
-  var best = {}, deg = {};
-  realNodes().forEach(function (n) { var c = n.data("character"), d = n.degree(false);
-    if (deg[c] === undefined || d > deg[c]) { deg[c] = d; best[c] = n.id(); } });
-  var out = [];
-  Object.keys(ANCHORS).forEach(function (c) { if (best[c]) out.push({ nodeId: best[c], position: ANCHORS[c] }); });
-  return out;
-}
+// Acentric: no pins. fcose scatters the ~19 root-territory compounds as co-equal growth points,
+// so no single root is the origin (the topology disproved the single base).
 function runLayout() {
   cy.layout({ name: "fcose", quality: "default", randomize: false, animate: false,
-    fixedNodeConstraint: fixedConstraints(), nodeSeparation: 18, nodeRepulsion: 1800,
-    idealEdgeLength: 22, gravity: 0.2, gravityCompound: 1.2, packComponents: false }).run();
+    nodeSeparation: 22, nodeRepulsion: 4000, idealEdgeLength: 40, gravity: 0.06,
+    gravityCompound: 1.0, packComponents: true }).run();
 }
+// mark edges touching a spine node as the lateral runners
+cy.edges().forEach(function (e) {
+  if (e.source().data("spine") || e.target().data("spine")) e.addClass("spine-edge");
+});
 runLayout();
 
-// ---- recolour by lens (character default; modality/axis optional) ----
+// ---- recolour: root territory (default), or a semantic lens ----
 function applyColor() {
   var mode = document.querySelector('input[name="cmode"]:checked').value;
   realNodes().forEach(function (n) {
-    var v, pal;
-    if (mode === "character") { v = n.data("character"); pal = CHAR; }
-    else if (mode === "modality") { v = n.data("modality"); pal = MOD; }
-    else { v = n.data("axis"); pal = AX; }
-    var col = pal[v] || "#DDDDDD";
+    var col;
+    if (mode === "root") { col = rootColor(n.data()); }
+    else if (mode === "character") { col = CHAR[n.data("character")] || "#DDDDDD"; }
+    else if (mode === "modality") { col = MOD[n.data("modality")] || "#DDDDDD"; }
+    else { col = AX[n.data("axis")] || "#DDDDDD"; }
     n.style("background-color", col);
-    n.style("color", (col === CHAR.apophatic || col === CHAR.seam) ? "#fff" : "#111");
+    n.style("color", (col === "#4477AA" || col === "#AA4499" || col === "#882255" || col === "#117733") ? "#fff" : "#111");
   });
 }
 document.querySelectorAll('input[name="cmode"]').forEach(function (r) { r.onchange = applyColor; });
