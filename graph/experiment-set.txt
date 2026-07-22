@@ -3,12 +3,8 @@
 AssemblageFragility
 Enumerate
 Flattening
-Gaining
-GroundError
 InteriorRange
 LikeFactors
-Opening
 PhaseSpace
 RangeAcrossSizes
-Reconciliation
 RegisterAssemblages
