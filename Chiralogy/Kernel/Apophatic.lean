@@ -218,6 +218,31 @@ theorem external_judge_is_degenerate {X : Type} (j : X → Option Bool) :
     ¬ NonDegenerate (fun (_ : X) => j) := by
   rintro ⟨_, _, h⟩; exact h rfl
 
+/-! ## Degeneracy for morphisms -/
+
+/-- The structureless point: a terminal object, its carrier and distinction space singletons. -/
+def pointObj : Obj := ⟨Unit, Unit, fun _ _ => ()⟩
+
+/-- The constant morphism collapsing any object onto the structureless point. -/
+def toPoint (S : Obj) : Hom S pointObj := ⟨fun _ => (), fun _ => (), fun _ _ => rfl⟩
+
+/-- **Degenerate morphisms are permitted.** Every object has a morphism to the structureless point, a degenerate
+collapse erasing all structure, its target a subsingleton. Where a degenerate object is excluded, the total opening
+failing non-degeneracy, a degenerate morphism is admitted: a trivial relation between objects says something
+admissible where a trivial object says nothing. -/
+theorem degenerate_morphism_permitted (S : Obj) :
+    Nonempty (Hom S pointObj) ∧ Subsingleton pointObj.B :=
+  ⟨⟨toPoint S⟩, inferInstanceAs (Subsingleton Unit)⟩
+
+/-- **The saturated morphism end is inhabited.** Between distinct objects there is a morphism injective on both
+carrier and distinction space, an embedding of a smaller register into a larger: the injective end, where the tower
+does its work, is reached, opposite the degenerate collapse. -/
+theorem saturated_morphism_available :
+    ∃ (S T : Obj) (φ : Hom S T), Function.Injective φ.onCarrier ∧ Function.Injective φ.onValues :=
+  ⟨⟨Fin 2, Fin 2, fun x _ => x⟩, ⟨Fin 3, Fin 3, fun x _ => x⟩,
+   ⟨Fin.castSucc, Fin.castSucc, fun _ _ => rfl⟩,
+   Fin.castSucc_injective 2, Fin.castSucc_injective 2⟩
+
 /-! ## The lift is not a reflection -/
 
 /-- The lift onto `Deg` collapses to a degenerate shadow at a basepoint. Different basepoints give

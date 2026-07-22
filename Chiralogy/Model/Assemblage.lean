@@ -220,12 +220,19 @@ the import's, not any condition on the factors (`location_is_not_sufficient`, `s
 sit only with the assemblage: `located` is a fact about the product carrier's cross-region, which nothing earlier
 has, so it is homed here beside `exceeds`.
 
-READING (a reading, not a theorem): the modal contrast. The kernel forbids one object's two ends coinciding,
-`center_is_empty`, a forced negated existential, an impossibility; the assemblage permits any relation between two
-distinct objects, `no_factor_forces_the_cross`, a universal existential, a realizability. The two emptinesses are
-opposite in kind, the empty center a wall and the inter-object-forced position an open field. Empty by construction
-means the cross is a free parameter, that within the assemblage no factor forces it; it does not mean no extension
-could force inter-object difference.
+READING (a reading, not a theorem): the modal contrast, which closes the model-versus-kernel question. The kernel
+forbids one object's two ends coinciding, `center_is_empty`, a forced negated existential, an impossibility; the
+assemblage permits any relation between two distinct objects, `no_factor_forces_the_cross`, a universal
+existential, a realizability. The two emptinesses are opposite in kind, the empty center a wall and the
+inter-object-forced position an open field. That the inter-object-forced cell is empty is now a theorem, not an
+observation: `inter_object_forced_cell_is_empty` proves it from total realizability. The reason is orthogonality:
+the empty center is a type-level impossibility about the carrier and its function space; a cross-configuration is a
+value-level assignment of verdicts on the fully-cross pairs; and realizing one is choosing the import to be it,
+which constructs no isomorphism and so cannot violate the center (`center_orthogonal_to_cross`), the two living at
+different strata and not meeting. Empty by construction means the cross is a free parameter, that within the
+assemblage no factor forces it; it does not mean no extension could force inter-object difference. That ceiling is
+now exactly located: any inter-object forcing must come from an extension that constrains the cross, which this
+construction does not do.
 
 READING: exceeding is a strict extension of non-degeneracy, not its arity-1 form, correcting the conjecture that
 the two might be mutually constitutive. At a trivial second factor the cross-region collapses
@@ -281,6 +288,41 @@ theorem no_factor_forces_the_cross {X1 X2 : Type} [DecidableEq X1] [DecidableEq 
   rw [import_is_the_complement c1 c2 (fun _ _ => none) a0 b0 h1 h2,
       import_is_the_complement c1 c2 (fun _ _ => some true) a0 b0 h1 h2] at hval
   exact absurd hval (by decide)
+
+/-- **The empty center is orthogonal to the cross.** The product carries the empty center, `X1 × X2` no more
+isomorphic to its own function space than any type is, forced; yet every target on the fully-cross pairs is
+realizable, the import being the target itself. The empty center is a type-level fact about the carrier's ends, a
+cross-configuration a value-level assignment of verdicts, and realizing one constructs no isomorphism, so the
+center forbids no cross-configuration: the two are orthogonal. -/
+theorem center_orthogonal_to_cross {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool) :
+    (¬ ∃ Y : Type, Nonempty (Y ≃ (Y → Bool)))
+    ∧ (∀ r : (X1 × X2) → (X1 × X2) → Option Bool,
+        ∃ imp, ∀ a b, a.1 ≠ b.1 → a.2 ≠ b.2 → assembleClassify c1 c2 imp a b = r a b) :=
+  ⟨center_is_empty, fun r => cross_is_free_over_all_factors c1 c2 r⟩
+
+/-- **No forced inter-object obstruction.** No cross-configuration is unrealizable: there is no target `r` that
+every import misses on the cross, since for any `r` an import realizes it. So no cross-relation is forbidden, and no
+forced inter-object obstruction exists. -/
+theorem no_forced_inter_object_obstruction {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool) :
+    ¬ ∃ r : (X1 × X2) → (X1 × X2) → Option Bool,
+        ∀ imp, ∃ a b, a.1 ≠ b.1 ∧ a.2 ≠ b.2 ∧ assembleClassify c1 c2 imp a b ≠ r a b := by
+  rintro ⟨r, hr⟩
+  obtain ⟨imp, himp⟩ := cross_is_free_over_all_factors c1 c2 r
+  obtain ⟨a, b, h1, h2, hne⟩ := hr imp
+  exact hne (himp a b h1 h2)
+
+/-- **The inter-object-forced cell is empty by proof.** The empty center is forced, inherited by the product, yet
+forbids no cross-configuration; and realizability is total, no cross-relation being unreachable. So no forced
+inter-object obstruction exists, and the cell is provably empty, not merely observed so: the assemblage forces no
+inter-object obstruction the way the empty center forces the ends' non-coincidence. -/
+theorem inter_object_forced_cell_is_empty {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool) :
+    (¬ ∃ Y : Type, Nonempty (Y ≃ (Y → Bool)))
+    ∧ (¬ ∃ r : (X1 × X2) → (X1 × X2) → Option Bool,
+          ∀ imp, ∃ a b, a.1 ≠ b.1 ∧ a.2 ≠ b.2 ∧ assembleClassify c1 c2 imp a b ≠ r a b) :=
+  ⟨center_is_empty, no_forced_inter_object_obstruction c1 c2⟩
 
 /-- **The collapse at a trivial second factor.** When the second carrier is a subsingleton no two pairs differ in
 both components, so the cross-region is empty and the assemblage is independent of the import. -/
@@ -343,5 +385,71 @@ theorem intra_survives_where_inter_vacuous :
       ∧ ∀ (imp : (Fin 2 × Unit) → (Fin 2 × Unit) → Option Bool), ¬ exceeds c1 (fun _ _ => none) imp :=
   ⟨(fun x y => if x = y then some true else none), by unfold NonDegenerate; decide,
    fun imp => exceeding_vacuous_at_trivial_factor _ (fun _ _ => none) imp⟩
+
+/-! ## Bounds compose conjunctively
+
+The assemblage's floor and saturation-ceiling compose from the parts', but not at the same generality. The floor is
+proven universal (`floor_of_an_assemblage`): the assemblage never fires the present verdict only when all three,
+both factors and the import, never fire it, since the verdict fires in whichever region it is present. So the floor
+is asymmetric under assembly, assembly clearing a floor a factor cannot clear alone (`can_assembly_clear_a_floor`)
+but not imposing one on healthy factors (`can_assembly_impose_one`). The ceiling composition is only witnessed, not
+proven general: `ceiling_of_an_assemblage` establishes the conjunctive form and the lattice product on the specific
+prerequisite chains by finite computation, the assemblage reaching its ceiling exactly when both factors reach
+theirs. The two bounds thus differ in what is proven and at what generality, the floor conjunction universal over
+carriers, the ceiling conjunction a decidable witness on the instance.
+
+READING (a reading, not a theorem): the bounds compose conjunctively, unlike the two ground-order parameters, which
+add and multiply. The floor is reached only when all parts are floored and the ceiling only when both factors'
+closures are full, so each bound is a conjunction of the parts'; the floor composition is asymmetric, assembly
+clearing but not imposing. What is proven differs by bound and generality: the floor conjunction is a universal
+theorem over arbitrary carriers (`floor_of_an_assemblage`), the ceiling conjunction only a decidable witness on the
+specific chains (`ceiling_of_an_assemblage`), so the conjunctive ceiling is illustrated on an instance, not
+established for all ground-orders. -/
+
+/-- **The floor is the conjunction of the parts'.** The assemblage is at its floor, a present verdict never firing,
+only when all three, both factors and the import, are at theirs: the verdict fires in whichever region it is
+present. So one factor at its floor does not floor the assemblage. -/
+theorem floor_of_an_assemblage {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
+    (imp : (X1 × X2) → (X1 × X2) → Option Bool) :
+    (∀ x y, c1 x y ≠ some true) → (∀ x y, c2 x y ≠ some true) → (∀ a b, imp a b ≠ some true) →
+    (∀ a b : X1 × X2, assembleClassify c1 c2 imp a b ≠ some true) := by
+  intro h1 h2 himp a b
+  unfold assembleClassify
+  split
+  · exact h1 a.1 b.1
+  · split
+    · exact h2 a.2 b.2
+    · exact himp a b
+
+/-- **Assembly can clear a floor.** A floored factor, never firing the verdict, assembled with a healthy one gives
+an assemblage that fires it, in the healthy factor's region: the whole clears a floor a factor cannot clear
+alone. -/
+theorem can_assembly_clear_a_floor :
+    ∃ (c1 c2 : Fin 2 → Fin 2 → Option Bool) (imp : (Fin 2 × Fin 2) → (Fin 2 × Fin 2) → Option Bool)
+      (a b : Fin 2 × Fin 2),
+      (∀ x y, c1 x y ≠ some true) ∧ assembleClassify c1 c2 imp a b = some true :=
+  ⟨fun _ _ => none, fun _ _ => some true, fun _ _ => none, (0, 0), (0, 1), by decide, by decide⟩
+
+/-- **Assembly cannot impose a floor.** Two healthy factors, an import firing nothing, still give an assemblage that
+fires the verdict, in a factor's region: a dead import does not floor healthy factors, since their regions are
+untouched by it. -/
+theorem can_assembly_impose_one :
+    ∃ (c1 c2 : Fin 2 → Fin 2 → Option Bool) (a b : Fin 2 × Fin 2),
+      (∃ x y, c1 x y = some true) ∧ (∃ x y, c2 x y = some true)
+      ∧ assembleClassify c1 c2 (fun _ _ => none) a b = some true :=
+  ⟨fun _ _ => some true, fun _ _ => some true, (0, 0), (1, 0),
+   ⟨0, 0, by decide⟩, ⟨0, 0, by decide⟩, by decide⟩
+
+/-- **The ceiling is the conjunction of the factors', on the instance.** On the specific prerequisite chains the
+assemblage's ground-order is the disjoint sum, so its full closure closes both factors' grounds: the assemblage
+reaches its ceiling exactly when both factors reach theirs, sitting atop the product of the factors' closeable
+lattices, nine as three times three. A decidable witness on the instance, not a claim for all ground-orders. -/
+theorem ceiling_of_an_assemblage :
+    (∀ S : Fin 4 → Bool, (∀ i, S i = true) ↔ ((S 0 = true ∧ S 1 = true) ∧ (S 2 = true ∧ S 3 = true)))
+    ∧ ((Finset.univ.filter (fun S : Fin 4 → Bool => closeable prereqTwoChain S)).card =
+       (Finset.univ.filter (fun S : Fin 2 → Bool => closeable prereqChain2 S)).card *
+       (Finset.univ.filter (fun S : Fin 2 → Bool => closeable prereqChain2 S)).card) := by
+  refine ⟨by decide, by decide⟩
 
 end Chiralogy

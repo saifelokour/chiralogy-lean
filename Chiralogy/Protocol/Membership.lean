@@ -47,6 +47,16 @@ theorem four_quadrants :
    ⟨fun x y => if x = y then some true else none,
      ⟨0, 1, fun h => absurd (congrFun h 0) (by decide)⟩, 0, 1, by decide⟩⟩
 
+/-- **Saturation is free.** The degeneracy axis has a maximum opposite its excluded floor: a saturated
+classification, its transpose injective so every row is distinct, is non-degenerate and satisfies the hole. Unlike
+the absence axis, whose ceiling is prohibited by the collision, the distinction ceiling is unforbidden, the one
+prohibition sitting on absence and not on distinction. -/
+theorem saturation_is_free :
+    ∃ c : Fin 2 → Fin 2 → Option Bool,
+      Function.Injective c ∧ NonDegenerate c ∧ ¬ Function.Surjective c :=
+  ⟨fun x y => if x = y then some true else none,
+   by decide, by unfold NonDegenerate; decide, hole_uniform _⟩
+
 /-- **The payload.** Every member's self-classification is not surjective: no complete self-account. -/
 theorem payload (M : Member) : ¬ Function.Surjective M.classify := by
   obtain ⟨g, hg⟩ := fpf_of_canDiffer M.canDiffer

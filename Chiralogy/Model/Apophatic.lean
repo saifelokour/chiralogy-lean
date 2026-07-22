@@ -218,6 +218,84 @@ theorem model_center_is_the_none :
   · simp [totalization, h]
   · simp [partialization, h]
 
+/-! ## The moves on distinction
+
+What totalization and partialization do to the distinctions between rows, scale-independently. A distinction
+between two rows is present-carried when they differ at a pair where both return present verdicts, absence-carried
+when they differ only where one abstains. The survival and monotonicity facts are universal; the move-duality they
+frame is witnessed.
+
+READING (a reading, not a theorem): the two moves destroy dual kinds of distinction. Totalization removes absences,
+so it destroys absence-carried distinctions while preserving present-carried ones (`survives_totalization`, a
+universal theorem: a present-carried distinction survives totalization under every scale). Partialization removes
+present verdicts, so it destroys present-carried distinctions at the opened pair while a column-uniform opening
+never separates equal rows (`opening_is_monotone_on_distinction`, a universal theorem: separation comes from the
+mask, never from the parameterless absence fill). The duality itself is witnessed, not proven general: one
+present-carried distinction survives totalization yet dies when its column is opened
+(`opening_destroys_present_carried`, a Fin 2 witness), and dually one absence-carried distinction merges under
+totalization (`totalization_destroys_absence_carried`, a Fin 2 witness). So the survival and monotonicity are
+universal, the crossing duality witnessed, the same honesty as the assemblage's floor-universal, ceiling-witnessed
+bounds. -/
+
+/-- A distinction between two rows is present-carried when they differ at a pair where both return present
+verdicts. Decidable from the classification alone, no move performed. -/
+abbrev presentCarried {X : Type} (c : X → X → Option Bool) (x x' : X) : Prop :=
+  ∃ y b b', c x y = some b ∧ c x' y = some b' ∧ b ≠ b'
+
+/-- **Present-carried distinctions survive totalization.** If two rows differ at a pair where both are present, then
+under every scale the totalization keeps the present values there, so the rows stay distinct. -/
+theorem survives_totalization {X : Type} (c : X → X → Option Bool) (s : X → Nat) (x x' : X) :
+    presentCarried c x x' → totalization s c x ≠ totalization s c x' := by
+  rintro ⟨y, b, b', hb, hb', hne⟩ heq
+  have := congrFun heq y
+  simp [totalization, hb, hb'] at this
+  exact hne this
+
+/-- **Totalization separates equal rows exactly through a split fill.** Two rows equal before totalization become
+distinct after when they share an absence at a pair where the scale sends the fill different ways,
+`decide (s y ≤ s x) ≠ decide (s y ≤ s x')`: at that pair the totalization gives different filled values. -/
+theorem totalization_separates_equal_rows {X : Type} (c : X → X → Option Bool) (s : X → Nat) (x x' : X) :
+    c x = c x' → (∃ y, c x y = none ∧ decide (s y ≤ s x) ≠ decide (s y ≤ s x')) →
+    totalization s c x ≠ totalization s c x' := by
+  intro heqc hy htot
+  obtain ⟨y, hnone, hf⟩ := hy
+  have hnone' : c x' y = none := (congrFun heqc y) ▸ hnone
+  have he := congrFun htot y
+  have e1 : totalization s c x y = some (decide (s y ≤ s x)) := by simp [totalization, hnone]
+  have e2 : totalization s c x' y = some (decide (s y ≤ s x')) := by simp [totalization, hnone']
+  rw [e1, e2] at he
+  exact hf (Option.some_inj.mp he)
+
+/-- **Opening is monotone on distinction.** Opening by a column-uniform mask never separates equal rows: the fill is
+the parameterless absence, so on a column it maps both rows the same way. Partialization increases distinction only
+through a row-discriminating mask, never through its fill. -/
+theorem opening_is_monotone_on_distinction {X : Type} (wc : X → Bool)
+    (c : X → X → Option Bool) (x x' : X) :
+    c x = c x' → partialization (fun _ y => wc y) c x = partialization (fun _ y => wc y) c x' := by
+  intro h; funext y; simp only [partialization, congrFun h y]
+
+/-- **Totalization destroys an absence-carried distinction (witness).** The saturated map's two rows differ only
+where one abstains, not present-carried, and they merge under totalization. -/
+theorem totalization_destroys_absence_carried :
+    (¬ presentCarried (fun x y => if x = y then some true else none : Fin 2 → Fin 2 → Option Bool) 0 1)
+    ∧ (totalization (fun _ => 0) (fun x y => if x = y then some true else none : Fin 2 → Fin 2 → Option Bool) 0
+        = totalization (fun _ => 0) (fun x y => if x = y then some true else none : Fin 2 → Fin 2 → Option Bool) 1) := by
+  refine ⟨by decide, by decide⟩
+
+/-- **Opening destroys a present-carried distinction (witness).** Two rows differing at column 0 by present verdicts
+merge when column 0 is opened; that same distinction is present-carried, so it survives totalization. The two moves
+destroy dual kinds at this pair. -/
+theorem opening_destroys_present_carried :
+    (partialization (fun _ y => decide (y = 0))
+        (fun x y => if y = 0 then some (decide (x = 0)) else none : Fin 2 → Fin 2 → Option Bool) 0
+      = partialization (fun _ y => decide (y = 0))
+        (fun x y => if y = 0 then some (decide (x = 0)) else none : Fin 2 → Fin 2 → Option Bool) 1)
+    ∧ (totalization (fun _ => 0)
+        (fun x y => if y = 0 then some (decide (x = 0)) else none : Fin 2 → Fin 2 → Option Bool) 0
+      ≠ totalization (fun _ => 0)
+        (fun x y => if y = 0 then some (decide (x = 0)) else none : Fin 2 → Fin 2 → Option Bool) 1) := by
+  refine ⟨by decide, by decide⟩
+
 /-- Copy is available on every distinction space in a cartesian base: the diagonal is unconditional. This
 is the root of both collapses, and the diagonal the obstructions use. -/
 def copy {B : Type} (b : B) : B × B := (b, b)
