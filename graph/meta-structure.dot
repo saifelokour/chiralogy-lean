@@ -1,0 +1,55 @@
+digraph MetaStructure {
+  layout=fdp; bgcolor="white"; splines=true; overlap=false; forcelabels=true; K=1.05; sep="+10";
+  fontname="Helvetica"; node [fontname="Helvetica"]; edge [fontname="Helvetica"];
+  labelloc="t"; fontsize=13;
+  label="Chiralogy: 19 roots, two spines. Node size = territory; tint = functional cluster;\nblue = self-description (chiasm) spine, orange = application (register) spine; the crossing = roots bridged by both;\ndiamond = contains (nesting); dashed = isolate, reached by neither spine.";
+  SELFDESC [label="self-description\nspine (chiasm)", shape=box, style="filled,rounded", fillcolor="#2266CC", fontcolor="white", penwidth=0, fontsize=12];
+  APPLIC  [label="application\nspine (register)", shape=box, style="filled,rounded", fillcolor="#DD7711", fontcolor="white", penwidth=0, fontsize=12];
+  n_fixedPoint_of_surjection [label="69", xlabel="fixedPoint_of_surjection", shape=circle, fixedsize=true, width=1.869, style="filled", fillcolor="#E8EDF4", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_Obj [label="35", xlabel="Obj", shape=circle, fixedsize=true, width=1.155, style="filled", fillcolor="#E9F2E9", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_optCycle [label="33", xlabel="optCycle", shape=circle, fixedsize=true, width=1.113, style="filled", fillcolor="#E8EDF4", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_imprecise [label="29", xlabel="imprecise", shape=circle, fixedsize=true, width=1.029, style="filled", fillcolor="#F5EEE6", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_CataphaticConformant [label="25", xlabel="CataphaticConformant", shape=circle, fixedsize=true, width=0.945, style="filled", fillcolor="#F5EEE6", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_LevelObj [label="23", xlabel="LevelObj", shape=circle, fixedsize=true, width=0.903, style="filled,dashed", fillcolor="#E9F2E9", color="#888888", penwidth=2.2, fontsize=11, fontcolor="#222222"];
+  n_assembleClassify [label="23", xlabel="assembleClassify", shape=circle, fixedsize=true, width=0.903, style="filled", fillcolor="#E8EDF4", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_totalization [label="22", xlabel="totalization", shape=circle, fixedsize=true, width=0.882, style="filled", fillcolor="#F5EEE6", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_closeable [label="21", xlabel="closeable", shape=circle, fixedsize=true, width=0.861, style="filled", fillcolor="#E8EDF4", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_AbsenceStructure [label="20", xlabel="AbsenceStructure", shape=circle, fixedsize=true, width=0.84, style="filled", fillcolor="#E8EDF4", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_NonDegenerate [label="19", xlabel="NonDegenerate", shape=circle, fixedsize=true, width=0.819, style="filled", fillcolor="#E8EDF4", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_Member [label="17", xlabel="Member", shape=circle, fixedsize=true, width=0.777, style="filled", fillcolor="#F5EEE6", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_OpLevelObj [label="14", xlabel="OpLevelObj", shape=circle, fixedsize=true, width=0.714, style="filled,dashed", fillcolor="#E9F2E9", color="#888888", penwidth=2.2, fontsize=11, fontcolor="#222222"];
+  n_TypeSystem_TypeGround [label="14", xlabel="TypeSystem.TypeGround", shape=circle, fixedsize=true, width=0.714, style="filled", fillcolor="#F5EEE6", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_embed [label="14", xlabel="embed", shape=circle, fixedsize=true, width=0.714, style="filled,dashed", fillcolor="#F5EEE6", color="#888888", penwidth=2.2, fontsize=11, fontcolor="#222222"];
+  n_Rep [label="12", xlabel="Rep", shape=circle, fixedsize=true, width=0.672, style="filled", fillcolor="#E9F2E9", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_partialization [label="12", xlabel="partialization", shape=circle, fixedsize=true, width=0.672, style="filled", fillcolor="#F5EEE6", color="#33383F", penwidth=1.0, fontsize=11, fontcolor="#222222"];
+  n_agreementLE [label="10", xlabel="agreementLE", shape=circle, fixedsize=true, width=0.63, style="filled,dashed", fillcolor="#F1EAF2", color="#888888", penwidth=2.2, fontsize=11, fontcolor="#222222"];
+  n_mzAppend [label="10", xlabel="mzAppend", shape=circle, fixedsize=true, width=0.63, style="filled,dashed", fillcolor="#F5EEE6", color="#888888", penwidth=2.2, fontsize=11, fontcolor="#222222"];
+  n_fixedPoint_of_surjection -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_Obj -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_optCycle -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_imprecise -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_totalization -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_Rep -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_partialization -> SELFDESC [color="#2266CC", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_fixedPoint_of_surjection -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_optCycle -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_imprecise -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_CataphaticConformant -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_assembleClassify -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_closeable -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_AbsenceStructure -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_NonDegenerate -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_Member -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_TypeSystem_TypeGround -> APPLIC [color="#DD7711", penwidth=1.6, arrowsize=0.7, dir=none];
+  n_fixedPoint_of_surjection -> n_optCycle [dir=back, arrowtail=diamond, arrowsize=1.1, color="#556070", penwidth=1.3, constraint=false, label="contains", fontsize=8, fontcolor="#556070"];
+  n_Obj -> n_Rep [dir=back, arrowtail=diamond, arrowsize=1.1, color="#556070", penwidth=1.3, constraint=false, label="contains", fontsize=8, fontcolor="#556070"];
+  subgraph cluster_iso {
+    label="isolates: reached by neither spine"; fontsize=11; fontcolor="#777777";
+    style="dashed,rounded"; color="#AAAAAA"; margin=12;
+    n_LevelObj;
+    n_OpLevelObj;
+    n_embed;
+    n_agreementLE;
+    n_mzAppend;
+  }
+}

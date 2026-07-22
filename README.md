@@ -110,6 +110,98 @@ The model depends on the kernel through a narrow waist (40 edges into 9 kernel n
 `NonDegenerate`, and the diagonal facts) and never on the protocol (`model → protocol = 0`): the protocol is
 the lateral entry point beside the spine, its only dependency the kernel and its only dependent a register.
 
+## The meta-structure: 19 roots, two spines
+
+The rhizome render draws all 557 nodes; the root-level view draws only the 19 roots (the sinks with a
+territory of at least 10) and asks how they relate. `python3 graph/meta_structure.py` recomputes this off
+`depgraph-proof.json` (nothing hand placed: territories, spine systems, nestings, and isolates are all
+measured) and renders `graph/meta-structure.svg`, the small legible diagram of the framework's shape.
+
+It is a **spine-unified federation**, not an archipelago and not a hierarchy. The roots are near-co-equal:
+the meta-DAG (territory containment) is almost flat, 17 primary roots with only two nestings, `optCycle`
+inside `fixedPoint_of_surjection` and `Rep` inside `Obj`, drawn as containment. They are territorially
+near-independent, mostly disjoint trees. What binds them is the lateral spine, and the spine is **two
+distinct systems that reach different roots**. The chiasm spine (self-description) unifies the categorical
+and dynamic core (`Obj`, `Rep`, `totalization`, `partialization`); the register spine (application) unifies
+the scaffolding, cataphatic, and absence machinery (`Member`, `assembleClassify`, `closeable`,
+`AbsenceStructure`, `NonDegenerate`, `CataphaticConformant`, `TypeSystem.TypeGround`). The two connective
+systems are edge-disjoint except at the kernel: they meet at exactly three roots, `fixedPoint_of_surjection`,
+`imprecise`, and `optCycle`, the founding absence and its dynamics. Five roots (`LevelObj`, `OpLevelObj`,
+`embed`, `agreementLE`, `mzAppend`) are reached by neither spine: constructions the framework builds but
+neither describes nor applies, drawn apart as an outer archipelago. So the framework holds together in two
+ways, by describing itself and by applying itself, and those two unities touch only at its empty center.
+
+```mermaid
+graph LR
+  CHI(["self-description spine<br/>chiasm"])
+  APP(["application spine<br/>register"])
+  subgraph r_fixedPoint_of_surjection_box["fixedPoint_of_surjection 69 contains optCycle"]
+    r_fixedPoint_of_surjection["fixedPoint_of_surjection 69"]
+    r_optCycle["optCycle 33"]
+  end
+  subgraph r_Obj_box["Obj 35 contains Rep"]
+    r_Obj["Obj 35"]
+    r_Rep["Rep 12"]
+  end
+  r_imprecise["imprecise 29"]
+  r_CataphaticConformant["CataphaticConformant 25"]
+  r_assembleClassify["assembleClassify 23"]
+  r_totalization["totalization 22"]
+  r_closeable["closeable 21"]
+  r_AbsenceStructure["AbsenceStructure 20"]
+  r_NonDegenerate["NonDegenerate 19"]
+  r_Member["Member 17"]
+  r_TypeSystem_TypeGround["TypeSystem.TypeGround 14"]
+  r_partialization["partialization 12"]
+  subgraph iso_box["isolates: reached by neither spine"]
+    r_LevelObj["LevelObj 23"]
+    r_OpLevelObj["OpLevelObj 14"]
+    r_embed["embed 14"]
+    r_agreementLE["agreementLE 10"]
+    r_mzAppend["mzAppend 10"]
+  end
+  r_fixedPoint_of_surjection --- CHI
+  r_Obj --- CHI
+  r_optCycle --- CHI
+  r_imprecise --- CHI
+  r_totalization --- CHI
+  r_Rep --- CHI
+  r_partialization --- CHI
+  r_fixedPoint_of_surjection --- APP
+  r_optCycle --- APP
+  r_imprecise --- APP
+  r_CataphaticConformant --- APP
+  r_assembleClassify --- APP
+  r_closeable --- APP
+  r_AbsenceStructure --- APP
+  r_NonDegenerate --- APP
+  r_Member --- APP
+  r_TypeSystem_TypeGround --- APP
+  linkStyle 0 stroke:#2266CC,stroke-width:2px
+  linkStyle 1 stroke:#2266CC,stroke-width:2px
+  linkStyle 2 stroke:#2266CC,stroke-width:2px
+  linkStyle 3 stroke:#2266CC,stroke-width:2px
+  linkStyle 4 stroke:#2266CC,stroke-width:2px
+  linkStyle 5 stroke:#2266CC,stroke-width:2px
+  linkStyle 6 stroke:#2266CC,stroke-width:2px
+  linkStyle 7 stroke:#DD7711,stroke-width:2px
+  linkStyle 8 stroke:#DD7711,stroke-width:2px
+  linkStyle 9 stroke:#DD7711,stroke-width:2px
+  linkStyle 10 stroke:#DD7711,stroke-width:2px
+  linkStyle 11 stroke:#DD7711,stroke-width:2px
+  linkStyle 12 stroke:#DD7711,stroke-width:2px
+  linkStyle 13 stroke:#DD7711,stroke-width:2px
+  linkStyle 14 stroke:#DD7711,stroke-width:2px
+  linkStyle 15 stroke:#DD7711,stroke-width:2px
+  linkStyle 16 stroke:#DD7711,stroke-width:2px
+  classDef spineC fill:#2266CC,color:#fff,stroke-width:0px
+  classDef spineA fill:#DD7711,color:#fff,stroke-width:0px
+  classDef iso fill:#F1EAF2,stroke:#999,stroke-dasharray:4 3
+  class CHI spineC
+  class APP spineA
+  class r_LevelObj,r_OpLevelObj,r_embed,r_agreementLE,r_mzAppend iso
+```
+
 ## License
 
 Released under CC BY-SA 4.0: fork it, rewrite it, re-register it in any language or proof assistant; the
