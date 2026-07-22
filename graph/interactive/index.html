@@ -35,12 +35,21 @@
   .legend div { margin: 2px 0; }
   #axlist { margin: 4px 0 0; padding-left: 16px; }
   small { color: #777; }
+  #search { width: 100%; box-sizing: border-box; padding: 5px; font-size: 12px; margin: 4px 0; }
+  #results { max-height: 240px; overflow-y: auto; border: 1px solid #ddd; background: #fff; }
+  #results div[data-id] { padding: 3px 6px; cursor: pointer; border-bottom: 1px solid #f2f2f2; }
+  #results div[data-id]:hover { background: #eef; }
+  #results .rk { color: #999; font-size: 10px; }
 </style>
 </head>
 <body>
 <div id="panel">
   <h1>Chiralogy dependency graph</h1>
   <small>557 nodes over one source of truth. Click a node for its cones and stipulations.</small>
+
+  <h2>Find node</h2>
+  <input type="text" id="search" placeholder="filter by name" autocomplete="off">
+  <div id="results"></div>
 
   <h2>Interactions</h2>
   <button id="btnAxioms">Trace to axioms</button>
@@ -288,6 +297,42 @@ document.getElementById("previewFile").onchange = function (evt) {
   };
   reader.readAsText(f);
 };
+
+// ---- searchable node list ----
+function nodeIndex() {
+  return realNodes().map(function (n) {
+    return { id: n.id(), label: shortName(n.id()), strat: n.data("stratum"),
+      mod: n.data("modality") || "na", ax: n.data("axis") || "na" };
+  }).sort(function (a, b) { return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0); });
+}
+var ALLNODES = nodeIndex();
+
+function renderResults(q) {
+  var box = document.getElementById("results");
+  q = q.trim().toLowerCase();
+  var matches = q === "" ? ALLNODES : ALLNODES.filter(function (n) { return n.label.toLowerCase().indexOf(q) >= 0; });
+  var shown = matches.slice(0, 200);
+  box.innerHTML = shown.map(function (n) {
+    return '<div data-id="' + n.id + '">' + n.label +
+      ' <span class="rk">' + n.strat + " / " + n.mod + " / " + n.ax + "</span></div>";
+  }).join("") + (matches.length > shown.length
+    ? '<div class="rk" style="padding:3px 6px">' + (matches.length - shown.length) + " more, refine the search</div>"
+    : (matches.length === 0 ? '<div class="rk" style="padding:3px 6px">no match</div>' : ""));
+  Array.prototype.forEach.call(box.querySelectorAll("div[data-id]"), function (d) {
+    d.onclick = function () { selectNode(d.getAttribute("data-id")); };
+  });
+}
+
+function selectNode(id) {
+  var n = cy.getElementById(id);
+  if (!n || n.empty()) return;
+  window.__selected = n;
+  showCones(n);
+  cy.animate({ fit: { eles: n.closedNeighborhood(), padding: 60 }, duration: 300 });
+}
+
+document.getElementById("search").addEventListener("input", function (e) { renderResults(e.target.value); });
+renderResults("");
 </script>
 </body>
 </html>
