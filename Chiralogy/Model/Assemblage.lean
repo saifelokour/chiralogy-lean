@@ -209,4 +209,139 @@ theorem territorialization_adds_the_family_multiplies :
        (Finset.univ.filter (fun S : Fin 2 → Bool => ¬ closeable prereqChain2 S)).card) :=
   ⟨by decide, by decide, by decide, by decide⟩
 
+/-! ## The membership condition: located difference and the free cross
+
+The assemblage exceeds its factors when it adds content over the empty-cross juxtaposition. This is the
+assemblage's membership condition, the whole-versus-parts analogue of an object's non-degeneracy: exceeding stands
+to two objects as distinguishing stands to one, both requirements that can fail. It is difference-gated and
+import-supplied. `located X1 X2`, the cross-region non-empty, is necessary (`exceeding_requires_location`); above
+it the cross is a free parameter (`cross_is_free_over_all_factors`, `no_factor_forces_the_cross`), so sufficiency is
+the import's, not any condition on the factors (`location_is_not_sufficient`, `sufficiency_is_the_import`). Both
+sit only with the assemblage: `located` is a fact about the product carrier's cross-region, which nothing earlier
+has, so it is homed here beside `exceeds`.
+
+READING (a reading, not a theorem): the modal contrast. The kernel forbids one object's two ends coinciding,
+`center_is_empty`, a forced negated existential, an impossibility; the assemblage permits any relation between two
+distinct objects, `no_factor_forces_the_cross`, a universal existential, a realizability. The two emptinesses are
+opposite in kind, the empty center a wall and the inter-object-forced position an open field. Empty by construction
+means the cross is a free parameter, that within the assemblage no factor forces it; it does not mean no extension
+could force inter-object difference.
+
+READING: exceeding is a strict extension of non-degeneracy, not its arity-1 form, correcting the conjecture that
+the two might be mutually constitutive. At a trivial second factor the cross-region collapses
+(`collapse_at_trivial_factor`), so exceeding is vacuous (`exceeding_vacuous_at_trivial_factor`), while a factor's
+non-degeneracy is a genuine condition that survives (`intra_survives_where_inter_vacuous`): the intra requirement
+holds where the inter requirement is undefined for want of a cross, so intra is prior and inter is built on the
+product. This assemblage-membership is model-interior and construction-internal, not a kernel-adjacent
+domain-facing protocol like object-membership: the same non-coincidence shape at a different stratum and direction. -/
+
+/-- The cross-region is inhabited: two pairs differing in both components, so the factors are genuinely two. -/
+def located (X1 X2 : Type) : Prop := ∃ a b : X1 × X2, a.1 ≠ b.1 ∧ a.2 ≠ b.2
+
+/-- The assemblage exceeds its factors: it adds content over the empty-cross juxtaposition. -/
+def exceeds {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2] (c1 : X1 → X1 → Option Bool)
+    (c2 : X2 → X2 → Option Bool) (imp : (X1 × X2) → (X1 × X2) → Option Bool) : Prop :=
+  assembleClassify c1 c2 imp ≠ assembleClassify c1 c2 (fun _ _ => none)
+
+/-- **Exceeding requires location.** If the assemblage exceeds its juxtaposition, the cross-region is non-empty:
+where no two pairs differ in both components the assemblage equals its juxtaposition for every import and cannot
+exceed. -/
+theorem exceeding_requires_location {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
+    (imp : (X1 × X2) → (X1 × X2) → Option Bool) :
+    exceeds c1 c2 imp → located X1 X2 := by
+  intro hexc
+  by_contra hnl
+  exact hexc (by
+    funext a b
+    exact construction_takes_two_objects_and_a_cross_map c1 c2 imp (fun _ _ => none)
+      (fun a b h1 h2 => absurd ⟨h1, h2⟩ (fun hab => hnl ⟨a, b, hab⟩)) a b)
+
+/-- **The cross is free over all factors.** For any factors and any target relation on the fully-cross pairs an
+import realizes it, the witness being the target itself, since the cross value is exactly the import. -/
+theorem cross_is_free_over_all_factors {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
+    (r : (X1 × X2) → (X1 × X2) → Option Bool) :
+    ∃ imp : (X1 × X2) → (X1 × X2) → Option Bool,
+      ∀ a b, a.1 ≠ b.1 → a.2 ≠ b.2 → assembleClassify c1 c2 imp a b = r a b :=
+  ⟨r, fun a b h1 h2 => import_is_the_complement c1 c2 r a b h1 h2⟩
+
+/-- **No factor forces the cross.** For all located factors two imports give assemblages differing on the cross, so
+the factors do not determine the cross value: the emptiness of the inter-object-forced position is realizability,
+not obstruction, over arbitrary carriers, its only hypothesis decidable equality. -/
+theorem no_factor_forces_the_cross {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool) :
+    located X1 X2 →
+      ∃ imp imp' : (X1 × X2) → (X1 × X2) → Option Bool,
+        assembleClassify c1 c2 imp ≠ assembleClassify c1 c2 imp' := by
+  rintro ⟨a0, b0, h1, h2⟩
+  refine ⟨(fun _ _ => none), (fun _ _ => some true), ?_⟩
+  intro heq
+  have hval := congrFun (congrFun heq a0) b0
+  rw [import_is_the_complement c1 c2 (fun _ _ => none) a0 b0 h1 h2,
+      import_is_the_complement c1 c2 (fun _ _ => some true) a0 b0 h1 h2] at hval
+  exact absurd hval (by decide)
+
+/-- **The collapse at a trivial second factor.** When the second carrier is a subsingleton no two pairs differ in
+both components, so the cross-region is empty and the assemblage is independent of the import. -/
+theorem collapse_at_trivial_factor {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2] [Subsingleton X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
+    (imp imp' : (X1 × X2) → (X1 × X2) → Option Bool) :
+    (∀ a b : X1 × X2, ¬ (a.1 ≠ b.1 ∧ a.2 ≠ b.2))
+    ∧ (assembleClassify c1 c2 imp = assembleClassify c1 c2 imp') := by
+  refine ⟨?_, ?_⟩
+  · rintro a b ⟨_, h2⟩; exact h2 (Subsingleton.elim a.2 b.2)
+  · funext a b
+    exact construction_takes_two_objects_and_a_cross_map c1 c2 imp imp'
+      (fun a b _ h2 => absurd (Subsingleton.elim a.2 b.2) h2) a b
+
+/-- **Exceeding is vacuous at a trivial second factor.** With a subsingleton second carrier the assemblage equals
+its juxtaposition for every import, so it never exceeds. -/
+theorem exceeding_vacuous_at_trivial_factor {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2] [Subsingleton X2]
+    (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
+    (imp : (X1 × X2) → (X1 × X2) → Option Bool) :
+    ¬ exceeds c1 c2 imp :=
+  fun h => h (collapse_at_trivial_factor c1 c2 imp (fun _ _ => none)).2
+
+/-- **The factor-swap fixes the cross.** For two factors on the same carrier, on a fully-cross pair both orderings
+give the import, so swapping the factors leaves the cross-region unchanged and permutes only the determined
+regions. -/
+theorem swap_fixes_the_cross {X : Type} [DecidableEq X] (c1 c2 : X → X → Option Bool)
+    (imp : (X × X) → (X × X) → Option Bool) (a b : X × X) :
+    a.1 ≠ b.1 → a.2 ≠ b.2 → assembleClassify c1 c2 imp a b = assembleClassify c2 c1 imp a b := by
+  intro h1 h2
+  rw [import_is_the_complement c1 c2 imp a b h1 h2, import_is_the_complement c2 c1 imp a b h1 h2]
+
+/-- **Location does not suffice.** There are located factors with an import that does not exceed, the pure open
+cross: difference is present at the carriers and the whole still does not exceed. -/
+theorem location_is_not_sufficient :
+    ∃ (c1 c2 : Fin 2 → Fin 2 → Option Bool) (imp : (Fin 2 × Fin 2) → (Fin 2 × Fin 2) → Option Bool),
+      located (Fin 2) (Fin 2) ∧ ¬ exceeds c1 c2 imp :=
+  ⟨(fun _ _ => none), (fun _ _ => none), (fun _ _ => none),
+   ⟨(0, 0), (1, 1), by decide, by decide⟩, fun h => h rfl⟩
+
+/-- **Sufficiency is the import.** For located factors there is an import that exceeds and one that does not, so
+above location the deciding factor is the free import, not any structural condition on the factors. -/
+theorem sufficiency_is_the_import :
+    ∃ (c1 c2 : Fin 2 → Fin 2 → Option Bool) (imp imp' : (Fin 2 × Fin 2) → (Fin 2 × Fin 2) → Option Bool),
+      exceeds c1 c2 imp ∧ ¬ exceeds c1 c2 imp' := by
+  refine ⟨(fun _ _ => none), (fun _ _ => none),
+    (fun a b => if a = (0, 0) ∧ b = (1, 1) then some true else none), (fun _ _ => none), ?_, fun h => h rfl⟩
+  intro heq
+  have hv := congrFun (congrFun heq (0, 0)) (1, 1)
+  rw [import_is_the_complement (fun _ _ => none) (fun _ _ => none)
+        (fun a b => if a = (0, 0) ∧ b = (1, 1) then some true else none) (0, 0) (1, 1) (by decide) (by decide),
+      import_is_the_complement (fun _ _ => none) (fun _ _ => none) (fun _ _ => none) (0, 0) (1, 1)
+        (by decide) (by decide)] at hv
+  exact absurd hv (by decide)
+
+/-- **Intra survives where inter is vacuous.** A non-degenerate first factor keeps its non-degeneracy while, at a
+trivial second factor, the assemblage never exceeds: the intra requirement holds where the inter requirement is
+undefined, so they are two conditions, not one at two arities. -/
+theorem intra_survives_where_inter_vacuous :
+    ∃ c1 : Fin 2 → Fin 2 → Option Bool, NonDegenerate c1
+      ∧ ∀ (imp : (Fin 2 × Unit) → (Fin 2 × Unit) → Option Bool), ¬ exceeds c1 (fun _ _ => none) imp :=
+  ⟨(fun x y => if x = y then some true else none), by unfold NonDegenerate; decide,
+   fun imp => exceeding_vacuous_at_trivial_factor _ (fun _ _ => none) imp⟩
+
 end Chiralogy
