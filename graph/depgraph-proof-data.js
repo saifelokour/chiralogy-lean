@@ -1,4 +1,4 @@
-{
+window.DEPGRAPH = {
   "nodes": [
     {"name":"Chiralogy.Absence","kind":"inductive","stratum":"model","character":"seam","modality":"na","axis":"na","module":"Chiralogy.Model.Boundary"},
     {"name":"Chiralogy.Absence.ctorElimType","kind":"abbrev","stratum":"model","character":"seam","modality":"na","axis":"na","module":"Chiralogy.Model.Boundary"},
@@ -1504,3 +1504,4 @@
     {"source":"Chiralogy.𝒜_nondegenerate","target":"Chiralogy.𝒜"}
   ]
 }
+;

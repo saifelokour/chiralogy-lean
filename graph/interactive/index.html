@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <!--
   Chiralogy dependency graph, interactive viewer (Cytoscape.js).
-  Regenerated from ../depgraph-data.js (a JS wrapped copy of depgraph.json). Do not hand edit
-  the data. This page is a viewer over the committed JSON, the same source the static SVG renders.
-  Open with no server: double click this file (file://). It loads ../depgraph-data.js via a script
-  tag, so no CORS or server is needed. Cytoscape and fcose are pinned CDN builds (needs internet on
-  first open); to run fully offline, vendor those four scripts next to this file.
-  Encoding matches the static render: colour = modality, shape = kind, groups = stratum then axis.
+  Regenerated from ../depgraph-proof-data.js (a JS wrapped copy of the proof-level depgraph-proof.json,
+  the real structure). Do not hand edit the data. Encoding matches the self-image: default colour =
+  character (the two hands), grouping = character regions; modality and axis are optional lenses, not
+  the default. Open with no server: double click this file (file://). Cytoscape and fcose are pinned CDN
+  builds (needs internet on first open); vendor them next to this file to run fully offline.
 -->
 <html lang="en">
 <head>
@@ -16,36 +15,30 @@
 <script src="https://cdn.jsdelivr.net/npm/layout-base@2.0.1/layout-base.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/cose-base@2.2.0/cose-base.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
-<script src="../depgraph-data.js"></script>
+<script src="../depgraph-proof-data.js"></script>
 <style>
   html, body { margin: 0; height: 100%; font-family: Helvetica, Arial, sans-serif; }
   #cy { position: absolute; left: 320px; right: 0; top: 0; bottom: 0; }
   #panel { position: absolute; left: 0; top: 0; bottom: 0; width: 320px; overflow-y: auto;
-    box-sizing: border-box; padding: 12px; background: #f7f7f7; border-right: 1px solid #ccc;
-    font-size: 13px; }
+    box-sizing: border-box; padding: 12px; background: #f7f7f7; border-right: 1px solid #ccc; font-size: 13px; }
   h1 { font-size: 15px; margin: 0 0 8px; }
   h2 { font-size: 13px; margin: 14px 0 4px; }
   .swatch { display: inline-block; width: 12px; height: 12px; margin-right: 5px; vertical-align: middle; border: 1px solid #999; }
   label { display: block; margin: 2px 0; cursor: pointer; }
   button { font-size: 12px; margin: 3px 3px 3px 0; cursor: pointer; }
-  #info { margin-top: 8px; padding: 8px; background: #fff; border: 1px solid #ddd; min-height: 60px;
-    word-break: break-all; }
-  #info b { font-weight: 600; }
-  .k { color: #666; }
-  .legend div { margin: 2px 0; }
-  #axlist { margin: 4px 0 0; padding-left: 16px; }
-  small { color: #777; }
+  #info { margin-top: 8px; padding: 8px; background: #fff; border: 1px solid #ddd; min-height: 60px; word-break: break-all; }
+  #info b { font-weight: 600; } .k { color: #666; }
   #search { width: 100%; box-sizing: border-box; padding: 5px; font-size: 12px; margin: 4px 0; }
-  #results { max-height: 240px; overflow-y: auto; border: 1px solid #ddd; background: #fff; }
+  #results { max-height: 200px; overflow-y: auto; border: 1px solid #ddd; background: #fff; }
   #results div[data-id] { padding: 3px 6px; cursor: pointer; border-bottom: 1px solid #f2f2f2; }
-  #results div[data-id]:hover { background: #eef; }
-  #results .rk { color: #999; font-size: 10px; }
+  #results div[data-id]:hover { background: #eef; } #results .rk { color: #999; font-size: 10px; }
+  small { color: #777; } .legend div { margin: 2px 0; }
 </style>
 </head>
 <body>
 <div id="panel">
   <h1>Chiralogy dependency graph</h1>
-  <small>557 nodes over one source of truth. Click a node for its cones and stipulations.</small>
+  <small>Proof-level, 557 nodes. Colour = character (the two hands); regions = character. Click a node for its cones.</small>
 
   <h2>Find node</h2>
   <input type="text" id="search" placeholder="filter by name" autocomplete="off">
@@ -54,53 +47,61 @@
   <h2>Interactions</h2>
   <button id="btnAxioms">Trace to axioms</button>
   <button id="btnClear">Clear</button>
-  <div><small>Click a node: teal = it depends on (down to kernel), purple = depends on it (up to leaves). Trace to axioms marks the stipulations beneath a node.</small></div>
+  <div><small>Teal = it depends on (down to the absences), purple = depends on it.</small></div>
 
-  <h2>Filter (modality)</h2>
-  <label><input type="checkbox" class="fmod" value="forced" checked><span class="swatch" style="background:#4477AA"></span>forced</label>
-  <label><input type="checkbox" class="fmod" value="conditional" checked><span class="swatch" style="background:#EE7733"></span>conditional</label>
-  <label><input type="checkbox" class="fmod" value="na" checked><span class="swatch" style="background:#DDDDDD"></span>na</label>
-  <h2>Filter (axis)</h2>
+  <h2>Colour by (lens)</h2>
+  <label><input type="radio" name="cmode" value="character" checked> character (the two hands, default)</label>
+  <label><input type="radio" name="cmode" value="modality"> modality (forced / conditional)</label>
+  <label><input type="radio" name="cmode" value="axis"> axis (intra / inter)</label>
+
+  <h2>Filter (character)</h2>
+  <label><input type="checkbox" class="fchar" value="apophatic" checked><span class="swatch" style="background:#4477AA"></span>apophatic</label>
+  <label><input type="checkbox" class="fchar" value="cataphatic" checked><span class="swatch" style="background:#EE7733"></span>cataphatic</label>
+  <label><input type="checkbox" class="fchar" value="neutral" checked><span class="swatch" style="background:#CCCCCC"></span>scaffolding</label>
+  <label><input type="checkbox" class="fchar" value="seam" checked><span class="swatch" style="background:#AA4499"></span>seam</label>
+  <h2>Filter (modality, optional)</h2>
+  <label><input type="checkbox" class="fmod" value="forced" checked>forced</label>
+  <label><input type="checkbox" class="fmod" value="conditional" checked>conditional</label>
+  <label><input type="checkbox" class="fmod" value="na" checked>na</label>
+  <h2>Filter (axis, optional)</h2>
   <label><input type="checkbox" class="faxis" value="intra" checked>intra</label>
   <label><input type="checkbox" class="faxis" value="inter-cross" checked>inter-cross</label>
   <label><input type="checkbox" class="faxis" value="inter-categorical" checked>inter-categorical</label>
   <label><input type="checkbox" class="faxis" value="na" checked>na</label>
 
   <h2>Preview an experiment</h2>
-  <small>Load a preview-&lt;Experiment&gt;.json from depgraph-preview to overlay its candidate joint.</small>
+  <small>Load a preview-&lt;Experiment&gt;.json from depgraph-preview.</small>
   <input type="file" id="previewFile" accept=".json">
 
   <h2>Legend</h2>
   <div class="legend">
-    <div><span class="swatch" style="background:#4477AA"></span>forced &nbsp; <span class="swatch" style="background:#EE7733"></span>conditional &nbsp; <span class="swatch" style="background:#DDDDDD"></span>na</div>
-    <div>diamond = axiom, ellipse = theorem, box = def/structure</div>
-    <div>groups: stratum, then axis; dashed = un-graduated (preview)</div>
+    <div><span class="swatch" style="background:#4477AA"></span>apophatic (larger hand) &nbsp; <span class="swatch" style="background:#EE7733"></span>cataphatic</div>
+    <div><span class="swatch" style="background:#CCCCCC"></span>scaffolding &nbsp; <span class="swatch" style="background:#AA4499"></span>seam</div>
+    <div>thick border = base (absences + taproot); diamond = axiom; dashed = preview</div>
   </div>
-
   <div id="info">Click a node.</div>
 </div>
 <div id="cy"></div>
 
 <script>
 "use strict";
-var TOL = { forced: "#4477AA", conditional: "#EE7733", na: "#DDDDDD" };
+var CHAR = { apophatic: "#4477AA", cataphatic: "#EE7733", neutral: "#CCCCCC", seam: "#AA4499" };
+var MOD = { forced: "#4477AA", conditional: "#EE7733", na: "#DDDDDD" };
+var AX = { "intra": "#4477AA", "inter-cross": "#EE7733", "inter-categorical": "#AA4499", "na": "#DDDDDD" };
+var BASE = { "Chiralogy.no_reflexive_object": 1, "Chiralogy.hole_uniform": 1, "Chiralogy.fixedPoint_of_surjection": 1 };
 function shortName(n) { return n.replace(/^Chiralogy\./, ""); }
+function charOf(n) { return n.character || "neutral"; }  // proof data carries character
 
-// Build Cytoscape elements from window.DEPGRAPH: compound parents stratum -> axis -> node.
 function buildElements(data, isPreview) {
-  var els = [];
-  var strata = {}, axes = {};
+  var els = [], seen = {};
   data.nodes.forEach(function (n) {
-    var sid = "s::" + n.stratum;
-    var aid = "a::" + n.stratum + "::" + n.axis;
-    if (!strata[sid]) { strata[sid] = true;
-      els.push({ data: { id: sid, label: n.stratum }, classes: "stratum" }); }
-    if (!axes[aid]) { axes[aid] = true;
-      els.push({ data: { id: aid, label: n.axis, parent: sid }, classes: "axis" }); }
+    var c = isPreview ? "experiment" : charOf(n);
+    var pid = "grp::" + c;
+    if (!seen[pid]) { seen[pid] = 1; els.push({ data: { id: pid, label: c }, classes: "group" }); }
     els.push({ data: {
-      id: n.name, label: shortName(n.name), parent: aid,
-      kind: n.kind, stratum: n.stratum, modality: n.modality, axis: n.axis
-    }, classes: isPreview ? "previewnode" : "" });
+      id: n.name, label: shortName(n.name), parent: pid, kind: n.kind, stratum: n.stratum,
+      character: c, modality: n.modality, axis: n.axis, base: BASE[n.name] ? 1 : 0
+    }, classes: (isPreview ? "previewnode " : "") + (BASE[n.name] ? "basenode" : "") });
   });
   data.edges.forEach(function (e) {
     els.push({ data: { id: e.source + " >> " + e.target, source: e.source, target: e.target } });
@@ -112,227 +113,183 @@ var cy = cytoscape({
   container: document.getElementById("cy"),
   elements: buildElements(window.DEPGRAPH, false),
   style: [
-    { selector: "node", style: {
-      "label": "data(label)", "font-size": 7, "text-valign": "center", "color": "#111",
-      "width": "label", "height": "label", "padding": "3px", "border-width": 0.5,
-      "border-color": "#888", "background-color": "#DDDDDD" } },
-    { selector: 'node[modality="forced"]', style: { "background-color": TOL.forced, "color": "#fff" } },
-    { selector: 'node[modality="conditional"]', style: { "background-color": TOL.conditional } },
-    { selector: 'node[modality="na"]', style: { "background-color": TOL.na } },
-    { selector: 'node[kind="axiom"]', style: { "shape": "diamond", "border-width": 1.5, "border-color": "#000" } },
+    { selector: "node", style: { "label": "data(label)", "font-size": 7, "text-valign": "center",
+      "color": "#111", "width": "label", "height": "label", "padding": "3px", "border-width": 0.5,
+      "border-color": "#888", "background-color": "#CCCCCC" } },
+    { selector: 'node[character="apophatic"]', style: { "background-color": CHAR.apophatic, "color": "#fff" } },
+    { selector: 'node[character="cataphatic"]', style: { "background-color": CHAR.cataphatic } },
+    { selector: 'node[character="seam"]', style: { "background-color": CHAR.seam, "color": "#fff" } },
+    { selector: 'node[character="neutral"]', style: { "background-color": CHAR.neutral } },
+    { selector: 'node[kind="axiom"]', style: { "shape": "diamond" } },
     { selector: 'node[kind="theorem"]', style: { "shape": "ellipse" } },
-    { selector: 'node[kind="def"]', style: { "shape": "round-rectangle" } },
-    { selector: 'node[kind="abbrev"]', style: { "shape": "round-rectangle" } },
-    { selector: 'node[kind="structure"]', style: { "shape": "round-rectangle" } },
-    { selector: 'node[kind="inductive"]', style: { "shape": "round-rectangle" } },
-    { selector: 'node[kind="instance"]', style: { "shape": "round-rectangle" } },
-    { selector: ".stratum", style: { "background-opacity": 0.06, "background-color": "#4477AA",
-      "border-width": 1, "border-color": "#888", "label": "data(label)", "font-size": 22,
-      "text-valign": "top", "text-halign": "center", "color": "#444", "shape": "round-rectangle" } },
-    { selector: ".axis", style: { "background-opacity": 0.05, "background-color": "#999",
-      "border-width": 1, "border-style": "dashed", "border-color": "#bbb", "label": "data(label)",
-      "font-size": 13, "text-valign": "top", "color": "#777" } },
+    { selector: 'node[kind="def"],node[kind="abbrev"],node[kind="structure"],node[kind="inductive"],node[kind="instance"]', style: { "shape": "round-rectangle" } },
+    { selector: ".basenode", style: { "border-width": 3, "border-color": "#000", "font-size": 10, "z-index": 99 } },
+    { selector: ".group", style: { "background-opacity": 0.05, "border-width": 1, "border-color": "#999",
+      "label": "data(label)", "font-size": 24, "text-valign": "top", "color": "#555", "shape": "round-rectangle" } },
     { selector: ".previewnode", style: { "border-width": 2, "border-style": "dashed", "border-color": "#111" } },
-    { selector: "edge", style: { "width": 0.5, "line-color": "#cfcfcf", "curve-style": "straight",
-      "target-arrow-shape": "triangle", "target-arrow-color": "#cfcfcf", "arrow-scale": 0.4 } },
-    { selector: "edge.joint", style: { "line-color": "#888", "target-arrow-color": "#888" } },
-    { selector: ".dimmed", style: { "opacity": 0.08 } },
-    { selector: ".down", style: { "border-width": 2.5, "border-color": "#009988",
-      "line-color": "#009988", "target-arrow-color": "#009988", "width": 1.5, "opacity": 1 } },
-    { selector: ".up", style: { "border-width": 2.5, "border-color": "#AA4499",
-      "line-color": "#AA4499", "target-arrow-color": "#AA4499", "width": 1.5, "opacity": 1 } },
-    { selector: ".axpath", style: { "line-color": "#CC3311", "target-arrow-color": "#CC3311",
-      "width": 2, "border-width": 3, "border-color": "#CC3311", "opacity": 1 } },
+    { selector: "edge", style: { "width": 0.5, "line-color": "#d8d8d8", "curve-style": "straight",
+      "target-arrow-shape": "triangle", "target-arrow-color": "#d8d8d8", "arrow-scale": 0.4 } },
+    { selector: ".dimmed", style: { "opacity": 0.07 } },
+    { selector: ".down", style: { "border-width": 2.5, "border-color": "#009988", "line-color": "#009988",
+      "target-arrow-color": "#009988", "width": 1.5, "opacity": 1 } },
+    { selector: ".up", style: { "border-width": 2.5, "border-color": "#AA4499", "line-color": "#AA4499",
+      "target-arrow-color": "#AA4499", "width": 1.5, "opacity": 1 } },
+    { selector: ".axpath", style: { "line-color": "#CC3311", "target-arrow-color": "#CC3311", "width": 2,
+      "border-width": 3, "border-color": "#CC3311", "opacity": 1 } },
     { selector: ".focus", style: { "border-width": 4, "border-color": "#000" } }
   ],
-  layout: { name: "grid" },
-  wheelSensitivity: 0.2
+  layout: { name: "grid" }, wheelSensitivity: 0.2
 });
 
-// Colour cross-stratum edges (the joints) a touch darker, matching the static render.
-cy.edges().forEach(function (e) {
-  if (e.source().data("stratum") !== e.target().data("stratum")) e.addClass("joint");
-});
-
-function realNodes() { return cy.nodes().filter(function (n) { return !n.isParent() && !n.hasClass("stratum") && !n.hasClass("axis"); }); }
-
+function realNodes() { return cy.nodes().filter(function (n) { return !n.hasClass("group"); }); }
+function realNode(n) { return !n.hasClass("group"); }
+// Pin one high-degree anchor per character to a distinct quadrant so the two hands and the
+// scaffolding settle as separated regions (character edges keep each mass near its anchor).
+var ANCHORS = { apophatic: { x: -1000, y: 650 }, cataphatic: { x: 1000, y: 650 },
+  neutral: { x: 0, y: -750 }, seam: { x: -1050, y: -350 } };
+function fixedConstraints() {
+  var best = {}, deg = {};
+  realNodes().forEach(function (n) { var c = n.data("character"), d = n.degree(false);
+    if (deg[c] === undefined || d > deg[c]) { deg[c] = d; best[c] = n.id(); } });
+  var out = [];
+  Object.keys(ANCHORS).forEach(function (c) { if (best[c]) out.push({ nodeId: best[c], position: ANCHORS[c] }); });
+  return out;
+}
 function runLayout() {
-  cy.layout({ name: "fcose", quality: "default", randomize: false, animate: false,
-    nodeSeparation: 75, packComponents: true, nodeRepulsion: 6000,
-    idealEdgeLength: 55, gravity: 0.25 }).run();
+  cy.layout({ name: "fcose", quality: "proof", randomize: false, animate: false,
+    fixedNodeConstraint: fixedConstraints(), nodeSeparation: 55, nodeRepulsion: 4500,
+    idealEdgeLength: 40, gravity: 0.08, gravityCompound: 0.6, packComponents: false }).run();
 }
 runLayout();
 
-// ---- clearing ----
-function clearHighlight() {
-  cy.elements().removeClass("dimmed down up axpath focus");
+// ---- recolour by lens (character default; modality/axis optional) ----
+function applyColor() {
+  var mode = document.querySelector('input[name="cmode"]:checked').value;
+  realNodes().forEach(function (n) {
+    var v, pal;
+    if (mode === "character") { v = n.data("character"); pal = CHAR; }
+    else if (mode === "modality") { v = n.data("modality"); pal = MOD; }
+    else { v = n.data("axis"); pal = AX; }
+    var col = pal[v] || "#DDDDDD";
+    n.style("background-color", col);
+    n.style("color", (col === CHAR.apophatic || col === CHAR.seam) ? "#fff" : "#111");
+  });
 }
+document.querySelectorAll('input[name="cmode"]').forEach(function (r) { r.onchange = applyColor; });
 
-// ---- cone highlighting ----
+// ---- cones ----
+function clearHighlight() { cy.elements().removeClass("dimmed down up axpath focus"); }
 function showCones(node) {
   clearHighlight();
-  var down = node.successors();       // everything it depends on, to the kernel
-  var up = node.predecessors();       // everything that depends on it, to the leaves
   cy.elements().addClass("dimmed");
-  down.removeClass("dimmed").addClass("down");
-  up.removeClass("dimmed").addClass("up");
-  node.removeClass("dimmed").addClass("focus");
-  node.ancestors().removeClass("dimmed");
-  showInfo(node, down.nodes().filter(realNode), up.nodes().filter(realNode));
+  node.successors().removeClass("dimmed").addClass("down");
+  node.predecessors().removeClass("dimmed").addClass("up");
+  node.removeClass("dimmed").addClass("focus"); node.ancestors().removeClass("dimmed");
+  showInfo(node);
 }
-function realNode(n) { return !n.isParent() && !n.hasClass("stratum") && !n.hasClass("axis"); }
-
-// ---- reachability to axioms (the honesty query) ----
 function traceToAxioms(node) {
   clearHighlight();
-  var down = node.successors();
-  var axioms = down.nodes('[kind="axiom"]');
-  cy.elements().addClass("dimmed");
-  node.removeClass("dimmed").addClass("focus");
-  node.ancestors().removeClass("dimmed");
+  var down = node.successors(); var axioms = down.nodes('[kind="axiom"]');
+  cy.elements().addClass("dimmed"); node.removeClass("dimmed").addClass("focus"); node.ancestors().removeClass("dimmed");
   var pathEles = cy.collection();
-  axioms.forEach(function (ax) {
-    // nodes on a path node -> ax: down-reachable from node AND can reach ax
-    var toAx = ax.predecessors().intersection(down);
-    pathEles = pathEles.union(toAx).union(ax);
-  });
-  // include edges among path nodes plus the clicked node
+  axioms.forEach(function (ax) { pathEles = pathEles.union(ax.predecessors().intersection(down)).union(ax); });
   var pnodes = pathEles.nodes().union(node);
-  var pedges = pnodes.edgesWith(pnodes);
-  pnodes.union(pedges).removeClass("dimmed").addClass("axpath");
+  pnodes.union(pnodes.edgesWith(pnodes)).removeClass("dimmed").addClass("axpath");
   node.addClass("focus");
   var names = axioms.map(function (a) { return shortName(a.id()); });
-  var el = document.getElementById("axlist");
-  var msg = axioms.length
-    ? "rests on " + axioms.length + " axiom(s): " + names.join(", ")
-    : "rests on no axiom (fully proved beneath).";
-  document.getElementById("info").innerHTML =
-    "<b>" + shortName(node.id()) + "</b><br><span class='k'>reachability to axioms</span><br>" + msg;
+  document.getElementById("info").innerHTML = "<b>" + shortName(node.id()) + "</b><br><span class='k'>reachability to axioms</span><br>"
+    + (axioms.length ? "rests on " + axioms.length + " axiom(s): " + names.join(", ") : "rests on no axiom (fully proved beneath).");
 }
-
-// ---- info panel ----
-function showInfo(node, downNodes, upNodes) {
+function showInfo(node) {
   var d = node.data();
-  var down = node.successors().nodes().filter(realNode);
-  var up = node.predecessors().nodes().filter(realNode);
-  var ax = node.successors().nodes('[kind="axiom"]');
+  var down = node.successors().nodes().filter(realNode), up = node.predecessors().nodes().filter(realNode);
   document.getElementById("info").innerHTML =
-    "<b>" + shortName(node.id()) + "</b><br>" +
-    "<span class='k'>kind</span> " + d.kind + " &nbsp; <span class='k'>stratum</span> " + d.stratum + "<br>" +
-    "<span class='k'>modality</span> " + (d.modality || "na") + " &nbsp; <span class='k'>axis</span> " + (d.axis || "na") + "<br>" +
-    "<span class='k'>depends on</span> " + down.length + " &nbsp; <span class='k'>depended by</span> " + up.length + "<br>" +
-    "<span class='k'>axioms beneath</span> " + ax.length +
-    "<div id='axlist'></div>";
+    "<b>" + shortName(node.id()) + "</b>" + (d.base ? " <span class='k'>(base)</span>" : "") + "<br>" +
+    "<span class='k'>character</span> " + d.character + " &nbsp; <span class='k'>kind</span> " + d.kind + "<br>" +
+    "<span class='k'>stratum</span> " + d.stratum + " &nbsp; <span class='k'>modality</span> " + (d.modality||"na") +
+    " &nbsp; <span class='k'>axis</span> " + (d.axis||"na") + "<br>" +
+    "<span class='k'>depends on</span> " + down.length + " &nbsp; <span class='k'>depended by</span> " + up.length;
 }
 
-// ---- events ----
 cy.on("tap", "node", function (evt) {
-  var n = evt.target;
-  if (n.hasClass("stratum") || n.hasClass("axis")) return;
+  var n = evt.target; if (n.hasClass("group")) return;
   if (n.hasClass("previewnode")) { showPreviewJoint(n); return; }
-  window.__selected = n;
-  showCones(n);
+  window.__selected = n; showCones(n);
 });
 cy.on("tap", function (evt) { if (evt.target === cy) { clearHighlight();
   document.getElementById("info").innerHTML = "Click a node."; window.__selected = null; } });
+document.getElementById("btnAxioms").onclick = function () { if (window.__selected) traceToAxioms(window.__selected); };
+document.getElementById("btnClear").onclick = function () { clearHighlight();
+  document.getElementById("info").innerHTML = "Click a node."; window.__selected = null; };
 
-document.getElementById("btnAxioms").onclick = function () {
-  if (window.__selected) traceToAxioms(window.__selected);
-};
-document.getElementById("btnClear").onclick = function () {
-  clearHighlight(); document.getElementById("info").innerHTML = "Click a node."; window.__selected = null;
-};
-
-// ---- filters ----
+// ---- filters (character, modality, axis all combinable) ----
 function applyFilters() {
-  var mods = {}, axes = {};
+  var chars = {}, mods = {}, axes = {};
+  document.querySelectorAll(".fchar").forEach(function (c) { chars[c.value] = c.checked; });
   document.querySelectorAll(".fmod").forEach(function (c) { mods[c.value] = c.checked; });
   document.querySelectorAll(".faxis").forEach(function (c) { axes[c.value] = c.checked; });
   realNodes().forEach(function (n) {
-    var ok = mods[n.data("modality") || "na"] && axes[n.data("axis") || "na"];
+    var ok = chars[n.data("character")||"neutral"] && mods[n.data("modality")||"na"] && axes[n.data("axis")||"na"];
     n.style("display", ok ? "element" : "none");
   });
-  // hide axis/stratum parents with no visible descendant
-  cy.nodes(".axis, .stratum").forEach(function (p) {
+  cy.nodes(".group").forEach(function (p) {
     var vis = p.descendants().filter(function (d) { return realNode(d) && d.style("display") !== "none"; });
     p.style("display", vis.length ? "element" : "none");
   });
 }
-document.querySelectorAll(".fmod, .faxis").forEach(function (c) { c.onchange = applyFilters; });
+document.querySelectorAll(".fchar, .fmod, .faxis").forEach(function (c) { c.onchange = applyFilters; });
 
-// ---- preview mode ----
+// ---- preview ----
 function showPreviewJoint(node) {
-  clearHighlight();
-  cy.elements().addClass("dimmed");
-  node.removeClass("dimmed").addClass("focus");
-  // candidate joint: this experiment node's outgoing edges into canonical (different stratum)
-  var joint = node.outgoers().filter(function (e) {
-    return e.isEdge() && e.target().data("stratum") !== "experiment";
-  });
-  joint.removeClass("dimmed").addClass("axpath");
-  joint.targets().removeClass("dimmed");
+  clearHighlight(); cy.elements().addClass("dimmed"); node.removeClass("dimmed").addClass("focus");
+  var joint = node.outgoers().filter(function (e) { return e.isEdge() && !e.target().hasClass("previewnode"); });
+  joint.removeClass("dimmed").addClass("axpath"); joint.targets().removeClass("dimmed");
   var targets = joint.targets().map(function (t) { return shortName(t.id()); });
-  document.getElementById("info").innerHTML =
-    "<b>" + shortName(node.id()) + "</b> <span class='k'>(preview)</span><br>candidate joint into canonical: " +
-    (targets.length ? targets.join(", ") : "none");
+  document.getElementById("info").innerHTML = "<b>" + shortName(node.id()) + "</b> <span class='k'>(preview)</span><br>candidate joint: "
+    + (targets.length ? targets.join(", ") : "none");
 }
 document.getElementById("previewFile").onchange = function (evt) {
   var f = evt.target.files[0]; if (!f) return;
   var reader = new FileReader();
   reader.onload = function () {
-    var data = JSON.parse(reader.result);
-    // add only nodes/edges not already present (the experiment overlay)
-    var have = {}; cy.nodes().forEach(function (n) { have[n.id()] = true; });
-    var add = buildElements(data, true).filter(function (el) {
-      if (el.data.source) return true;              // edges
-      if (el.data.id.indexOf("::") === 0) return !have[el.data.id]; // parents
-      return !have[el.data.id];
-    });
-    cy.add(add);
-    cy.edges().forEach(function (e) {
-      if (e.source().data("stratum") !== e.target().data("stratum")) e.addClass("joint");
-    });
-    runLayout();
-    document.getElementById("info").innerHTML = "Preview loaded. Click a dashed experiment node to see its joint.";
+    var data = JSON.parse(reader.result), have = {};
+    cy.nodes().forEach(function (n) { have[n.id()] = true; });
+    cy.add(buildElements(data, true).filter(function (el) {
+      if (el.data.source) return true; return !have[el.data.id];
+    }));
+    runLayout(); applyColor();
+    document.getElementById("info").innerHTML = "Preview loaded. Click a dashed experiment node for its joint.";
   };
   reader.readAsText(f);
 };
 
-// ---- searchable node list ----
+// ---- search ----
 function nodeIndex() {
-  return realNodes().map(function (n) {
-    return { id: n.id(), label: shortName(n.id()), strat: n.data("stratum"),
-      mod: n.data("modality") || "na", ax: n.data("axis") || "na" };
-  }).sort(function (a, b) { return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0); });
+  return realNodes().map(function (n) { return { id: n.id(), label: shortName(n.id()),
+    ch: n.data("character"), strat: n.data("stratum") }; })
+    .sort(function (a, b) { return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0); });
 }
 var ALLNODES = nodeIndex();
-
 function renderResults(q) {
-  var box = document.getElementById("results");
-  q = q.trim().toLowerCase();
+  var box = document.getElementById("results"); q = q.trim().toLowerCase();
   var matches = q === "" ? ALLNODES : ALLNODES.filter(function (n) { return n.label.toLowerCase().indexOf(q) >= 0; });
   var shown = matches.slice(0, 200);
-  box.innerHTML = shown.map(function (n) {
-    return '<div data-id="' + n.id + '">' + n.label +
-      ' <span class="rk">' + n.strat + " / " + n.mod + " / " + n.ax + "</span></div>";
-  }).join("") + (matches.length > shown.length
-    ? '<div class="rk" style="padding:3px 6px">' + (matches.length - shown.length) + " more, refine the search</div>"
-    : (matches.length === 0 ? '<div class="rk" style="padding:3px 6px">no match</div>' : ""));
+  box.innerHTML = shown.map(function (n) { return '<div data-id="' + n.id + '">' + n.label +
+    ' <span class="rk">' + n.ch + " / " + n.strat + "</span></div>"; }).join("")
+    + (matches.length > shown.length ? '<div class="rk" style="padding:3px 6px">' + (matches.length - shown.length) + " more, refine</div>"
+       : (matches.length === 0 ? '<div class="rk" style="padding:3px 6px">no match</div>' : ""));
   Array.prototype.forEach.call(box.querySelectorAll("div[data-id]"), function (d) {
     d.onclick = function () { selectNode(d.getAttribute("data-id")); };
   });
 }
-
 function selectNode(id) {
-  var n = cy.getElementById(id);
-  if (!n || n.empty()) return;
-  window.__selected = n;
-  showCones(n);
+  var n = cy.getElementById(id); if (!n || n.empty()) return;
+  window.__selected = n; showCones(n);
   cy.animate({ fit: { eles: n.closedNeighborhood(), padding: 60 }, duration: 300 });
 }
-
 document.getElementById("search").addEventListener("input", function (e) { renderResults(e.target.value); });
 renderResults("");
+applyColor();
 </script>
 </body>
 </html>

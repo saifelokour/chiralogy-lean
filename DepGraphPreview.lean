@@ -21,4 +21,6 @@ def main (args : List String) : IO Unit := do
       IO.eprintln s!"'{name}' is not in graph/experiment-set.txt (the committed preview set)"
     else
       let mod := (`Chiralogy.Experiments).str name
+      -- Proof-level, coloured by character (the measured encoding), consistent with the self-image.
       GraphCore.run #[`Chiralogy, mod] s!"graph/preview-{name}"
+        (proofLevel := true) (charColorMode := true)

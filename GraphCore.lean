@@ -278,7 +278,7 @@ def peripheralCenter : Name := `Chiralogy.center_is_empty
 `{outBase}.json`, and print a report. -/
 def run (imports : Array Name) (outBase : String)
     (proofLevel : Bool := false) (emitData : Bool := true) (renderSvg : Bool := true)
-    (selfImage : Bool := false) : IO Unit := do
+    (selfImage : Bool := false) (charColorMode : Bool := false) : IO Unit := do
   initSearchPath (← findSysroot)
   let env ← importModules (imports.map (fun m => { module := m })) {} (trustLevel := 1024)
   -- Pass 1: classify Chiralogy constants.
@@ -388,8 +388,14 @@ def run (imports : Array Name) (outBase : String)
             dot := dot.push ("      label=\"" ++ ax ++ "\"; style=dashed; color=\"#CCCCCC\"; fontsize=11;")
             for n in an do
               let k := (kindMap.find? n).getD "def"
-              let md := (modalityMap.find? n).getD "na"
-              dot := dot.push ("      " ++ quote n ++ nodeAttrs k md strat ++ ";")
+              if charColorMode then
+                let c := (charMap.find? n).getD "neutral"
+                let fc := if c == "cataphatic" || c == "neutral" then "black" else "white"
+                dot := dot.push ("      " ++ quote n ++ " [shape=" ++ kindShape k ++ ", fillcolor=\""
+                  ++ charColor c ++ "\", fontcolor=" ++ fc ++ ", style=filled];")
+              else
+                let md := (modalityMap.find? n).getD "na"
+                dot := dot.push ("      " ++ quote n ++ nodeAttrs k md strat ++ ";")
             dot := dot.push "    }"
         dot := dot.push "  }"
     for (s, t) in edges do
@@ -401,6 +407,7 @@ def run (imports : Array Name) (outBase : String)
   let nodeJson := nodes.map (fun n =>
     "{\"name\":\"" ++ n.toString ++ "\",\"kind\":\"" ++ (kindMap.find? n).getD "def"
       ++ "\",\"stratum\":\"" ++ (stratMap.find? n).getD "core"
+      ++ "\",\"character\":\"" ++ (charMap.find? n).getD "neutral"
       ++ "\",\"modality\":\"" ++ (modalityMap.find? n).getD "na"
       ++ "\",\"axis\":\"" ++ (axisMap.find? n).getD "na"
       ++ "\",\"module\":\"" ++ ((modMap.find? n).getD Name.anonymous).toString ++ "\"}")
