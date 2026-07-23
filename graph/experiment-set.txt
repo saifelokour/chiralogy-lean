@@ -1,2 +1,3 @@
 # Committed preview set: live experiment module short names (Chiralogy.Experiments.<name>).
 # Read by depgraph-preview so the preview is deterministic. Not the committed reference graph.
+MembershipBoundary
