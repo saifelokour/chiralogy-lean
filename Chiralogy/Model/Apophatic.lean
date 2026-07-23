@@ -444,6 +444,31 @@ theorem fragility_eq_distinctRows_iff {X : Type} [Fintype X] [DecidableEq X] (c 
     intro p _; simp only [absenceCarried]
     exact ⟨fun hp => hp.1, fun hne => ⟨hne, h p.1 p.2 hne⟩⟩
 
+/-- **An all-absent row is absence-carried against anything it differs from.** If `x0` abstains in every column,
+then no distinction between `x0` and `x'` can be present-carried (a present-carried witness needs `x0` present at
+some column), so every distinction it carries is carried by absence. -/
+theorem absent_row_absenceCarried {X : Type} (c : X → X → Option Bool) (x0 x' : X)
+    (habs : ∀ y, c x0 y = none) (hne : c x0 ≠ c x') : absenceCarried c x0 x' := by
+  refine ⟨hne, ?_⟩
+  rintro ⟨y, b, b', h1, h2, hbb⟩
+  rw [habs y] at h1; exact absurd h1 (by simp)
+
+/-- **No present false makes a classification destroyable by the constant scale.** If `c` never returns
+`some false`, then the constant scale totalizes every cell to `some true` (present cells are `some true`, absent
+cells fill to `some (decide (0 ≤ 0)) = some true`), so all rows collapse and the totalization is degenerate. -/
+theorem no_false_destroyable {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool)
+    (hnf : ∀ x y, c x y ≠ some false) : ¬ NonDegenerate (totalization (fun _ => 0) c) := by
+  rintro ⟨x, x', hxx⟩
+  refine hxx (funext fun y => ?_)
+  have key : ∀ z, totalization (fun _ => 0) c z y = some true := by
+    intro z
+    rcases hcz : c z y with _ | b
+    · simp [totalization, hcz]
+    · cases b
+      · exact absurd hcz (hnf z y)
+      · simp [totalization, hcz]
+  rw [key x, key x']
+
 /-! #### Interior full fill: every fragility value is achieved
 
 `cfamS S` on `Fin n`: `some true` on the diagonal (so all rows are distinct), and for `i < j` the entry is `none`
