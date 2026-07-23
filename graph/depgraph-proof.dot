@@ -399,6 +399,9 @@ digraph SelfImage {
     "Chiralogy.WriterOverReader" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.WriterOverWriter" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.WriterOverWriter'" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.absenceCarried" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.absenceCarried_offdiagonal" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.absenceCarried_symm" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.an_identity_is_permanently_invisible" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.assembly_order_matters" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.assertsFalse" [shape=point, width=0.07, color="#DDDDDD"];
@@ -442,6 +445,7 @@ digraph SelfImage {
     "Chiralogy.departures_interact" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.dependence_adds_reasons" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.diagonal_factors_through_copy" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.distinctRows" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.does_the_pattern_hold_or_break" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.dummyClass" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.embedding_buys_in_rich_ambient" [shape=point, width=0.07, color="#DDDDDD"];
@@ -459,6 +463,8 @@ digraph SelfImage {
     "Chiralogy.forcing_gives_heyting" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.forget_the_order" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.fpf_of_canDiffer" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.fragility" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.fragility_even" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.full_closure_is_the_top" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.full_totality_collides" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.genuineFam" [shape=point, width=0.07, color="#DDDDDD"];
@@ -723,6 +729,11 @@ digraph SelfImage {
   "Chiralogy.TypeSystem.typeRegister" -> "Chiralogy.TypeSystem.TypeGround" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.TypeSystem.typeRegister" -> "Chiralogy.TypeSystem.typeClassify" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.a_verdict_never_firing_is_generic" -> "Chiralogy.NonDegenerate" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.absenceCarried" -> "Chiralogy.presentCarried" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.absenceCarried_offdiagonal" -> "Chiralogy.absenceCarried" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.absenceCarried_offdiagonal" -> "Chiralogy.presentCarried" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.absenceCarried_symm" -> "Chiralogy.absenceCarried" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.absenceCarried_symm" -> "Chiralogy.presentCarried" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.absorbing_reaches_the_lattice" -> "Chiralogy.isBlockable" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.absorbing_reaches_the_lattice" -> "Chiralogy.mzAppend" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.agreementLE_refl" -> "Chiralogy.agreementLE" [color="#E4E4E4", penwidth=0.25];
@@ -1017,6 +1028,11 @@ digraph SelfImage {
   "Chiralogy.form_distinguishes_nothing" -> "Chiralogy.CataphaticConformant" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.form_distinguishes_nothing" -> "Chiralogy.cataphatic_is_loose" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.four_quadrants" -> "Chiralogy.NonDegenerate" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.fragility" -> "Chiralogy.absenceCarried" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.fragility" -> "Chiralogy.presentCarried" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.fragility_even" -> "Chiralogy.absenceCarried" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.fragility_even" -> "Chiralogy.fragility" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.fragility_even" -> "Chiralogy.presentCarried" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.freeDeclare" -> "Chiralogy.LevelObj" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.freeDeclare" -> "Chiralogy.Obj" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.free_declaration" -> "Chiralogy.Hom" [color="#E4E4E4", penwidth=0.25];
