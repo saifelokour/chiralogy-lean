@@ -5,6 +5,7 @@ import Chiralogy.Model.Apophatic
 import Chiralogy.Model.Apophatic.Instances
 import Chiralogy.Model.InformationOrder
 import Chiralogy.Model.NaryAssemblage
+import Chiralogy.Model.AssemblageRelations
 import Chiralogy.Model.Grounds
 import Chiralogy.Model.Cataphatic
 import Chiralogy.Model.Cataphatic.Instances
