@@ -369,10 +369,48 @@ theorem fragility_eq_two_mul {X : Type} [Fintype X] [DecidableEq X] [LinearOrder
     congr 1; ext p; simp only [hA, hS, Finset.mem_filter, Finset.mem_univ, true_and]; tauto
   omega
 
-/-- **Fragility is even**: `2` divides it, double-counting each unordered absence-carried pair. -/
-theorem fragility_even {X : Type} [Fintype X] [DecidableEq X] [LinearOrder X]
-    (c : X → X → Option Bool) : 2 ∣ fragility c :=
-  ⟨_, fragility_eq_two_mul c⟩
+/-- Absence-carried is preserved under relabeling the carrier by an equivalence: the differ-and-not-present
+relation only sees the values `d` takes, not the names of the elements. -/
+theorem absenceCarried_relabel {X Y : Type} (e : X ≃ Y) (d : Y → Y → Option Bool) (a b : X) :
+    absenceCarried (fun x x' => d (e x) (e x')) a b ↔ absenceCarried d (e a) (e b) := by
+  unfold absenceCarried presentCarried
+  constructor
+  · rintro ⟨hne, hnp⟩
+    refine ⟨fun h => hne (funext fun x => ?_), fun ⟨y, bb, bb', h1, h2, hbb⟩ =>
+      hnp ⟨e.symm y, bb, bb', by simpa using h1, by simpa using h2, hbb⟩⟩
+    have := congrFun h (e x); simpa using this
+  · rintro ⟨hne, hnp⟩
+    refine ⟨fun h => hne (funext fun y => ?_), fun ⟨z, bb, bb', h1, h2, hbb⟩ =>
+      hnp ⟨e z, bb, bb', h1, h2, hbb⟩⟩
+    have := congrFun h (e.symm y); simpa using this
+
+/-- **Fragility is preserved by relabeling the carrier.** Fragility is a filtered-set cardinality of an
+equivalence-invariant relation (`absenceCarried_relabel`), so it transports along any carrier equivalence. This
+is what lifts the order-scoped and `Fin n` results below to any finite carrier via `Fintype.equivFin`. -/
+theorem fragility_relabel {X Y : Type} [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
+    (e : X ≃ Y) (d : Y → Y → Option Bool) :
+    fragility (fun x x' => d (e x) (e x')) = fragility d := by
+  classical
+  unfold fragility
+  apply Finset.card_bij' (fun p _ => (e p.1, e p.2)) (fun q _ => (e.symm q.1, e.symm q.2))
+  · intro p hp
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at *
+    exact (absenceCarried_relabel e d p.1 p.2).mp hp
+  · intro q hq
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at *
+    exact (absenceCarried_relabel e d (e.symm q.1) (e.symm q.2)).mpr (by simpa using hq)
+  · intro p _; simp
+  · intro q _; simp
+
+/-- **Fragility is even, on any finite carrier.** `2` divides it, double-counting each unordered absence-carried
+pair. Fintype-general: the order-witness `fragility_eq_two_mul` names each orbit's representative with a
+`LinearOrder`, and `fragility_relabel` transports the parity to any carrier via `Fintype.equivFin`. -/
+theorem fragility_even {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
+    2 ∣ fragility c := by
+  have e : X ≃ Fin (Fintype.card X) := Fintype.equivFin X
+  have h : fragility c = fragility (fun i j => c (e.symm i) (e.symm j)) := by
+    rw [← fragility_relabel e (fun i j => c (e.symm i) (e.symm j))]; simp
+  rw [h]; exact ⟨_, fragility_eq_two_mul _⟩
 
 /-- **Robust iff every distinction is present-carried.** Fragility is zero exactly when no distinct row-pair is
 absence-carried: `totalization` destroys nothing. The lower boundary of the coordinate. -/
@@ -493,15 +531,65 @@ theorem fragility_cfamS {n : Nat} (S : Finset (Fin n × Fin n)) (hS : ∀ p ∈ 
       exact ⟨cfamS_rows_ne' S (hS _ hab),
         fun hpc => (cfamS_presentCarried_iff S (hS _ hab)).mp (cfamS_presentCarried_symm S hpc) hab⟩
 
-/-- **Interior full fill.** For every carrier size `n` and every `u` up to `C(n,2)` (the count of ordered pairs),
-some classification on `Fin n` has fragility exactly `2u`. With `fragility_even`, the achievable spectrum is exactly
-the even values `{0, 2, ..., n^2 - n}`: parity is the only structural constraint and full fill leaves no gaps. On
-these all-distinct-rows carriers `distinctRows = n^2 - n`, so the coordinate realizes every grid point `u / C(n,2)`. -/
-theorem interior_full_fill (n u : Nat)
+/-- **Interior full fill, the `Fin n` construction.** For every `u` up to the count of ordered pairs, `cfamS`
+on `Fin n` realizes fragility `2u`. The general-carrier statement is `interior_full_fill`. -/
+theorem interior_full_fill_fin (n u : Nat)
     (hu : u ≤ (Finset.univ.filter (fun p : Fin n × Fin n => p.1.val < p.2.val)).card) :
     ∃ c : Fin n → Fin n → Option Bool, fragility c = 2 * u := by
   obtain ⟨S, hSsub, hScard⟩ := Finset.exists_subset_card_eq hu
   exact ⟨cfamS S, by rw [fragility_cfamS S (fun p hp => by simpa using hSsub hp), hScard]⟩
+
+/-- The ordered strict pairs of `Fin k` double to `k * (k - 1)` (the off-diagonal, split by the swap
+involution): `u` is admissible iff `2 * u ≤ k * (k - 1)`. -/
+theorem strictPairs_double (k : ℕ) :
+    2 * (Finset.univ.filter (fun p : Fin k × Fin k => p.1.val < p.2.val)).card = k * (k - 1) := by
+  classical
+  have hne : (Finset.univ.filter (fun p : Fin k × Fin k => p.2.val < p.1.val)).card
+           = (Finset.univ.filter (fun p : Fin k × Fin k => p.1.val < p.2.val)).card := by
+    apply Finset.card_bij' (fun p _ => Prod.swap p) (fun q _ => Prod.swap q)
+    · intro p hp; simp only [Finset.mem_filter, Finset.mem_univ, true_and, Prod.fst_swap, Prod.snd_swap] at *; exact hp
+    · intro q hq; simp only [Finset.mem_filter, Finset.mem_univ, true_and, Prod.fst_swap, Prod.snd_swap] at *; exact hq
+    · intro p _; simp
+    · intro q _; simp
+  have hoff : Finset.univ.filter (fun p : Fin k × Fin k => p.1.val < p.2.val)
+            ∪ Finset.univ.filter (fun p : Fin k × Fin k => p.2.val < p.1.val)
+            = (Finset.univ : Finset (Fin k)).offDiag := by
+    ext ⟨i, j⟩
+    simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_offDiag]
+    constructor
+    · rintro (h | h)
+      · exact fun e => absurd (congrArg Fin.val e) (Nat.ne_of_lt h)
+      · exact fun e => absurd (congrArg Fin.val e).symm (Nat.ne_of_lt h)
+    · intro hne2
+      rcases lt_trichotomy i.val j.val with h | h | h
+      · exact Or.inl h
+      · exact absurd (Fin.ext h) hne2
+      · exact Or.inr h
+  have hdisj : Disjoint (Finset.univ.filter (fun p : Fin k × Fin k => p.1.val < p.2.val))
+                        (Finset.univ.filter (fun p : Fin k × Fin k => p.2.val < p.1.val)) := by
+    rw [Finset.disjoint_left]; rintro ⟨i, j⟩ h1 h2
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at h1 h2; omega
+  have hcard : ((Finset.univ : Finset (Fin k)).offDiag).card = k * (k - 1) := by
+    rw [Finset.offDiag_card, Finset.card_univ, Fintype.card_fin, Nat.mul_sub_one]
+  have hsum : (Finset.univ.filter (fun p : Fin k × Fin k => p.1.val < p.2.val)).card
+            + (Finset.univ.filter (fun p : Fin k × Fin k => p.2.val < p.1.val)).card
+            = k * (k - 1) := by
+    rw [← Finset.card_union_of_disjoint hdisj, hoff, hcard]
+  omega
+
+/-- **Interior full fill.** For every finite carrier `X` and every `u` with `2 * u ≤ |X| * (|X| - 1)`, some
+classification on `X` has fragility exactly `2u`. With `fragility_even` this characterizes the achievable spectrum
+completely: exactly the even values `{0, 2, ..., |X|^2 - |X|}`, parity the only constraint, no gaps. Fintype-general:
+the `Fin n` construction `interior_full_fill_fin` transports along `Fintype.equivFin` by `fragility_relabel`. -/
+theorem interior_full_fill {X : Type} [Fintype X] [DecidableEq X] (u : Nat)
+    (hu : 2 * u ≤ Fintype.card X * (Fintype.card X - 1)) :
+    ∃ c : X → X → Option Bool, fragility c = 2 * u := by
+  have e : X ≃ Fin (Fintype.card X) := Fintype.equivFin X
+  have hbound : u ≤ (Finset.univ.filter
+      (fun p : Fin (Fintype.card X) × Fin (Fintype.card X) => p.1.val < p.2.val)).card := by
+    have := strictPairs_double (Fintype.card X); omega
+  obtain ⟨d, hd⟩ := interior_full_fill_fin (Fintype.card X) u hbound
+  exact ⟨fun x x' => d (e x) (e x'), by rw [fragility_relabel e d, hd]⟩
 
 end Fragility
 
