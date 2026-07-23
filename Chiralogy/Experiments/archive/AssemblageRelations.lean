@@ -1,23 +1,34 @@
-import Chiralogy.Model.NaryAssemblage
-import Chiralogy.Model.AssemblageDynamics
+import Chiralogy.Experiments.archive.AssemblageDynamics
 
-/-! # The relations among an assemblage's parts
+/-! # Experiment (ARCHIVED after graduation pass 5): the relations among an assemblage's parts
 
-The kernel Hom does NOT reach assemblage factors: factors are bare classifications, not `Obj`, and `Member` has
-no morphism notion. So the relations among an assemblage's parts are NOT morphisms. They are PREDICATES built
-from the n-ary machinery (`nary`, `differsInOne`, `nary_apply_differ`): `IsFactorAt i A c` (the factor at a
-coordinate, coordinate-indexed by necessity) and `ArePeersIn` (factors at distinct coordinates). A factor forces
-region-independence at its coordinate (`IsFactorAt_imp_region_independent`), which drives transport under
-coherent moves, vacuity under incoherent ones, and the presence/absence immunity duality.
+ARCHIVED. Both relation groups are canonical in `Model/AssemblageRelations`: the n-ary relations (pass 4) and the
+BINARY relations (`IsFactor1B`/`IsFactor2B` and their `_unique`/`_not_unique`/`_of_assemble`/`_transport_totalization`/
+`_presence_immune`/`_absence_immune`, plus `nested_factor_reads`) in pass 5. Nothing graduate-worthy remains. Kept
+as a standalone record, namespaced `Chiralogy.AssemblageRelations`.
 
-Depends on `Model/NaryAssemblage` (and thereby `Model/InformationOrder`, `Model/Apophatic`); no dependence on the
-ordered binary `Model/Assemblage`. -/
+The kernel Hom does NOT reach assemblage factors (factors are bare classifications, not `Obj`; `Member` has no
+morphism notion). So these relations are NOT morphisms. They are defined here as PREDICATES from existing
+machinery (`isAssemblageN`, `nary`, `nary_apply_differ`, the move results), then tested.
 
-namespace Chiralogy
+GRADUATED (group 4 of 5, the relations group) to the new canonical module `Model/AssemblageRelations`
+(`namespace Chiralogy`), verbatim under the same names: the predicates `IsFactorAt`, `IsFactorOf`, `ArePeersIn`;
+the basic facts `IsFactorAt_of_nary`, `IsFactorAt_offdiag_unique`, `ArePeersIn_symm`, `ArePeersIn_irrefl`; the
+hinge `IsFactorAt_imp_region_independent`; transport `IsFactorAt_transport_totalization`,
+`ArePeersIn_transport_totalization`; the immunities `presence_carried_factor_immune_to_scale`,
+`absence_carried_factor_immune_to_mask`; and the witnesses `IsFactorAt_not_unique`, `peers_can_be_equal`,
+`incoherent_scale_no_factor`, `incoherent_mask_no_factor`. NOT graduated here (pass-5 binary material, they hook
+`assembleClassify`): `nested_factor_reads` (a nested product), and the whole `IsFactor1B`/`IsFactor2B` block
+(`_unique`, `_not_unique`, `_of_assemble`, `_transport_totalization`, `_presence_immune`, `_absence_immune`).
+These stay live below. This file is NOT archived: it holds the pass-5 binary relations. -/
+
+open Chiralogy Chiralogy.InformationOrder Chiralogy.AssemblageDynamics
+
+namespace Chiralogy.AssemblageRelations
 
 variable {n : ℕ} {X : Fin n → Type} [∀ i, DecidableEq (X i)]
 
-/-! ## The predicates -/
+/-! ## Part 1: the relations, as predicates -/
 
 /-- **`c` is the factor at coordinate `i` of `A`.** The honest primitive: `c` agrees with `A`'s reading on every
 differ-in-`i` pair. This pins `c` off its diagonal only, which is exactly what `nary_apply_differ` supplies. -/
@@ -33,14 +44,23 @@ def ArePeersIn (A : (∀ k, X k) → (∀ k, X k) → Option Bool) (i j : Fin n)
     (c : X i → X i → Option Bool) (c' : X j → X j → Option Bool) : Prop :=
   i ≠ j ∧ IsFactorAt i A c ∧ IsFactorAt j A c'
 
-/-! ## Basic facts -/
+/-- Binary factor-1: read on the shared-second-coordinate region (includes the diagonal). -/
+def IsFactor1B {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (A : (X1 × X2) → (X1 × X2) → Option Bool) (c1 : X1 → X1 → Option Bool) : Prop :=
+  ∀ a b : X1 × X2, a.2 = b.2 → c1 a.1 b.1 = A a b
+
+/-- Binary factor-2: read on the shared-first-coordinate region, which EXCLUDES the diagonal (`a.2 ≠ b.2`). -/
+def IsFactor2B {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
+    (A : (X1 × X2) → (X1 × X2) → Option Bool) (c2 : X2 → X2 → Option Bool) : Prop :=
+  ∀ a b : X1 × X2, a.1 = b.1 → a.2 ≠ b.2 → c2 a.2 b.2 = A a b
+
+/-! ## Part 2: properties -/
 
 /-- The factors of a `nary` are its factors. -/
 theorem IsFactorAt_of_nary (i : Fin n) (c : ∀ i, X i → X i → Option Bool)
     (imp : (∀ i, X i) → (∀ i, X i) → Option Bool) : IsFactorAt i (nary c imp) (c i) :=
-  fun _ _ hd => (nary_apply_differ c imp hd).symm
+  fun a b hd => (nary_apply_differ c imp hd).symm
 
-omit [∀ i, DecidableEq (X i)] in
 /-- **Off-diagonal the factor is unique**: two factors at `i` agree wherever the coordinate values differ. -/
 theorem IsFactorAt_offdiag_unique [∀ j, Inhabited (X j)] (i : Fin n)
     (A : (∀ k, X k) → (∀ k, X k) → Option Bool) (c c' : X i → X i → Option Bool)
@@ -55,8 +75,8 @@ theorem IsFactorAt_offdiag_unique [∀ j, Inhabited (X j)] (i : Fin n)
   simp only [Function.update_self] at e1 e2
   rw [e1, e2]
 
-/-- **The factor at a coordinate is NOT unique** (witness): the diagonal is free. Two classifications differing
-only on the diagonal are both the factor at coordinate 0. -/
+/-- **The factor at a coordinate is NOT unique**: the diagonal is free. Two classifications differing only on
+the diagonal are both the factor at coordinate 0. -/
 theorem IsFactorAt_not_unique :
     ∃ (A : (∀ _ : Fin 2, Fin 2) → (∀ _ : Fin 2, Fin 2) → Option Bool)
       (c c' : Fin 2 → Fin 2 → Option Bool), IsFactorAt 0 A c ∧ IsFactorAt 0 A c' ∧ c ≠ c' := by
@@ -65,19 +85,36 @@ theorem IsFactorAt_not_unique :
   · intro a b hd; rw [nary_apply_differ _ _ hd]
   · intro a b hd; rw [nary_apply_differ _ _ hd]; simp [hd.1]
 
-omit [∀ i, DecidableEq (X i)] in
-/-- **`ArePeersIn` is symmetric**: swapping the two factors and their coordinates. -/
+/-- **Binary factor-1 is fully unique** (its diagonal is pinned, unlike the n-ary): the shared-second region
+includes the diagonal. -/
+theorem IsFactor1B_unique {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2] [Inhabited X2]
+    (A : (X1 × X2) → (X1 × X2) → Option Bool) (c1 c1' : X1 → X1 → Option Bool)
+    (h : IsFactor1B A c1) (h' : IsFactor1B A c1') : c1 = c1' := by
+  funext x1 y1
+  rw [h (x1, default) (y1, default) rfl, h' (x1, default) (y1, default) rfl]
+
+/-- **Binary factor-2 is NOT unique**: its diagonal is free, since the region excludes it. So the `a.2`-first
+artifact makes coordinate 1 more determined than coordinate 2. -/
+theorem IsFactor2B_not_unique :
+    ∃ (A : (Fin 2 × Fin 2) → (Fin 2 × Fin 2) → Option Bool) (c2 c2' : Fin 2 → Fin 2 → Option Bool),
+      IsFactor2B A c2 ∧ IsFactor2B A c2' ∧ c2 ≠ c2' := by
+  refine ⟨assembleClassify (fun _ _ => none) (fun x y => if x = y then some true else none)
+      (fun _ _ => none), (fun _ _ => none), (fun x y => if x = y then some true else none), ?_, ?_, by decide⟩
+  · unfold IsFactor2B; decide
+  · unfold IsFactor2B; decide
+
+/-- **`ArePeersIn` is symmetric**, in both settings: swapping the two factors and their coordinates. The
+`a.2`-first artifact does not reach peer-symmetry. -/
 theorem ArePeersIn_symm (A : (∀ k, X k) → (∀ k, X k) → Option Bool) (i j : Fin n)
     (c : X i → X i → Option Bool) (c' : X j → X j → Option Bool)
     (h : ArePeersIn A i j c c') : ArePeersIn A j i c' c :=
   ⟨h.1.symm, h.2.2, h.2.1⟩
 
-omit [∀ i, DecidableEq (X i)] in
 /-- `ArePeersIn` is irreflexive on coordinates (distinct coordinates required). -/
 theorem ArePeersIn_irrefl (A : (∀ k, X k) → (∀ k, X k) → Option Bool) (i : Fin n)
     (c c' : X i → X i → Option Bool) : ¬ ArePeersIn A i i c c' := fun h => h.1 rfl
 
-/-- **Peers at distinct coordinates can be equal as classifications** (witness), when the coordinate types match. -/
+/-- **Peers at distinct coordinates can be equal as classifications** (when the coordinate types match). -/
 theorem peers_can_be_equal :
     ∃ (A : (∀ _ : Fin 2, Fin 2) → (∀ _ : Fin 2, Fin 2) → Option Bool) (c : Fin 2 → Fin 2 → Option Bool),
       ArePeersIn A 0 1 c c := by
@@ -86,11 +123,9 @@ theorem peers_can_be_equal :
   · intro a b hd; rw [nary_apply_differ _ _ hd]
   · intro a b hd; rw [nary_apply_differ _ _ hd]
 
-/-! ## The hinge, transport, and the immunity duality -/
+/-! ## Part 3: behaviour under the moves -/
 
-omit [∀ i, DecidableEq (X i)] in
-/-- **A factor forces region-independence of `A` at its coordinate.** The hinge for transport, vacuity, and both
-immunities. -/
+/-- A factor forces region-independence of `A` at its coordinate. -/
 theorem IsFactorAt_imp_region_independent (i : Fin n) (A : (∀ k, X k) → (∀ k, X k) → Option Bool)
     (c : X i → X i → Option Bool) (h : IsFactorAt i A c) {a b a' b' : ∀ k, X k}
     (hd : differsInOne a b i) (hd' : differsInOne a' b' i) (hai : a i = a' i) (hbi : b i = b' i) :
@@ -117,8 +152,8 @@ theorem ArePeersIn_transport_totalization (i j : Fin n) (c : ∀ i, X i → X i 
   ⟨hij, IsFactorAt_transport_totalization i c imp s si hs,
     IsFactorAt_transport_totalization j c imp s si hs⟩
 
-/-- **Under an incoherent scale the relation goes vacuous** (witness): the broken coordinate has NO factor,
-because `IsFactorAt` forces region-independence, which the incoherent fill destroys. -/
+/-- **Under an incoherent scale the relation goes vacuous**: the broken coordinate has NO factor, because
+`IsFactorAt` forces region-independence, which the incoherent fill destroys. -/
 theorem incoherent_scale_no_factor :
     ∃ (c : ∀ _ : Fin 2, Fin 2 → Fin 2 → Option Bool)
       (imp : (∀ _ : Fin 2, Fin 2) → (∀ _ : Fin 2, Fin 2) → Option Bool)
@@ -134,8 +169,36 @@ theorem incoherent_scale_no_factor :
   rw [nary_apply_differ _ _ hd, nary_apply_differ _ _ hd']
   decide
 
-/-- **Under an incoherent mask the relation goes vacuous too** (witness, dual to `incoherent_scale_no_factor`):
-a mask reading the wrong coordinate breaks region-0 independence, so coordinate 0 has NO factor. -/
+/-- **Duality, presence side: a present-carried factor is immune to an incoherent scale.** If the factor at `i`
+is total, `IsFactorAt` at `i` survives totalization by ANY scale, since totalization never touches present
+cells. -/
+theorem presence_carried_factor_immune_to_scale (i : Fin n) (c : ∀ i, X i → X i → Option Bool)
+    (imp : (∀ i, X i) → (∀ i, X i) → Option Bool) (s : (∀ i, X i) → Nat) (hc : isTotal (c i)) :
+    IsFactorAt i (totalization s (nary c imp)) (c i) := by
+  intro a b hd
+  simp only [totalization]
+  rw [nary_apply_differ c imp hd]
+  rcases hcv : c i (a i) (b i) with _ | v
+  · exact absurd hcv (hc (a i) (b i))
+  · simp [Option.getD_some]
+
+/-- **Duality, absence side: an absence-carried factor is immune to an incoherent mask.** If the factor at `i`
+is all-absent, `IsFactorAt` at `i` survives partialization by ANY mask, since partialization never touches
+absent cells. -/
+theorem absence_carried_factor_immune_to_mask (i : Fin n) (c : ∀ i, X i → X i → Option Bool)
+    (imp : (∀ i, X i) → (∀ i, X i) → Option Bool) (w : (∀ i, X i) → (∀ i, X i) → Bool)
+    (hc : c i = fun _ _ => none) :
+    IsFactorAt i (partialization w (nary c imp)) (fun _ _ => none) := by
+  intro a b hd
+  simp only [partialization]
+  rw [nary_apply_differ c imp hd, hc]
+  split <;> rfl
+
+/-! ## (1) The dual partialization vacuity -/
+
+/-- **Under an incoherent mask the relation goes vacuous too** (dual to `incoherent_scale_no_factor`): a mask
+reading the wrong coordinate breaks region-0 independence, so coordinate 0 has NO factor. Stated in the same
+shape as the totalization case. -/
 theorem incoherent_mask_no_factor :
     ∃ (c : ∀ _ : Fin 2, Fin 2 → Fin 2 → Option Bool)
       (imp : (∀ _ : Fin 2, Fin 2) → (∀ _ : Fin 2, Fin 2) → Option Bool)
@@ -151,46 +214,7 @@ theorem incoherent_mask_no_factor :
   rw [nary_apply_differ _ _ hd, nary_apply_differ _ _ hd']
   decide
 
-/-- **Duality, presence side: a present-carried factor is immune to an incoherent scale.** If the factor at `i`
-is total, `IsFactorAt` at `i` survives totalization by ANY scale, since totalization never touches present cells. -/
-theorem presence_carried_factor_immune_to_scale (i : Fin n) (c : ∀ i, X i → X i → Option Bool)
-    (imp : (∀ i, X i) → (∀ i, X i) → Option Bool) (s : (∀ i, X i) → Nat) (hc : isTotal (c i)) :
-    IsFactorAt i (totalization s (nary c imp)) (c i) := by
-  intro a b hd
-  simp only [totalization]
-  rw [nary_apply_differ c imp hd]
-  rcases hcv : c i (a i) (b i) with _ | v
-  · exact absurd hcv (hc (a i) (b i))
-  · simp [Option.getD_some]
-
-/-- **Duality, absence side: an absence-carried factor is immune to an incoherent mask.** If the factor at `i`
-is all-absent, `IsFactorAt` at `i` survives partialization by ANY mask, since partialization never touches absent
-cells. -/
-theorem absence_carried_factor_immune_to_mask (i : Fin n) (c : ∀ i, X i → X i → Option Bool)
-    (imp : (∀ i, X i) → (∀ i, X i) → Option Bool) (w : (∀ i, X i) → (∀ i, X i) → Bool)
-    (hc : c i = fun _ _ => none) :
-    IsFactorAt i (partialization w (nary c imp)) (fun _ _ => none) := by
-  intro a b hd
-  simp only [partialization]
-  rw [nary_apply_differ c imp hd, hc]
-  split <;> rfl
-
-/-! ## The binary relations
-
-For the ordered binary `assembleClassify` (Model/Assemblage), the factor predicates read on the two regions.
-Factor-1's region includes the diagonal (so it is fully unique); factor-2's excludes it (so its diagonal is
-free): the `a.2`-first artifact makes coordinate 1 more determined than coordinate 2. Both transport under a
-region-coherent totalization and enjoy the presence/absence immunities. -/
-
-/-- Binary factor-1: read on the shared-second-coordinate region (includes the diagonal). -/
-def IsFactor1B {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
-    (A : (X1 × X2) → (X1 × X2) → Option Bool) (c1 : X1 → X1 → Option Bool) : Prop :=
-  ∀ a b : X1 × X2, a.2 = b.2 → c1 a.1 b.1 = A a b
-
-/-- Binary factor-2: read on the shared-first-coordinate region, which EXCLUDES the diagonal (`a.2 ≠ b.2`). -/
-def IsFactor2B {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
-    (A : (X1 × X2) → (X1 × X2) → Option Bool) (c2 : X2 → X2 → Option Bool) : Prop :=
-  ∀ a b : X1 × X2, a.1 = b.1 → a.2 ≠ b.2 → c2 a.2 b.2 = A a b
+/-! ## (2) Binary transport and duality, per coordinate -/
 
 /-- Binary factors are factors of the assemblage (factor 1). -/
 theorem IsFactor1B_of_assemble {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
@@ -203,24 +227,6 @@ theorem IsFactor2B_of_assemble {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
     (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
     (imp : (X1 × X2) → (X1 × X2) → Option Bool) : IsFactor2B (assembleClassify c1 c2 imp) c2 :=
   fun a b h1 h2 => ((factors_determine_the_shared_region c1 c2 imp a b).2 h1 h2).symm
-
-/-- **Binary factor-1 is fully unique** (its diagonal is pinned, unlike the n-ary): the shared-second region
-includes the diagonal. -/
-theorem IsFactor1B_unique {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2] [Inhabited X2]
-    (A : (X1 × X2) → (X1 × X2) → Option Bool) (c1 c1' : X1 → X1 → Option Bool)
-    (h : IsFactor1B A c1) (h' : IsFactor1B A c1') : c1 = c1' := by
-  funext x1 y1
-  rw [h (x1, default) (y1, default) rfl, h' (x1, default) (y1, default) rfl]
-
-/-- **Binary factor-2 is NOT unique** (witness): its diagonal is free. So the `a.2`-first artifact makes
-coordinate 1 more determined than coordinate 2. -/
-theorem IsFactor2B_not_unique :
-    ∃ (A : (Fin 2 × Fin 2) → (Fin 2 × Fin 2) → Option Bool) (c2 c2' : Fin 2 → Fin 2 → Option Bool),
-      IsFactor2B A c2 ∧ IsFactor2B A c2' ∧ c2 ≠ c2' := by
-  refine ⟨assembleClassify (fun _ _ => none) (fun x y => if x = y then some true else none)
-      (fun _ _ => none), (fun _ _ => none), (fun x y => if x = y then some true else none), ?_, ?_, by decide⟩
-  · unfold IsFactor2B; decide
-  · unfold IsFactor2B; decide
 
 /-- **Factor-1 transports under a region-coherent totalization.** -/
 theorem IsFactor1B_transport_totalization {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
@@ -254,8 +260,9 @@ theorem IsFactor1B_presence_immune {X1 X2 : Type} [DecidableEq X1] [DecidableEq 
   · exact absurd hcv (hc a.1 b.1)
   · simp [Option.getD_some]
 
-/-- **Presence immunity, factor 2 (minimal hypothesis).** Needs presence only OFF the diagonal, the only region
-factor-2 reads: factor-2's diagonal is free, so its diagonal presence is irrelevant. -/
+/-- **Presence immunity, factor 2 (lifted to the minimal hypothesis).** Needs presence only OFF the diagonal,
+which is the only region factor-2 reads. Strictly weaker than the full-presence form, and this is the honest
+generality: factor-2's diagonal is free, so its diagonal presence is irrelevant. -/
 theorem IsFactor2B_presence_immune {X1 X2 : Type} [DecidableEq X1] [DecidableEq X2]
     (s : X1 × X2 → Nat) (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool)
     (imp : (X1 × X2) → (X1 × X2) → Option Bool) (hc : ∀ x y, x ≠ y → c2 x y ≠ none) :
@@ -287,9 +294,15 @@ theorem IsFactor2B_absence_immune {X1 X2 : Type} [DecidableEq X1] [DecidableEq X
   rw [(factors_determine_the_shared_region c1 c2 imp a b).2 h1 h2, hc]
   split <;> rfl
 
-/-- **The reading composes at the nesting layer.** Flat "factor of" is terminal by types (a nested
-`B = (c1 ⊗ c2) ⊗ c3` has factor-1 the whole `c1 ⊗ c2`, not `c1`). But on cells where the `X3` and `X2`
-coordinates both agree, `B` reads exactly `c1`: `c1` is recoverable from `B` at the composed `X1`-coordinate. -/
+/-! ## (3) Transitivity at the nesting layer
+
+Flat "factor of" is terminal by types (a nested `B = A ⊗ c3` has factor-1 the whole `A`, type
+`(X1 × X2) → (X1 × X2) → Option Bool`, not `c1`'s type `X1 → X1 → Option Bool`). But the READING composes: on
+the region where the two OTHER coordinates agree, `B` reads `c1`. That is what survives, with no new notion. -/
+
+/-- **The reading composes.** In a left-nested assemblage `B = (c1 ⊗ c2) ⊗ c3`, on cells where the `X3` and `X2`
+coordinates both agree, `B` reads exactly `c1`. So `c1` is recoverable from `B` at the composed `X1`-coordinate,
+even though the flat `IsFactor1B B c1` does not typecheck. -/
 theorem nested_factor_reads {X1 X2 X3 : Type} [DecidableEq X1] [DecidableEq X2] [DecidableEq X3]
     (c1 : X1 → X1 → Option Bool) (c2 : X2 → X2 → Option Bool) (c3 : X3 → X3 → Option Bool)
     (imp12 : (X1 × X2) → (X1 × X2) → Option Bool)
@@ -299,4 +312,4 @@ theorem nested_factor_reads {X1 X2 X3 : Type} [DecidableEq X1] [DecidableEq X2] 
   rw [(factors_determine_the_shared_region (assembleClassify c1 c2 imp12) c3 imp123 a b).1 h3,
     (factors_determine_the_shared_region c1 c2 imp12 a.1 b.1).1 h2]
 
-end Chiralogy
+end Chiralogy.AssemblageRelations
