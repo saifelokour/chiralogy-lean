@@ -406,6 +406,103 @@ theorem fragility_eq_distinctRows_iff {X : Type} [Fintype X] [DecidableEq X] (c 
     intro p _; simp only [absenceCarried]
     exact ⟨fun hp => hp.1, fun hne => ⟨hne, h p.1 p.2 hne⟩⟩
 
+/-! #### Interior full fill: every fragility value is achieved
+
+`cfamS S` on `Fin n`: `some true` on the diagonal (so all rows are distinct), and for `i < j` the entry is `none`
+when `(i,j)` is in `S` (turned off) and `some false` otherwise, `none` when `i > j`. Turning off a set `S` of
+ordered pairs makes exactly those pairs absence-carried, because each pair `(i,j)` (with `i < j`) has a PRIVATE
+deciding column, namely column `j`: there the diagonal `some true` meets the off-diagonal `some false`, the only
+place both rows are present and differ. Setting `(i,j)` to `none` removes it, and no other column decides that pair
+(columns above are `some false` for both, equal; columns below have one side absent). So each pair's status is
+independent of every other, and any count `S.card` is realizable. -/
+
+def cfamS {n : Nat} (S : Finset (Fin n × Fin n)) (i j : Fin n) : Option Bool :=
+  if i = j then some true else if i.val < j.val then (if (i, j) ∈ S then none else some false) else none
+
+theorem cfamS_diag {n : Nat} (S : Finset (Fin n × Fin n)) (i : Fin n) : cfamS S i i = some true := by
+  simp [cfamS]
+theorem cfamS_gt {n : Nat} (S : Finset (Fin n × Fin n)) {i j : Fin n} (h : j.val < i.val) :
+    cfamS S i j = none := by
+  have : i ≠ j := fun e => by simp [e] at h
+  simp [cfamS, this, Nat.not_lt.mpr (le_of_lt h)]
+theorem cfamS_lt {n : Nat} (S : Finset (Fin n × Fin n)) {i j : Fin n} (h : i.val < j.val) :
+    cfamS S i j = (if (i, j) ∈ S then none else some false) := by
+  have : i ≠ j := fun e => by simp [e] at h
+  simp [cfamS, this, h]
+theorem cfamS_rows_ne {n : Nat} (S : Finset (Fin n × Fin n)) {i j : Fin n} (h : i.val < j.val) :
+    cfamS S i ≠ cfamS S j := fun e => by
+  have := congrFun e i; rw [cfamS_diag, cfamS_gt S h] at this; simp at this
+theorem cfamS_rows_ne' {n : Nat} (S : Finset (Fin n × Fin n)) {i j : Fin n} (h : j.val < i.val) :
+    cfamS S i ≠ cfamS S j := fun e => by
+  have := congrFun e j; rw [cfamS_gt S h, cfamS_diag] at this; simp at this
+
+/-- **Per-pair independence.** For `i < j`, the pair is present-carried iff its own entry is not turned off, so its
+absence-carried status depends only on `(i,j) in S`, independent of every other pair: column `j` is the pair's
+private deciding column. This is the mechanism behind full fill. -/
+theorem cfamS_presentCarried_iff {n : Nat} (S : Finset (Fin n × Fin n)) {i j : Fin n} (h : i.val < j.val) :
+    presentCarried (cfamS S) i j ↔ (i, j) ∉ S := by
+  constructor
+  · rintro ⟨y, b, b', h1, h2, hb⟩ hmem
+    rcases lt_trichotomy y.val j.val with hy | hy | hy
+    · rw [cfamS_gt S hy] at h2; exact absurd h2 (by simp)
+    · have : y = j := Fin.ext hy
+      subst this; rw [cfamS_lt S h, if_pos hmem] at h1; exact absurd h1 (by simp)
+    · have hiy : i.val < y.val := lt_trans h hy
+      rw [cfamS_lt S hy] at h2; rw [cfamS_lt S hiy] at h1
+      by_cases o1 : (i, y) ∈ S
+      · rw [if_pos o1] at h1; exact absurd h1 (by simp)
+      · by_cases o2 : (j, y) ∈ S
+        · rw [if_pos o2] at h2; exact absurd h2 (by simp)
+        · rw [if_neg o1] at h1; rw [if_neg o2] at h2
+          exact hb ((Option.some.inj h1).symm.trans (Option.some.inj h2))
+  · intro hoff
+    exact ⟨j, false, true, by rw [cfamS_lt S h, if_neg hoff], by rw [cfamS_diag], by simp⟩
+
+theorem cfamS_presentCarried_symm {n : Nat} (S : Finset (Fin n × Fin n)) {i j : Fin n} :
+    presentCarried (cfamS S) i j → presentCarried (cfamS S) j i :=
+  fun ⟨y, b, b', p1, p2, pn⟩ => ⟨y, b', b, p2, p1, fun e => pn e.symm⟩
+
+/-- **The count.** For an ordered off-set `S`, the fragility of `cfamS S` is `2 * S.card`: the absence-carried
+ordered pairs are exactly `S` and its swap, disjoint. -/
+theorem fragility_cfamS {n : Nat} (S : Finset (Fin n × Fin n)) (hS : ∀ p ∈ S, p.1.val < p.2.val) :
+    fragility (cfamS S) = 2 * S.card := by
+  have hdisj : Disjoint S (S.image Prod.swap) := by
+    rw [Finset.disjoint_left]
+    rintro ⟨i, j⟩ hin himg
+    obtain ⟨⟨a, b⟩, hab, hsw⟩ := Finset.mem_image.mp himg
+    rw [Prod.swap_prod_mk] at hsw; obtain ⟨rfl, rfl⟩ := Prod.mk.inj hsw
+    exact absurd (hS _ hab) (Nat.not_lt.mpr (le_of_lt (hS _ hin)))
+  rw [fragility, show 2 * S.card = (S ∪ S.image Prod.swap).card by
+        rw [Finset.card_union_of_disjoint hdisj,
+            Finset.card_image_of_injective _ Prod.swap_injective]; omega]
+  congr 1
+  ext ⟨i, j⟩
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_union, absenceCarried]
+  constructor
+  · rintro ⟨hne, hnpc⟩
+    rcases lt_trichotomy i.val j.val with hlt | he | hlt
+    · exact Or.inl (not_not.mp (fun ho => hnpc ((cfamS_presentCarried_iff S hlt).mpr ho)))
+    · exact absurd (congrArg (cfamS S) (Fin.ext he)) hne
+    · exact Or.inr (Finset.mem_image.mpr ⟨(j, i), not_not.mp (fun ho =>
+        (fun hpc => hnpc (cfamS_presentCarried_symm S hpc)) ((cfamS_presentCarried_iff S hlt).mpr ho)), rfl⟩)
+  · rintro (hin | himg)
+    · exact ⟨cfamS_rows_ne S (hS _ hin),
+        fun hpc => (cfamS_presentCarried_iff S (hS _ hin)).mp hpc hin⟩
+    · obtain ⟨⟨a, b⟩, hab, hsw⟩ := Finset.mem_image.mp himg
+      rw [Prod.swap_prod_mk] at hsw; obtain ⟨rfl, rfl⟩ := Prod.mk.inj hsw
+      exact ⟨cfamS_rows_ne' S (hS _ hab),
+        fun hpc => (cfamS_presentCarried_iff S (hS _ hab)).mp (cfamS_presentCarried_symm S hpc) hab⟩
+
+/-- **Interior full fill.** For every carrier size `n` and every `u` up to `C(n,2)` (the count of ordered pairs),
+some classification on `Fin n` has fragility exactly `2u`. With `fragility_even`, the achievable spectrum is exactly
+the even values `{0, 2, ..., n^2 - n}`: parity is the only structural constraint and full fill leaves no gaps. On
+these all-distinct-rows carriers `distinctRows = n^2 - n`, so the coordinate realizes every grid point `u / C(n,2)`. -/
+theorem interior_full_fill (n u : Nat)
+    (hu : u ≤ (Finset.univ.filter (fun p : Fin n × Fin n => p.1.val < p.2.val)).card) :
+    ∃ c : Fin n → Fin n → Option Bool, fragility c = 2 * u := by
+  obtain ⟨S, hSsub, hScard⟩ := Finset.exists_subset_card_eq hu
+  exact ⟨cfamS S, by rw [fragility_cfamS S (fun p hp => by simpa using hSsub hp), hScard]⟩
+
 end Fragility
 
 /-- Copy is available on every distinction space in a cartesian base: the diagonal is unconditional. This
