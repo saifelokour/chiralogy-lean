@@ -1,4 +1,4 @@
-import Chiralogy.Model.Apophatic
+import Chiralogy.Model.Moves
 
 /-! # The information order on classifications
 

@@ -1,6 +1,7 @@
 import Chiralogy.Kernel.Apophatic
 import Chiralogy.Kernel.Center
 import Chiralogy.Kernel.Cataphatic
+import Chiralogy.Model.Moves
 import Chiralogy.Model.Apophatic
 import Chiralogy.Model.Apophatic.Instances
 import Chiralogy.Model.InformationOrder
