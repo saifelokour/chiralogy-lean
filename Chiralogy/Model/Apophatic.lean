@@ -252,18 +252,19 @@ theorem opening_destroys_present_carried :
         (fun x y => if y = 0 then some (decide (x = 0)) else none : Fin 2 → Fin 2 → Option Bool) 1) := by
   refine ⟨by decide, by decide⟩
 
-/-! ### Fragility: the absence-carried measure of a classification
+/-! ### The absence-carried count of a classification
 
 A distinction between two rows is absence-carried when the rows differ but no column has both present, so
 `totalization` merges them (the complement, among distinct pairs, of `presentCarried`, which `survives_totalization`
-keeps). `fragility` counts the absence-carried distinct ordered row-pairs; `distinctRows` counts all distinct
-ordered row-pairs. The coordinate `fragility / distinctRows` is the scale-independent measure of how absence-carried
-a classification's distinctions are, in `[0,1]`, well-defined exactly when `c` is non-degenerate (some rows differ).
-The raw count is scale-relative (the saturated family gives `n^2 - n`); the normalization by the state-dependent
-denominator is what makes it scale-independent. The two boundary theorems characterize the extremes; parity gives
-the artifact-free integer `fragility / 2`. -/
+keeps). `absenceCarriedCount` counts the absence-carried distinct ordered row-pairs; `distinctRows` counts all
+distinct ordered row-pairs. The coordinate `absenceCarriedCount / distinctRows` (phi, the absence-carried fraction)
+is the scale-independent measure of how absence-carried a classification's distinctions are, in `[0,1]`,
+well-defined exactly when `c` is non-degenerate (some rows differ). The raw count is scale-relative (the saturated
+family gives `n^2 - n`); the normalization by the state-dependent denominator is what makes it scale-independent.
+The two boundary theorems characterize the poles; parity gives the artifact-free integer
+`absenceCarriedCount / 2`. -/
 
-section Fragility
+section AbsenceCarried
 attribute [local instance] Classical.propDecidable
 
 /-- A distinction between rows `x` and `x'` is absence-carried: the rows differ, but at no column are both
@@ -282,25 +283,25 @@ theorem absenceCarried_offdiagonal {X : Type} (c : X → X → Option Bool) (x :
     ¬ absenceCarried c x x := by
   rintro ⟨hne, _⟩; exact hne rfl
 
-/-- **Fragility**: the count of ordered distinct row-pairs whose distinction is absence-carried, the pairs
-`totalization` destroys. Fintype-general; on `Fin n` it is the count the experiments specialize. -/
-noncomputable def fragility {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) : Nat :=
+/-- **The absence-carried count**: the count of ordered distinct row-pairs whose distinction is absence-carried,
+the pairs `totalization` destroys. Fintype-general; on `Fin n` it is the count the experiments specialize. -/
+noncomputable def absenceCarriedCount {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) : Nat :=
   (Finset.univ.filter (fun p : X × X => absenceCarried c p.1 p.2)).card
 
-/-- The denominator of the fragility coordinate: all ordered distinct row-pairs. State-dependent (below
+/-- The denominator of the absence-carried fraction: all ordered distinct row-pairs. State-dependent (below
 `n^2 - n` when rows coincide, as for degenerate-factor assemblages; equal to `n^2 - n` when all rows differ).
-Positive exactly when `c` is non-degenerate, so `fragility / distinctRows` is defined there. -/
+Positive exactly when `c` is non-degenerate, so `absenceCarriedCount / distinctRows` is defined there. -/
 noncomputable def distinctRows {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) : Nat :=
   (Finset.univ.filter (fun p : X × X => c p.1 ≠ c p.2)).card
 
-/-- **Parity: fragility is twice the unordered absence-carried count.** The counted relation is symmetric
+/-- **Parity: the ordered absence-carried count is twice the unordered.** The counted relation is symmetric
 (`absenceCarried_symm`) and off-diagonal (`absenceCarried_offdiagonal`), so the counted set is a disjoint union of
 `2`-orbits under pair-swap. The `[LinearOrder X]` only names each orbit's representative for the proof; it is met by
 every concrete carrier and does not enter the statement's content. -/
-theorem fragility_eq_two_mul {X : Type} [Fintype X] [DecidableEq X] [LinearOrder X]
+theorem absenceCarriedCount_eq_two_mul {X : Type} [Fintype X] [DecidableEq X] [LinearOrder X]
     (c : X → X → Option Bool) :
-    fragility c = 2 * (Finset.univ.filter (fun p : X × X => p.1 < p.2 ∧ absenceCarried c p.1 p.2)).card := by
-  rw [fragility]
+    absenceCarriedCount c = 2 * (Finset.univ.filter (fun p : X × X => p.1 < p.2 ∧ absenceCarried c p.1 p.2)).card := by
+  rw [absenceCarriedCount]
   set S := Finset.univ.filter (fun p : X × X => absenceCarried c p.1 p.2) with hS
   have hsplit := Finset.filter_card_add_filter_neg_card_eq_card
     (s := S) (p := fun p : X × X => p.1 < p.2)
@@ -339,14 +340,14 @@ theorem absenceCarried_relabel {X Y : Type} (e : X ≃ Y) (d : Y → Y → Optio
       hnp ⟨e z, bb, bb', h1, h2, hbb⟩⟩
     have := congrFun h (e.symm y); simpa using this
 
-/-- **Fragility is preserved by relabeling the carrier.** Fragility is a filtered-set cardinality of an
+/-- **The absence-carried count is preserved by relabeling the carrier.** It is a filtered-set cardinality of an
 equivalence-invariant relation (`absenceCarried_relabel`), so it transports along any carrier equivalence. This
 is what lifts the order-scoped and `Fin n` results below to any finite carrier via `Fintype.equivFin`. -/
-theorem fragility_relabel {X Y : Type} [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
+theorem absenceCarriedCount_relabel {X Y : Type} [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y]
     (e : X ≃ Y) (d : Y → Y → Option Bool) :
-    fragility (fun x x' => d (e x) (e x')) = fragility d := by
+    absenceCarriedCount (fun x x' => d (e x) (e x')) = absenceCarriedCount d := by
   classical
-  unfold fragility
+  unfold absenceCarriedCount
   apply Finset.card_bij' (fun p _ => (e p.1, e p.2)) (fun q _ => (e.symm q.1, e.symm q.2))
   · intro p hp
     simp only [Finset.mem_filter, Finset.mem_univ, true_and] at *
@@ -357,32 +358,33 @@ theorem fragility_relabel {X Y : Type} [Fintype X] [DecidableEq X] [Fintype Y] [
   · intro p _; simp
   · intro q _; simp
 
-/-- **Fragility is even, on any finite carrier.** `2` divides it, double-counting each unordered absence-carried
-pair. Fintype-general: the order-witness `fragility_eq_two_mul` names each orbit's representative with a
-`LinearOrder`, and `fragility_relabel` transports the parity to any carrier via `Fintype.equivFin`. -/
-theorem fragility_even {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
-    2 ∣ fragility c := by
+/-- **The absence-carried count is even, on any finite carrier.** `2` divides it, double-counting each unordered
+absence-carried pair. Fintype-general: the order-witness `absenceCarriedCount_eq_two_mul` names each orbit's representative with a
+`LinearOrder`, and `absenceCarriedCount_relabel` transports the parity to any carrier via `Fintype.equivFin`. -/
+theorem absenceCarriedCount_even {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
+    2 ∣ absenceCarriedCount c := by
   have e : X ≃ Fin (Fintype.card X) := Fintype.equivFin X
-  have h : fragility c = fragility (fun i j => c (e.symm i) (e.symm j)) := by
-    rw [← fragility_relabel e (fun i j => c (e.symm i) (e.symm j))]; simp
-  rw [h]; exact ⟨_, fragility_eq_two_mul _⟩
+  have h : absenceCarriedCount c = absenceCarriedCount (fun i j => c (e.symm i) (e.symm j)) := by
+    rw [← absenceCarriedCount_relabel e (fun i j => c (e.symm i) (e.symm j))]; simp
+  rw [h]; exact ⟨_, absenceCarriedCount_eq_two_mul _⟩
 
-/-- **Robust iff every distinction is present-carried.** Fragility is zero exactly when no distinct row-pair is
-absence-carried: `totalization` destroys nothing. The lower boundary of the coordinate. -/
-theorem fragility_eq_zero_iff {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
-    fragility c = 0 ↔ ∀ x x', c x ≠ c x' → presentCarried c x x' := by
-  rw [fragility, Finset.card_eq_zero, Finset.filter_eq_empty_iff]
+/-- **Zero iff fully present-carried.** The absence-carried count is zero exactly when no distinct row-pair is
+absence-carried, every distinction present-carried: `totalization` destroys nothing. The lower pole of the
+fraction. -/
+theorem absenceCarriedCount_eq_zero_iff {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
+    absenceCarriedCount c = 0 ↔ ∀ x x', c x ≠ c x' → presentCarried c x x' := by
+  rw [absenceCarriedCount, Finset.card_eq_zero, Finset.filter_eq_empty_iff]
   constructor
   · intro h x x' hxx; by_contra hp; exact (h (Finset.mem_univ (x, x'))) ⟨hxx, hp⟩
   · intro h p _ ⟨hne, hnp⟩; exact hnp (h p.1 p.2 hne)
 
-/-- **Maximally fragile iff every distinction is absence-carried.** Fragility equals the full distinct-row count
-exactly when every distinct row-pair is absence-carried: `totalization` destroys every distinction. The upper
-boundary of the coordinate. The saturated family and every register (the saturated map) are instances; the
-present-saturated family instances `fragility_eq_zero_iff`. -/
-theorem fragility_eq_distinctRows_iff {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
-    fragility c = distinctRows c ↔ ∀ x x', c x ≠ c x' → ¬ presentCarried c x x' := by
-  rw [fragility, distinctRows]
+/-- **Full iff fully absence-carried.** The count equals the full distinct-row count exactly when every distinct
+row-pair is absence-carried: `totalization` destroys every distinction. The upper pole of the fraction. The
+saturated family and every register (the saturated map) are instances; the present-saturated family instances
+`absenceCarriedCount_eq_zero_iff`. -/
+theorem absenceCarriedCount_eq_distinctRows_iff {X : Type} [Fintype X] [DecidableEq X] (c : X → X → Option Bool) :
+    absenceCarriedCount c = distinctRows c ↔ ∀ x x', c x ≠ c x' → ¬ presentCarried c x x' := by
+  rw [absenceCarriedCount, distinctRows]
   have hsub : (Finset.univ.filter (fun p : X × X => absenceCarried c p.1 p.2)) ⊆
              (Finset.univ.filter (fun p : X × X => c p.1 ≠ c p.2)) := by
     intro p hp; simp only [Finset.mem_filter, Finset.mem_univ, true_and, absenceCarried] at *; exact hp.1
@@ -424,7 +426,7 @@ theorem no_false_destroyable {X : Type} [Fintype X] [DecidableEq X] (c : X → X
       · simp [totalization, hcz]
   rw [key x, key x']
 
-/-! #### Interior full fill: every fragility value is achieved
+/-! #### Interior full fill: every value of the absence-carried count is achieved
 
 `cfamS S` on `Fin n`: `some true` on the diagonal (so all rows are distinct), and for `i < j` the entry is `none`
 when `(i,j)` is in `S` (turned off) and `some false` otherwise, `none` when `i > j`. Turning off a set `S` of
@@ -480,17 +482,17 @@ theorem cfamS_presentCarried_symm {n : Nat} (S : Finset (Fin n × Fin n)) {i j :
     presentCarried (cfamS S) i j → presentCarried (cfamS S) j i :=
   fun ⟨y, b, b', p1, p2, pn⟩ => ⟨y, b', b, p2, p1, fun e => pn e.symm⟩
 
-/-- **The count.** For an ordered off-set `S`, the fragility of `cfamS S` is `2 * S.card`: the absence-carried
-ordered pairs are exactly `S` and its swap, disjoint. -/
-theorem fragility_cfamS {n : Nat} (S : Finset (Fin n × Fin n)) (hS : ∀ p ∈ S, p.1.val < p.2.val) :
-    fragility (cfamS S) = 2 * S.card := by
+/-- **The count.** For an ordered off-set `S`, the absence-carried count of `cfamS S` is `2 * S.card`: the
+absence-carried ordered pairs are exactly `S` and its swap, disjoint. -/
+theorem absenceCarriedCount_cfamS {n : Nat} (S : Finset (Fin n × Fin n)) (hS : ∀ p ∈ S, p.1.val < p.2.val) :
+    absenceCarriedCount (cfamS S) = 2 * S.card := by
   have hdisj : Disjoint S (S.image Prod.swap) := by
     rw [Finset.disjoint_left]
     rintro ⟨i, j⟩ hin himg
     obtain ⟨⟨a, b⟩, hab, hsw⟩ := Finset.mem_image.mp himg
     rw [Prod.swap_prod_mk] at hsw; obtain ⟨rfl, rfl⟩ := Prod.mk.inj hsw
     exact absurd (hS _ hab) (Nat.not_lt.mpr (le_of_lt (hS _ hin)))
-  rw [fragility, show 2 * S.card = (S ∪ S.image Prod.swap).card by
+  rw [absenceCarriedCount, show 2 * S.card = (S ∪ S.image Prod.swap).card by
         rw [Finset.card_union_of_disjoint hdisj,
             Finset.card_image_of_injective _ Prod.swap_injective]; omega]
   congr 1
@@ -512,12 +514,12 @@ theorem fragility_cfamS {n : Nat} (S : Finset (Fin n × Fin n)) (hS : ∀ p ∈ 
         fun hpc => (cfamS_presentCarried_iff S (hS _ hab)).mp (cfamS_presentCarried_symm S hpc) hab⟩
 
 /-- **Interior full fill, the `Fin n` construction.** For every `u` up to the count of ordered pairs, `cfamS`
-on `Fin n` realizes fragility `2u`. The general-carrier statement is `interior_full_fill`. -/
+on `Fin n` realizes absence-carried count `2u`. The general-carrier statement is `interior_full_fill`. -/
 theorem interior_full_fill_fin (n u : Nat)
     (hu : u ≤ (Finset.univ.filter (fun p : Fin n × Fin n => p.1.val < p.2.val)).card) :
-    ∃ c : Fin n → Fin n → Option Bool, fragility c = 2 * u := by
+    ∃ c : Fin n → Fin n → Option Bool, absenceCarriedCount c = 2 * u := by
   obtain ⟨S, hSsub, hScard⟩ := Finset.exists_subset_card_eq hu
-  exact ⟨cfamS S, by rw [fragility_cfamS S (fun p hp => by simpa using hSsub hp), hScard]⟩
+  exact ⟨cfamS S, by rw [absenceCarriedCount_cfamS S (fun p hp => by simpa using hSsub hp), hScard]⟩
 
 /-- The ordered strict pairs of `Fin k` double to `k * (k - 1)` (the off-diagonal, split by the swap
 involution): `u` is admissible iff `2 * u ≤ k * (k - 1)`. -/
@@ -558,20 +560,20 @@ theorem strictPairs_double (k : ℕ) :
   omega
 
 /-- **Interior full fill.** For every finite carrier `X` and every `u` with `2 * u ≤ |X| * (|X| - 1)`, some
-classification on `X` has fragility exactly `2u`. With `fragility_even` this characterizes the achievable spectrum
+classification on `X` has absence-carried count exactly `2u`. With `absenceCarriedCount_even` this characterizes the achievable spectrum
 completely: exactly the even values `{0, 2, ..., |X|^2 - |X|}`, parity the only constraint, no gaps. Fintype-general:
-the `Fin n` construction `interior_full_fill_fin` transports along `Fintype.equivFin` by `fragility_relabel`. -/
+the `Fin n` construction `interior_full_fill_fin` transports along `Fintype.equivFin` by `absenceCarriedCount_relabel`. -/
 theorem interior_full_fill {X : Type} [Fintype X] [DecidableEq X] (u : Nat)
     (hu : 2 * u ≤ Fintype.card X * (Fintype.card X - 1)) :
-    ∃ c : X → X → Option Bool, fragility c = 2 * u := by
+    ∃ c : X → X → Option Bool, absenceCarriedCount c = 2 * u := by
   have e : X ≃ Fin (Fintype.card X) := Fintype.equivFin X
   have hbound : u ≤ (Finset.univ.filter
       (fun p : Fin (Fintype.card X) × Fin (Fintype.card X) => p.1.val < p.2.val)).card := by
     have := strictPairs_double (Fintype.card X); omega
   obtain ⟨d, hd⟩ := interior_full_fill_fin (Fintype.card X) u hbound
-  exact ⟨fun x x' => d (e x) (e x'), by rw [fragility_relabel e d, hd]⟩
+  exact ⟨fun x x' => d (e x) (e x'), by rw [absenceCarriedCount_relabel e d, hd]⟩
 
-end Fragility
+end AbsenceCarried
 
 /-- Copy is available on every distinction space in a cartesian base: the diagonal is unconditional. This
 is the root of both collapses, and the diagonal the obstructions use. -/

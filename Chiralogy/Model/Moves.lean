@@ -7,7 +7,7 @@ verdict (none to some), `partialization` withdraws marked verdicts (some to none
 in the per-module-purity refactor: the moves cluster with the downstream dynamics community (the information order,
 the n-ary assemblage, the assemblage dynamics and relations) that consumes them, a consumer base that did not exist
 before those modules were graduated. This module holds the moves and the lemmas depending only on them; the
-move-lemmas that also use the fragility shelf (`presentCarried`) or the model material (`imprecise`, `assertsFalse`)
+move-lemmas that also use the absence-carried shelf (`presentCarried`) or the model material (`imprecise`, `assertsFalse`)
 stay in `Model/Apophatic`, which imports this module. -/
 
 namespace Chiralogy
