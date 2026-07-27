@@ -209,6 +209,39 @@ The `Classical.choice` in most of them comes from `nary`'s `Exists.choose` and i
   group, it reaches `totalization` and nothing above it, so the graph put it with the moves.
   axioms: {propext, Quot.sound}.
 
+Graduated in the Model/AssemblageRelations pass, the last of the four. These reach `presentCarried` in
+Model/Apophatic as well as `nary` in Model/NaryAssemblage, and neither of those imports the other, so they are
+forced up to the first module that sees both branches.
+
+- 9.18 THEOREM. The import map and its embedding: `importMap`, `importMap_kernel` (two imports have the same
+  image exactly when they agree on the cross, so the map is not injective on the nose and faithfulness means
+  injectivity modulo cross-agreement), `CrossSupported`, `importMap_injective_on_crossSupported`,
+  `importMap_is_a_meet_embedding`, and `importMap_singles_out_emptiness` (the empty import is least and there
+  is NO greatest element at all) (Model/NaryAssemblage.lean). axioms: {propext, Classical.choice, Quot.sound}.
+- 9.19 THEOREM. Absence carried through the import order: `presentCarried_mono` (axioms: none),
+  `absence_carried_downward_closed` (at any fixed pair of assembly points the imports leaving the distinction
+  absence-carried are downward closed, so the carriage split is order-theoretic) and
+  `cross_absence_carried_of_absent_factor` (an absent factor hands its coordinate's carriage to the import)
+  (Model/AssemblageRelations.lean). axioms: {propext, Classical.choice, Quot.sound}.
+- 9.20 THEOREM. The structure of variance: `structure_of_variance` (Model/AssemblageRelations.lean). With fixed
+  factors over an arbitrary finite product carrier, the free region is a faithful order-copy of the
+  classification space one level in: a meet-embedding with kernel exactly cross-agreement, injective on
+  cross-supported representatives, whose image carries a bottom, that bottom alone, plural incomparable maxima,
+  and a downward-closed present-and-absence split. Variance is not a second axis; it is the same structure
+  re-entering at the cross region.
+
+  TWO HOMES, and the split is real. The embedding half needs nothing from the absence shelf and lives in
+  Model/NaryAssemblage as 9.18; the carriage clause needs `presentCarried` and lives here; the conjunction that
+  is the theorem lands here, in the first module that sees both. The generality minimum over the clauses is
+  `Inhabited` fibres, contributed by the maxima clause alone. axioms: {propext, Classical.choice, Quot.sound}.
+- 9.21 THEOREM. The one feature that is not a copy: `TwoCoord`, `swapP`, `swapP_involutive`,
+  `swapP_differsInOne`, `swap_fixes_cross`, `swapImp`, `swapFactors`, and `swap_transport`
+  (Model/AssemblageRelations.lean). Relabelling an assembly by the coordinate swap equals the assembly of the
+  swapped import under the SWAPPED FACTORS, so the swap is not a symmetry at fixed factors: it relates the
+  construction over one factor family to the construction over another. That is a statement about the pair of
+  parts, not structure inside the free part, which is why it does not join the package. Stated on a homogeneous
+  two-coordinate carrier, in its own section. axioms: {propext, Classical.choice, Quot.sound}.
+
 ## Registers
 
 Domain instances, marked READING, defeasible, kept in this chart. A register instantiates the structure by
