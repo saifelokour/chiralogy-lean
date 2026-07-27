@@ -1233,4 +1233,81 @@ WHAT REMAINS OPEN
 
 end Witnesses
 
+/-! ## The import map, and the order structure it carries
+
+With the factors held fixed, sending an import to the assembly it completes is a MAP from the import space to
+the classification space. Read that way, the results above say it is an order embedding that preserves the
+meet; what remains is the exact sense in which it is faithful, which is not injectivity on the nose. -/
+
+/-- The import map: `nary c` read as a map in the import, with the factors fixed. -/
+noncomputable def importMap (c : ∀ i, X i → X i → Option Bool) (imp : Pt X → Pt X → Option Bool) :
+    Pt X → Pt X → Option Bool := nary c imp
+
+/-- **The kernel of the import map, exactly.** Two imports have the same image precisely when they agree on the
+cross region. So the map is NOT injective: imports differing only on the regions are overwritten by the factors,
+and faithfulness means injectivity modulo cross-agreement. -/
+theorem importMap_kernel (c : ∀ i, X i → X i → Option Bool) (imp imp' : Pt X → Pt X → Option Bool) :
+    importMap c imp = importMap c imp' ↔ ∀ a b, IsCross a b → imp a b = imp' a b := by
+  simp only [importMap]
+  constructor
+  · intro h a b hc
+    have hcell := congrFun (congrFun h a) b
+    rwa [nary_apply_imp c imp hc, nary_apply_imp c imp' hc] at hcell
+  · intro h
+    funext a b
+    by_cases hex : ∃ i, differsInOne a b i
+    · rw [nary_apply_differ c imp hex.choose_spec, nary_apply_differ c imp' hex.choose_spec]
+    · rw [nary_apply_imp c imp hex, nary_apply_imp c imp' hex]
+      exact h a b hex
+
+/-- Imports supported on the cross region: the canonical representatives of the kernel classes. -/
+def CrossSupported (imp : Pt X → Pt X → Option Bool) : Prop :=
+  ∀ a b, ¬ IsCross a b → imp a b = none
+
+/-- **Faithful, literally.** On cross-supported representatives the import map is injective, at any carrier. -/
+theorem importMap_injective_on_crossSupported (c : ∀ i, X i → X i → Option Bool)
+    (imp imp' : Pt X → Pt X → Option Bool) (h : CrossSupported imp) (h' : CrossSupported imp')
+    (heq : importMap c imp = importMap c imp') : imp = imp' := by
+  funext a b
+  by_cases hc : IsCross a b
+  · exact (importMap_kernel c imp imp').1 heq a b hc
+  · rw [h a b hc, h' a b hc]
+
+/-- **THE EMBEDDING, one statement.** The import map is a meet-embedding of the import order into the
+classification order with its kernel identified: the order transmits both ways, meets are preserved on the
+nose, two imports collide exactly when they agree on the cross, and on cross-supported representatives the map
+is injective. Carrier-general: arbitrary `n`, arbitrary fibres, no finiteness and no inhabitation. -/
+theorem importMap_is_a_meet_embedding (c : ∀ i, X i → X i → Option Bool) :
+    (∀ imp imp' : Pt X → Pt X → Option Bool,
+        cLE (importMap c imp) (importMap c imp') ↔ ∀ a b, IsCross a b → optLE (imp a b) (imp' a b))
+      ∧ (∀ imp imp' : Pt X → Pt X → Option Bool,
+        importMap c (cMeet imp imp') = cMeet (importMap c imp) (importMap c imp'))
+      ∧ (∀ imp imp' : Pt X → Pt X → Option Bool,
+        importMap c imp = importMap c imp' ↔ ∀ a b, IsCross a b → imp a b = imp' a b)
+      ∧ (∀ imp imp' : Pt X → Pt X → Option Bool,
+        CrossSupported imp → CrossSupported imp' → importMap c imp = importMap c imp' → imp = imp') :=
+  ⟨import_order_embeds c, nary_meet c, importMap_kernel c, importMap_injective_on_crossSupported c⟩
+
+/-- **The map singles out emptiness and refuses to single out content.** The empty import is the least element,
+and there is NO greatest element at all: any candidate would have to agree with both the all-true and the
+all-false import at a cross cell. So exactly one point is distinguished, and it is the one that supplies
+nothing. -/
+theorem importMap_singles_out_emptiness [∀ i, Inhabited (X i)]
+    (c : ∀ i, X i → X i → Option Bool) :
+    (∀ imp : Pt X → Pt X → Option Bool, cLE (importMap c (botC (Pt X))) (importMap c imp))
+      ∧ ¬ ∃ t : Pt X → Pt X → Option Bool,
+          ∀ imp : Pt X → Pt X → Option Bool, cLE (importMap c imp) (importMap c t) := by
+  refine ⟨import_bottom c, ?_⟩
+  rintro ⟨t, ht⟩
+  have hd : IsCross (fun i => (default : X i)) (fun i => (default : X i)) := diagAt _
+  have h1 := (import_order_embeds c cTrue t).1 (ht cTrue) _ _ hd
+  have h2 := (import_order_embeds c cFalse t).1 (ht cFalse) _ _ hd
+  rcases h1 with h1 | h1
+  · exact absurd h1 (by simp [cTrue])
+  rcases h2 with h2 | h2
+  · exact absurd h2 (by simp [cFalse])
+  have e1 : (some true : Option Bool) = t (fun i => (default : X i)) (fun i => (default : X i)) := h1
+  have e2 : (some false : Option Bool) = t (fun i => (default : X i)) (fun i => (default : X i)) := h2
+  exact absurd (e1.trans e2.symm) (by simp)
+
 end Chiralogy

@@ -299,4 +299,159 @@ theorem nested_factor_reads {X1 X2 X3 : Type} [DecidableEq X1] [DecidableEq X2] 
   rw [(factors_determine_the_shared_region (assembleClassify c1 c2 imp12) c3 imp123 a b).1 h3,
     (factors_determine_the_shared_region c1 c2 imp12 a.1 b.1).1 h2]
 
+/-! ## Absence carried through the import order
+
+The framework's present-and-absence distinction re-enters at the import: present-carriage is monotone upward,
+so the imports leaving a distinction absence-carried are closed downward. This is where the two branches meet,
+which is why it sits here and not with either alone. -/
+
+/-- **Present-carriage is monotone.** A distinction carried by presence survives every step upward in the
+order, because the witnessing cells are present and presence is preserved upward. -/
+theorem presentCarried_mono {Y : Type} {A B : Y → Y → Option Bool} (h : cLE A B) {x x' : Y}
+    (hp : presentCarried A x x') : presentCarried B x x' := by
+  obtain ⟨z, b, b', h1, h2, hb⟩ := hp
+  refine ⟨z, b, b', ?_, ?_, hb⟩
+  · rcases h x z with hc | hc
+    · exact absurd hc (by rw [h1]; exact Option.some_ne_none b)
+    · rw [← hc, h1]
+  · rcases h x' z with hc | hc
+    · exact absurd hc (by rw [h2]; exact Option.some_ne_none b')
+    · rw [← hc, h2]
+
+/-- **The absence-carried imports are downward closed.** At any fixed pair of assembly points, the imports
+leaving that distinction absence-carried form a downward-closed subset of the import order. So the split of the
+free region by carriage is order-theoretic, not arbitrary. -/
+theorem absence_carried_downward_closed (c : ∀ i, X i → X i → Option Bool) (a a' : ∀ i, X i)
+    (imp imp' : (∀ i, X i) → (∀ i, X i) → Option Bool)
+    (hle : ∀ p q, IsCross p q → optLE (imp p q) (imp' p q))
+    (h : ¬ presentCarried (nary c imp') a a') : ¬ presentCarried (nary c imp) a a' :=
+  fun hp => h (presentCarried_mono ((import_order_embeds c imp imp').2 hle) hp)
+
+/-- **An absent factor hands its coordinate's carriage to the import.** If the factor at coordinate `i`
+abstains off its diagonal, then over the empty import no distinction differing at that coordinate is
+present-carried: the cross carriage is the import's to supply. -/
+theorem cross_absence_carried_of_absent_factor (c : ∀ i, X i → X i → Option Bool) (i : Fin n)
+    (habs : ∀ x y, x ≠ y → c i x y = none) (a a' : ∀ k, X k) (hne : a i ≠ a' i) :
+    ¬ presentCarried (nary c (botC (∀ k, X k))) a a' := by
+  rintro ⟨b, v, v', h1, h2, _⟩
+  have e1 := present_forces_coord_eq c i habs a b (by rw [h1]; exact Option.some_ne_none v)
+  have e2 := present_forces_coord_eq c i habs a' b (by rw [h2]; exact Option.some_ne_none v')
+  exact hne (e1.trans e2.symm)
+
+/-! ## The structure of variance
+
+The free region is a faithful order-copy of the classification space, one level in. The embedding half lives in
+`Model/NaryAssemblage`, where it needs nothing from the absence shelf; the carriage clause needs
+`presentCarried`, so the whole statement lands here, in the first module that sees both branches. -/
+
+/-- **THE STRUCTURE OF VARIANCE.** For fixed factors over an arbitrary finite product carrier, the import map is
+a meet-embedding with kernel exactly cross-agreement, injective on cross-supported representatives, whose image
+carries the classification order's own shape: a bottom, that bottom alone, plural incomparable maxima, and a
+downward-closed present-and-absence split. Variance is not a second axis; it is the same structure re-entering
+at the cross region. The generality minimum over the clauses is `Inhabited` fibres, contributed by the maxima
+clause alone. -/
+theorem structure_of_variance [∀ i, Inhabited (X i)] (c : ∀ i, X i → X i → Option Bool) :
+    ((∀ imp imp' : Pt X → Pt X → Option Bool,
+        cLE (importMap c imp) (importMap c imp') ↔ ∀ a b, IsCross a b → optLE (imp a b) (imp' a b))
+      ∧ (∀ imp imp' : Pt X → Pt X → Option Bool,
+        importMap c (cMeet imp imp') = cMeet (importMap c imp) (importMap c imp'))
+      ∧ (∀ imp imp' : Pt X → Pt X → Option Bool,
+        importMap c imp = importMap c imp' ↔ ∀ a b, IsCross a b → imp a b = imp' a b)
+      ∧ (∀ imp imp' : Pt X → Pt X → Option Bool,
+        CrossSupported imp → CrossSupported imp' → importMap c imp = importMap c imp' → imp = imp'))
+    ∧ ((∀ imp : Pt X → Pt X → Option Bool, cLE (importMap c (botC (Pt X))) (importMap c imp))
+      ∧ (∀ imp : Pt X → Pt X → Option Bool,
+          cLE (importMap c imp) (importMap c (botC (Pt X))) → ∀ a b, IsCross a b → imp a b = none)
+      ∧ (¬ cLE (importMap c cTrue) (importMap c cFalse) ∧ ¬ cLE (importMap c cFalse) (importMap c cTrue))
+      ∧ (∀ (a a' : Pt X) (imp imp' : Pt X → Pt X → Option Bool),
+          (∀ p q, IsCross p q → optLE (imp p q) (imp' p q)) →
+          ¬ presentCarried (importMap c imp') a a' → ¬ presentCarried (importMap c imp) a a')) :=
+  ⟨importMap_is_a_meet_embedding c,
+   import_bottom c, bottom_is_unique c, maxima_are_plural c, absence_carried_downward_closed c⟩
+
+/-! ### The one feature that is not a copy: the coordinate swap
+
+Everything above says the free region reproduces the classification space's structure. The swap is the
+exception, and it is a statement about the RELATION between the free and determined parts rather than structure
+inside the free part. It lives on a homogeneous two-coordinate carrier, so it has its own section. -/
+
+section Swap
+
+variable {Y : Type} [DecidableEq Y]
+
+abbrev TwoCoord (Y : Type) := ∀ _ : Fin 2, Y
+
+theorem fin2_ne_iff : ∀ i j : Fin 2, j ≠ i ↔ j = i + 1 := by decide
+
+theorem fin2_add_one_add_one (i : Fin 2) : i + 1 + 1 = i := by revert i; decide
+
+/-- The coordinate swap on a homogeneous two-coordinate carrier. -/
+def swapP (a : TwoCoord Y) : TwoCoord Y := fun i => a (i + 1)
+
+omit [DecidableEq Y] in
+theorem swapP_involutive (a : TwoCoord Y) : swapP (swapP a) = a := by
+  funext i
+  show a (i + 1 + 1) = a i
+  rw [fin2_add_one_add_one]
+
+omit [DecidableEq Y] in
+theorem swapP_differsInOne (a b : TwoCoord Y) (i : Fin 2) :
+    differsInOne (swapP a) (swapP b) i ↔ differsInOne a b (i + 1) := by
+  constructor
+  · rintro ⟨hne, hoth⟩
+    refine ⟨hne, fun j hj => ?_⟩
+    have hji : j = i := by rw [fin2_ne_iff] at hj; rw [hj, fin2_add_one_add_one]
+    have hi : swapP a (i + 1) = swapP b (i + 1) := hoth (i + 1) (by rw [fin2_ne_iff])
+    rw [hji]
+    show a i = b i
+    have hx : a (i + 1 + 1) = b (i + 1 + 1) := hi
+    rwa [fin2_add_one_add_one] at hx
+  · rintro ⟨hne, hoth⟩
+    refine ⟨hne, fun j hj => ?_⟩
+    show a (j + 1) = b (j + 1)
+    refine hoth (j + 1) ?_
+    rw [fin2_ne_iff] at hj ⊢
+    rw [hj]
+
+omit [DecidableEq Y] in
+/-- **The swap fixes the cross region setwise**, so it acts on the import space. -/
+theorem swap_fixes_cross (a b : TwoCoord Y) : IsCross a b ↔ IsCross (swapP a) (swapP b) := by
+  constructor
+  · rintro h ⟨i, hd⟩
+    exact h ⟨i + 1, (swapP_differsInOne a b i).1 hd⟩
+  · rintro h ⟨i, hd⟩
+    refine h ⟨i + 1, (swapP_differsInOne a b (i + 1)).2 ?_⟩
+    rwa [fin2_add_one_add_one]
+
+/-- The swap's action on the import space. -/
+def swapImp (imp : TwoCoord Y → TwoCoord Y → Option Bool) :
+    TwoCoord Y → TwoCoord Y → Option Bool := fun a b => imp (swapP a) (swapP b)
+
+/-- The swap's action on the factor family: it exchanges the two coordinates' factors. -/
+def swapFactors (c : ∀ _ : Fin 2, Y → Y → Option Bool) : ∀ _ : Fin 2, Y → Y → Option Bool :=
+  fun i => c (i + 1)
+
+/-- **WHERE THE SWAP SITS.** It is not a symmetry of the assembly at fixed factors. It passes through only as a
+transport law that SWAPS THE FACTORS: relabelling the assembly by the swap equals the assembly of the swapped
+import under the swapped factors. So the swap relates the construction over one factor family to the
+construction over another; it says something about the pair of parts, not about the free part alone. -/
+theorem swap_transport (c : ∀ _ : Fin 2, Y → Y → Option Bool)
+    (imp : TwoCoord Y → TwoCoord Y → Option Bool) :
+    relabel swapP (nary c imp) = nary (swapFactors c) (swapImp imp) := by
+  funext a b
+  by_cases hex : ∃ i, differsInOne a b i
+  · obtain ⟨i, hd⟩ := hex
+    have hd' : differsInOne (swapP a) (swapP b) (i + 1) :=
+      (swapP_differsInOne a b (i + 1)).2 (by rwa [fin2_add_one_add_one])
+    show nary c imp (swapP a) (swapP b) = nary (swapFactors c) (swapImp imp) a b
+    rw [nary_apply_differ c imp hd', nary_apply_differ (swapFactors c) (swapImp imp) hd]
+    show c (i + 1) (a (i + 1 + 1)) (b (i + 1 + 1)) = c (i + 1) (a i) (b i)
+    rw [fin2_add_one_add_one]
+  · have hc' : IsCross (swapP a) (swapP b) := (swap_fixes_cross a b).1 hex
+    show nary c imp (swapP a) (swapP b) = nary (swapFactors c) (swapImp imp) a b
+    rw [nary_apply_imp c imp hc', nary_apply_imp (swapFactors c) (swapImp imp) hex]
+    rfl
+
+end Swap
+
 end Chiralogy
