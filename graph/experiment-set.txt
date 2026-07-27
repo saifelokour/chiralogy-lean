@@ -1,3 +1,21 @@
 # Committed preview set: live experiment module short names (Chiralogy.Experiments.<name>).
 # Read by depgraph-preview so the preview is deterministic. Not the committed reference graph.
+AbsentCellCompleteness
+ArchetypeExposure
+AssemblageCoordinates
+AssemblyUniversal
+AsymmetricCone
+CombinedArrows
+CombinedCategory
+CombinedColimit
+Configurations
+DeterminationFlow
+ImportSpace
 MembershipBoundary
+MembershipRegion
+MoveAlgebra
+PhysicsImport
+PositionalChannel
+RelationCoordinates
+ScaleIndependence
+SelfCompletionAssemblage
