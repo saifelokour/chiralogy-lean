@@ -290,4 +290,195 @@ theorem moves_generate_no_incomparable {X : Type} (s : X → Nat) (w : X → X �
     cLE c (totalization s c) ∧ cLE (partialization w c) c :=
   ⟨c_le_totalization s c, partialization_le_c w c⟩
 
+/-! ## The minimal mask
+
+The mask arm's hom-sets are plural, but the plurality collapses in the order: between a classification and
+anything below it there is a least mask, and every other mask fires wherever it does. -/
+
+theorem optMeet_self (a : Option Bool) : optMeet a a = a := by
+  cases a with
+  | none => rfl
+  | some x => simp [optMeet]
+
+/-- The canonical mask between two comparable classifications: open exactly the cells that change. -/
+def minMask {X : Type} (A B : X → X → Option Bool) : X → X → Bool :=
+  fun x y => decide (A x y ≠ none ∧ B x y = none)
+
+/-- **The minimal mask realizes the descent.** Whenever `B` sits below `A`, opening `A` by the minimal mask
+gives exactly `B`, so every downward step in the order is a mask arrow. -/
+theorem minMask_realizes {X : Type} (A B : X → X → Option Bool) (h : cLE B A) :
+    partialization (minMask A B) A = B := by
+  rw [mask_hom_iff]
+  intro x y
+  by_cases hb : B x y = none
+  · by_cases ha : A x y = none
+    · exact Or.inr ⟨by simp [minMask, ha], by rw [hb, ha]⟩
+    · exact Or.inl ⟨by simp [minMask, ha, hb], hb⟩
+  · refine Or.inr ⟨by simp [minMask, hb], ?_⟩
+    rcases h x y with h1 | h1
+    · exact absurd h1 hb
+    · exact h1
+
+/-- **And it is least**: every mask carrying `A` to `B` fires wherever the minimal one does. So the hom-set has
+a canonical representative and the plurality of `mask_hom_freedom` is removable by choosing it. -/
+theorem minMask_least {X : Type} (A B : X → X → Option Bool) (w : X → X → Bool)
+    (h : partialization w A = B) (x y : X) (hmin : minMask A B x y = true) : w x y = true := by
+  have hd : A x y ≠ none ∧ B x y = none := by simpa [minMask] using hmin
+  rcases (mask_hom_iff A B w).1 h x y with ⟨hw, _⟩ | ⟨_, hb⟩
+  · exact hw
+  · exact absurd (hb.symm.trans hd.2) hd.1
+
+/-! ## Relabelling and the order -/
+
+/-- **Relabelling preserves the order.** A pointwise transport: the relabelled classifications compare cell by
+cell exactly as the originals do at the relabelled cells. -/
+theorem relabel_preserves_order {X : Type} (σ : X → X) (A B : X → X → Option Bool) (h : cLE A B) :
+    cLE (relabel σ A) (relabel σ B) := fun a b => h (σ a) (σ b)
+
+/-- **The kernel of the arrow action, exactly.** Two combined arrows act identically on every classification
+iff their masks agree and their carrier maps agree wherever the mask does not fire. Where the mask fires the
+carrier map is invisible, which is why `action_not_faithful` holds. -/
+theorem act_eq_iff {X : Type} [DecidableEq X] (σ σ' : X → X) (w w' : X → X → Bool) :
+    (∀ A : X → X → Option Bool, act (σ, w) A = act (σ', w') A)
+      ↔ w = w' ∧ ∀ a b, w a b = false → σ a = σ' a ∧ σ b = σ' b := by
+  constructor
+  · intro h
+    have hw : w = w' := by
+      funext a b
+      have hc : (if w a b then none else (some true : Option Bool))
+          = (if w' a b then none else (some true : Option Bool)) :=
+        congrFun (congrFun (h cTrue) a) b
+      cases hu : w a b <;> cases hu' : w' a b
+      · rfl
+      · rw [hu, hu'] at hc; simp at hc
+      · rw [hu, hu'] at hc; simp at hc
+      · rfl
+    subst hw
+    refine ⟨rfl, fun a b hf => ⟨?_, ?_⟩⟩
+    · have hc : (if w a b then none else some (decide (σ a = σ a)))
+          = (if w a b then none else some (decide (σ' a = σ a))) :=
+        congrFun (congrFun (h (fun x _ => some (decide (x = σ a)))) a) b
+      rw [hf] at hc
+      simp at hc
+      exact hc.symm
+    · have hc : (if w a b then none else some (decide (σ b = σ b)))
+          = (if w a b then none else some (decide (σ' b = σ b))) :=
+        congrFun (congrFun (h (fun _ y => some (decide (y = σ b)))) a) b
+      rw [hf] at hc
+      simp at hc
+      exact hc.symm
+  · rintro ⟨rfl, hσ⟩ A
+    funext a b
+    show (if w a b then none else A (σ a) (σ b)) = (if w a b then none else A (σ' a) (σ' b))
+    by_cases hf : w a b = true
+    · rw [hf]; rfl
+    · have hf' : w a b = false := by simpa using hf
+      have hd := hσ a b hf'
+      rw [hf', hd.1, hd.2]
+
+/-! ## The fill at the order bottom
+
+A determiner is any map from a classification to a scale for filling it. Asking that it read the object and not
+the labelling is equivariance under the relabelling groupoid. At the order bottom, which every relabelling
+fixes, that requirement alone fixes the fill. Stated here as a fact about this construction; no claim is made
+that the underlying up-to-automorphism argument is new. -/
+
+/-- A determiner is equivariant when it reads the object rather than the labelling: relabelling the input
+relabels the output scale. Quantified over the GROUPOID, so only bijections act. -/
+def EquivariantDeterminer {X : Type} (D : (X → X → Option Bool) → (X → Nat)) : Prop :=
+  ∀ (e : X ≃ X) (A : X → X → Option Bool), D (relabel e A) = D A ∘ e
+
+/-- At a classification the relabelling fixes, an equivariant determiner outputs an invariant scale. -/
+theorem equivariant_determiner_invariant {X : Type} (D : (X → X → Option Bool) → (X → Nat))
+    (hD : EquivariantDeterminer D) (e : X ≃ X) (A : X → X → Option Bool) (hA : relabel e A = A) :
+    D A ∘ e = D A := by
+  rw [← hD e A, hA]
+
+/-- **A transposition already collapses a scale.** Invariance under the two-element swaps alone forces a scale
+to be constant, so no larger supply of carrier maps is needed. -/
+theorem swap_invariant_scale_constant {X : Type} [DecidableEq X] (s : X → Nat)
+    (h : ∀ e : X ≃ X, s ∘ e = s) (x y : X) : s x = s y := by
+  have hc : s (Equiv.swap x y x) = s x := congrFun (h (Equiv.swap x y)) x
+  rw [Equiv.swap_apply_left] at hc
+  exact hc.symm
+
+/-- **The fill at the order bottom is forced.** Every relabelling fixes the empty classification, so an
+equivariant determiner must output a constant scale there, and a constant scale fills every cell with the same
+verdict. The determiner has no freedom left at the bottom: the outcome is the all-true map whichever determiner
+was supplied. Bijections suffice, so this does not depend on admitting arbitrary carrier maps. -/
+theorem fill_at_order_bottom_forced {X : Type} [DecidableEq X]
+    (D : (X → X → Option Bool) → (X → Nat)) (hD : EquivariantDeterminer D) :
+    totalization (D (botC X)) (botC X) = fun _ _ => some true := by
+  funext a b
+  have hconst : ∀ x y : X, D (botC X) x = D (botC X) y :=
+    swap_invariant_scale_constant _ (fun e => equivariant_determiner_invariant D hD e (botC X) rfl)
+  simp only [totalization, botC, Option.getD_none]
+  rw [hconst b a]
+  simp
+
+/-! ## Operator faithfulness of the two arms
+
+`totalization_not_faithful` says the fill loses information about the OBJECT. These say what the two arms do to
+their PARAMETER, which is a different question: the open arm's mask is recoverable from the operator, the fill
+arm's scale is recoverable only up to the comparison it induces. -/
+
+/-- The parameter is determined by the whole operator when distinct parameters act differently somewhere. -/
+def OperatorFaithful {P S : Type} (f : P → S → S) : Prop :=
+  ∀ p p' : P, (∀ s, f p s = f p' s) → p = p'
+
+/-- **The open arm is operator-faithful**: the mask is recovered from the operator, tested on the all-present
+classification alone. -/
+theorem open_operator_faithful {X : Type} : OperatorFaithful
+    (partialization : (X → X → Bool) → (X → X → Option Bool) → (X → X → Option Bool)) := by
+  intro w w' h
+  funext x y
+  have hc : (if w x y then none else (some true : Option Bool))
+      = (if w' x y then none else (some true : Option Bool)) :=
+    congrFun (congrFun (h cTrue) x) y
+  cases hw : w x y <;> cases hw' : w' x y
+  · rfl
+  · rw [hw, hw'] at hc; simp at hc
+  · rw [hw, hw'] at hc; simp at hc
+  · rfl
+
+/-- **The fill arm is faithful exactly up to the comparison it induces.** Two scales give the same operator iff
+they order every pair the same way, so the operator determines the ordering of the carrier and nothing more.
+Which scale supplies it is partly a non-question: only the comparison is at stake. -/
+theorem fill_operator_ext_iff {X : Type} (s s' : X → Nat) :
+    (∀ c : X → X → Option Bool, totalization s c = totalization s' c)
+      ↔ ∀ x y, decide (s y ≤ s x) = decide (s' y ≤ s' x) := by
+  constructor
+  · intro h x y
+    have hc : totalization s (botC X) x y = totalization s' (botC X) x y :=
+      congrFun (congrFun (h (botC X)) x) y
+    simpa [totalization, botC] using hc
+  · intro h c
+    funext x y
+    simp only [totalization, h x y]
+
+/-! ## The single-cell fill algebra -/
+
+/-- **Fills at different cells commute exactly.** Each cell receives its own scale's verdict, so the order in
+which two single-cell fills are applied is irrelevant. -/
+theorem fills_at_different_cells_commute {X : Type} [DecidableEq X] (s s' : X → Nat) (p q : X × X)
+    (hpq : p ≠ q) (c : X → X → Option Bool) :
+    fillCell s q (fillCell s' p c) = fillCell s' p (fillCell s q c) := by
+  funext x y
+  by_cases hq : (x, y) = q
+  · have hp : ¬ ((x, y) = p) := by rw [hq]; exact fun h => hpq h.symm
+    simp only [fillCell, if_pos hq, if_neg hp]
+  · by_cases hp : (x, y) = p
+    · simp only [fillCell, if_pos hp, if_neg hq]
+    · simp only [fillCell, if_neg hp, if_neg hq]
+
+/-- **Fills at the same cell absorb, and the first one wins.** The second fill finds the cell present and
+leaves it alone, so the two single-cell fills fail to commute only at a shared cell. -/
+theorem fills_at_same_cell_absorb {X : Type} [DecidableEq X] (s s' : X → Nat) (p : X × X)
+    (c : X → X → Option Bool) :
+    fillCell s p (fillCell s' p c) = fillCell s' p c := by
+  funext x y
+  by_cases hp : (x, y) = p
+  · simp only [fillCell, if_pos hp, Option.getD_some]
+  · simp only [fillCell, if_neg hp]
+
 end Chiralogy
