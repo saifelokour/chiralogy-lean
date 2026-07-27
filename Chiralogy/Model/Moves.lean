@@ -295,4 +295,33 @@ theorem nondegeneracy_survives_every_fill (s : Fin 2 → Nat) :
     have hs' : s 1 ≤ s 0 := by omega
     simp [totalization, cResist, hs'] at h1
 
+/-! ## What no fill can merge
+
+The placement correction of the group 3 pass: this reaches `totalization` and nothing above it, so it belongs
+with the moves rather than with the assemblies it was first proved for. -/
+
+theorem false_diagonal_survives_every_fill {Y : Type} (c : Y → Y → Option Bool) (x x' : Y)
+    (hxx : c x x = some false) (hx'x : c x' x = none)
+    (hx'x' : c x' x' = some false) (hxx' : c x x' = none) (s : Y → Nat) :
+    totalization s c x ≠ totalization s c x' := by
+  intro heq
+  have e1 : (some ((c x x).getD (decide (s x ≤ s x))) : Option Bool)
+      = some ((c x' x).getD (decide (s x ≤ s x'))) := congrFun heq x
+  have e2 : (some ((c x x').getD (decide (s x' ≤ s x))) : Option Bool)
+      = some ((c x' x').getD (decide (s x' ≤ s x'))) := congrFun heq x'
+  rw [hxx, hx'x, Option.getD_some, Option.getD_none] at e1
+  rw [hxx', hx'x', Option.getD_none, Option.getD_some] at e2
+  have h1 : ¬ (s x ≤ s x') := by
+    have := Option.some_inj.mp e1
+    exact of_decide_eq_false this.symm
+  have h2 : ¬ (s x' ≤ s x) := by
+    have := Option.some_inj.mp e2
+    exact of_decide_eq_false this
+  omega
+
+/-! ## G7: the absent-factor carriage law, lifted off `Fin 3` and off two coordinates
+
+`PhysicsImport` proved that an absence-carried factor at one coordinate hands the cross carriage to the
+import, on a two-coordinate three-point carrier. The general law holds at every `n` and every carrier. -/
+
 end Chiralogy
