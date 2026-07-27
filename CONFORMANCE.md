@@ -145,8 +145,17 @@ they sit above the moves.
   `swap_invariant_scale_constant` (a transposition already collapses a scale) and `fill_at_order_bottom_forced`
   (Model/InformationOrder.lean). Every relabelling fixes the empty classification, so a determiner that reads
   the object rather than the labelling must be constant there and the fill is the all-true map whichever
-  determiner was supplied. Bijections suffice. Stated as a fact about this construction; NO novelty is claimed
-  for the underlying up-to-automorphism argument, and the literature check on that point has not been run.
+  determiner was supplied. Bijections suffice.
+
+  ITS RELATION TO THE STANDARD FACT, settled. This is NOT the familiar "a universal property determines its
+  object up to automorphism", and it is not offered as new. It is that fact's DUAL, and the duality is the whole
+  of the content. The standard reading treats the automorphism group as the OBJECT's residual freedom: a larger
+  group means the object is pinned more loosely, and the object is essentially unique exactly when the group is
+  trivial. This reads the same group as the CONSTRAINT an equivariant rule must satisfy: a larger group means
+  the PARAMETER is pinned more tightly, and at maximal symmetry, which is the order bottom, the parameter is
+  forced to a constant and the rule has no freedom left at all. Bigger group, looser object, tighter parameter.
+  The standard essentially-unique and trivial-automorphism-group facts are the known relative; what is recorded
+  here is the dual reading of them in this construction.
   axioms: {propext, Classical.choice, Quot.sound}.
 - 9.10 THEOREM. Operator faithfulness of the two arms: `OperatorFaithful`, `open_operator_faithful` and
   `fill_operator_ext_iff` (Model/InformationOrder.lean). These concern the PARAMETER, where
