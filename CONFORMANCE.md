@@ -129,8 +129,33 @@ discipline. Graduated in the Model/Moves pass.
   A classification with every distinction absence-carried that EVERY scale leaves non-degenerate, so absence of
   presence-protection does not imply destroyability. axioms: {propext, Quot.sound}.
 
-The single-cell fill algebra (`fills_at_different_cells_commute`, `fills_at_same_cell_absorb`) is deferred to
-the Model/InformationOrder pass, where `fillCell` lives.
+Graduated in the Model/InformationOrder pass. These reach `cLE`, `optLE`, `botC`, `cTrue` or `fillCell`, so
+they sit above the moves.
+
+- 9.7 THEOREM. The minimal mask and the order-collapse of the mask hom-set: `minMask`, `minMask_realizes`
+  (whenever `B` sits below `A`, opening `A` by the minimal mask gives exactly `B`, so every downward step in
+  the order is a mask arrow) and `minMask_least` (every mask carrying `A` to `B` fires wherever the minimal one
+  does, so the plurality of 9.4 is removable by choosing a representative), with `optMeet_self`
+  (Model/InformationOrder.lean). axioms: {propext, Quot.sound}.
+- 9.8 THEOREM. Relabelling against the order, and the kernel of the arrow action: `relabel_preserves_order`
+  (axioms: none) and `act_eq_iff` (two arrows act identically iff their masks agree and their carrier maps
+  agree wherever the mask does not fire, which is exactly why 9.4's action is not faithful)
+  (Model/InformationOrder.lean). axioms: {propext, Quot.sound}.
+- 9.9 THEOREM. The fill at the order bottom: `EquivariantDeterminer`, `equivariant_determiner_invariant`,
+  `swap_invariant_scale_constant` (a transposition already collapses a scale) and `fill_at_order_bottom_forced`
+  (Model/InformationOrder.lean). Every relabelling fixes the empty classification, so a determiner that reads
+  the object rather than the labelling must be constant there and the fill is the all-true map whichever
+  determiner was supplied. Bijections suffice. Stated as a fact about this construction; NO novelty is claimed
+  for the underlying up-to-automorphism argument, and the literature check on that point has not been run.
+  axioms: {propext, Classical.choice, Quot.sound}.
+- 9.10 THEOREM. Operator faithfulness of the two arms: `OperatorFaithful`, `open_operator_faithful` and
+  `fill_operator_ext_iff` (Model/InformationOrder.lean). These concern the PARAMETER, where
+  `totalization_not_faithful` concerns the OBJECT, so they sharpen rather than repeat it: the open arm's mask
+  is recovered from the operator, while the fill arm's scale is recovered only up to the comparison it induces.
+  axioms: {propext, Quot.sound}.
+- 9.11 THEOREM. The single-cell fill algebra: `fills_at_different_cells_commute` and
+  `fills_at_same_cell_absorb` (Model/InformationOrder.lean). Single-cell fills commute except at a shared cell,
+  where the first one wins. axioms: {propext, Quot.sound}.
 
 ## Registers
 
