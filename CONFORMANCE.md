@@ -101,6 +101,37 @@ claimed, and the specification was corrected to match the code. No item is contr
   `every_target_is_defeasible` (Model/Boundary.lean); the harm and every magnitude are supplied per
   register and never enter the derived layers.
 
+## Derived
+
+Structure graduated from the live experiments after the specification was written. These are not specification
+items; they are results the derived layers proved and now carry, held to the same baseline and the same
+discipline. Graduated in the Model/Moves pass.
+
+- 9.1 THEOREM. The relabelling and its forcedness: `relabel`, `relabelW`, `relabel_id`, `relabel_comp`,
+  `relabelW_comp`, `relabelW_or`, and `relabel_unique` (among operations reading each cell of the relabelled
+  object off a single cell of the original, only precomposition by the same map in both arguments reproduces
+  the action, so nothing was chosen) (Model/Moves.lean). axioms: none.
+- 9.2 THEOREM. The transport laws: `transport_law` and `transport_law_fill` (Model/Moves.lean). Both hold by
+  computation, so relabelling-equivariance of the two moves is an identity already present at every carrier,
+  not a condition imposed. axioms: none.
+- 9.3 THEOREM. The combined arrows and the category on classifications: `Arrow`, `act`, `arrowComp`,
+  `arrowId`, `act_id`, `act_comp`, `arrowComp_id_left`, `arrowComp_id_right`, `arrowComp_assoc`, and the
+  packaged `Arr`, `arrId`, `arrComp`, `arr_id_left`, `arr_id_right`, `arr_assoc` (Model/Moves.lean). The
+  composition law is forced by 9.2 clause by clause. axioms: {propext, Quot.sound}.
+- 9.4 THEOREM. The hom-sets, and the action is not faithful: `act_hom_iff`, `mask_hom_iff`,
+  `mask_hom_freedom` (two masks between the same pair differ only where both ends already abstain), and
+  `action_not_faithful` (Model/Moves.lean). axioms: {propext, Quot.sound}.
+- 9.5 THEOREM. The two arms' categorical asymmetry: `partialization_union` and `partialization_id` (the open
+  arm accumulates by mask-union and has an identity), against `fill_has_no_identity` (the fill arm has no
+  identity at any object carrying an absence, so only the mask arm forms a category) (Model/Moves.lean).
+  axioms: {propext, Quot.sound} and {propext}.
+- 9.6 THEOREM. Nondegeneracy under fills: `cResist` and `nondegeneracy_survives_every_fill` (Model/Moves.lean).
+  A classification with every distinction absence-carried that EVERY scale leaves non-degenerate, so absence of
+  presence-protection does not imply destroyability. axioms: {propext, Quot.sound}.
+
+The single-cell fill algebra (`fills_at_different_cells_commute`, `fills_at_same_cell_absorb`) is deferred to
+the Model/InformationOrder pass, where `fillCell` lives.
+
 ## Registers
 
 Domain instances, marked READING, defeasible, kept in this chart. A register instantiates the structure by
