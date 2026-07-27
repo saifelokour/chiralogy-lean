@@ -157,6 +157,58 @@ they sit above the moves.
   `fills_at_same_cell_absorb` (Model/InformationOrder.lean). Single-cell fills commute except at a shared cell,
   where the first one wins. axioms: {propext, Quot.sound}.
 
+Graduated in the Model/NaryAssemblage pass. These reach `nary` and `differsInOne`, so they sit above the order.
+The `Classical.choice` in most of them comes from `nary`'s `Exists.choose` and is within baseline.
+
+- 9.12 THEOREM. The regions and the cross: `Pt`, `IsCross` (an `abbrev`, so instance search unfolds it for the
+  decidable witnesses), `diagAt`, and `present_forces_coord_eq` (a present verdict at a cell of the empty-import
+  assembly forces the two points to agree at that coordinate) (Model/NaryAssemblage.lean). axioms: none for the
+  first three, {propext, Classical.choice, Quot.sound} for the last.
+- 9.13 THEOREM. The import carries the order: `import_order_embeds` (with the factors fixed, one assembly sits
+  below another exactly when the imports are ordered on the cross, so the construction is an order embedding),
+  `nary_meet`, `import_bottom`, `bottom_is_unique`, `maxima_are_plural`, and
+  `composite_fill_not_a_factor_operation` (Model/NaryAssemblage.lean). The free region is an ordered space in
+  its own right, with a unique bottom and plural maxima. axioms: {propext, Classical.choice, Quot.sound}.
+- 9.14 THEOREM. The fibre-preserving symmetries: `Fib`, `Fib_differsInOne`, `Fib_cross`, `fib_fixes_iff` (a
+  coordinatewise map fixes an assembly exactly when it fixes each factor off that factor's own diagonal and
+  fixes the import on the cross), `factor_condition_is_local`, `full_product_when_unconstrained`,
+  `region_verdict_factors_through_coord` (the region blow-up: a region verdict factors through its coordinate
+  pair) and `rigid_factors_force_identity` (Model/NaryAssemblage.lean). The blow-up repeats each factor cell
+  across the other fibres but leaves the factor's own partition untouched, so it forces no symmetry.
+  axioms: {propext, Classical.choice, Quot.sound}; the `Fib` lemmas axiom-free.
+- 9.15 THEOREM. The full symmetry group of a classification: `cellMap`, `Level`, `fixes_iff_levels` (a carrier
+  map fixes a classification exactly when the induced cell map preserves every level set), and
+  `aut_invariant_under_value_relabel` (relabelling the verdicts by any injection leaves the group unchanged, so
+  absence is not distinguished among them) (Model/NaryAssemblage.lean). Witnesses `mixing_not_closed` (the
+  non-fibre-preserving elements are not closed under composition, so there is no subgroup complement) and
+  `full_group_not_determined_by_factors` (two assemblies with the same factors and different imports have
+  different automorphism groups). No assembly structure is used in the characterization itself.
+  axioms: {Quot.sound} for the two general results, baseline for the witnesses.
+- 9.16 THEOREM. The assembly as a cone over its pieces: `regionMask`, `crossMask`, `absenceMask`, `regionSlice`,
+  `crossSlice`, `regionSlice_apply`, `crossSlice_apply`, `regionSlice_reads_factor`, `crossSlice_reads_import`,
+  `leg_of_total`, `mediator_exists`, `mediator_unique`, `lazy_leg_no_mediator`,
+  `automorphism_breaks_existence` (Model/NaryAssemblage.lean). Each piece is the assembly opened by a mask
+  written in `differsInOne`, so a piece is a value of the down-move and a projection is a mask arrow by
+  definition.
+
+  POSITIVE HALF: under two restrictions, to mask arrows and to total sources, the cone IS a limit
+  (`mediator_exists` with `mediator_unique`), and uniqueness needs no totality.
+
+  NEGATIVE HALF, and its place in the literature. The setting is the known one for cones that fail to be limits
+  once the ambient structure is enriched or 2-categorical: weighted, lax and pseudo limits, and the
+  2-categorical failure of terminal cones analysed by Clingman and Moser. The nearest named relative is an
+  EQUIVARIANT universal property, universal up to a group action rather than up to unique isomorphism. What is
+  proved here is an INSTANCE within that landscape and is not offered as new and is not a named theorem: the
+  cone is jointly monic but not universal, the exact obstruction is the assembly's automorphism group
+  (`automorphism_breaks_existence`, carrier-general and uniform in the coordinate), a second and independent
+  obstruction is laziness (`lazy_leg_no_mediator`), and no forced enrichment repairs either.
+  axioms: {propext, Quot.sound} and below; `automorphism_breaks_existence` axiom-free.
+- 9.17 THEOREM. What no fill can merge: `false_diagonal_survives_every_fill` (Model/Moves.lean). Two rows
+  carrying a false verdict on their own diagonal and abstaining on the other's cannot be merged by any fill,
+  because a scale cannot order two points both ways. PLACEMENT CORRECTION: shelved for the NaryAssemblage
+  group, it reaches `totalization` and nothing above it, so the graph put it with the moves.
+  axioms: {propext, Quot.sound}.
+
 ## Registers
 
 Domain instances, marked READING, defeasible, kept in this chart. A register instantiates the structure by
