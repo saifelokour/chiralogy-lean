@@ -251,6 +251,60 @@ forced up to the first module that sees both branches.
   parts, not structure inside the free part, which is why it does not join the package. Stated on a homogeneous
   two-coordinate carrier, in its own section. axioms: {propext, Classical.choice, Quot.sound}.
 
+Graduated in the external-relation pass. These concern the IMPORT of an assemblage, its cross content, and
+they carry no finiteness hypothesis except where one is named to state a finite reading.
+
+- 9.22 THEOREM. The differing set and the cross-stable bijections: `diffSet`, `mem_diffSet`,
+  `differsInOne_iff_diffSet`, `diffSet_subset_union`, `Adjacent`, `CrossStable`, `crossStable_iff_adjacent`
+  (cross-stability IS adjacency preservation, since the cross is adjacency's complement), `Steps`,
+  `crossStable_preserves_diffCard` (the plain differing count is the shortest chain length, so it is
+  preserved), and the orbit relation `SameOrbit` (Model/NaryAssemblage.lean). axioms: {propext,
+  Classical.choice, Quot.sound}; several axiom-free.
+- 9.23 THEOREM. THE STRUCTURE OF EXTERNAL RELATIONS, four named properties of the import
+  (Model/NaryAssemblage.lean):
+  `externality`, no change of factors reaches any cross cell, so the import is underivable from them;
+  `irreducibility`, a fill on the whole writes a cross cell that every factor-side fill leaves alone, so the
+  import is reached only from the whole;
+  `freedom`, every cross content whatever is realized over any factors, so the framework fixes no value; and
+  `bundle_selects_no_import`, the discipline check, that the four properties hold of two arbitrary imports
+  alike and so distinguish none.
+  With `bound_of_factors` and `no_reading_is_fixed` as support. axioms: {propext, Classical.choice,
+  Quot.sound}.
+- 9.24 THEOREM. THE STRUCTURE CLAUSE, unconditional. `Equinumerous` (two coordinates are of one type when
+  their fibres admit a bijection), `eqTypedCount` (how many differing coordinates share a coordinate's type),
+  `crossStable_equinumerous` (a cross-stable bijection relates two coordinates only if their fibres are
+  equinumerous), `eqTypedCount_crossStable_invariant`, `sameOrbit_of_same_eqTypedCount`, and
+  `orbit_partition_is_eqTypedCount`: THE INVARIANT READINGS OF THE IMPORT ARE EXACTLY THE COARSENINGS OF THE
+  EQUINUMEROSITY-TYPED DIFFERING COUNT, over any product carrier. `eqTypedCount_is_finest_structural` states it
+  for the tower: every structural label coarsens the count and the count is itself structural, so it is the
+  finest rung.
+
+  NO FINITENESS. The count groups coordinates by the existence of a bijection between fibres, not by a
+  cardinal, and it counts COORDINATES, which are finite because the arity is. Nothing counts values. The
+  supporting mechanism reads a line of the adjacency graph as a SET and transports it (`lineSet`, `lineSet_eq`,
+  `lineEquiv`, `mem_lineSet_map`, `equiv_of_punctured`), yielding a bijection where a finite argument would
+  yield an equal number. axioms: {propext, Classical.choice, Quot.sound}.
+- 9.25 THEOREM. The finite readings, as corollaries: `typedCount` (the cardinal grouping),
+  `eqTypedCount_eq_typedCount`, `typedCount_iff_eqTypedCount`, `orbit_partition_is_typedCount` (the finite
+  form), and `orbit_partition_is_diffCard_of_homogeneous` (with one fibre size, two cells share an orbit
+  exactly when they differ in the same number of coordinates) (Model/NaryAssemblage.lean). Each is derived from
+  9.24 rather than proved separately. axioms: {propext, Classical.choice, Quot.sound}.
+- 9.26 THEOREM. Why the cardinal reading is not enough: `linkCount` and `linkCount_eq` (on finite fibres the
+  number of common neighbours of an adjacent pair reads the size of the fibre they differ in), and
+  `no_crossStable_relates`, the strict separation: on a carrier with fibre sizes two, two and three, two cells
+  with the SAME plain differing count lie in different orbits. So the plain count is not the classification and
+  the typing is not decorative. With the closed forms `whichDiffer_value_count` (the which-coordinates label
+  has `2 ^ m - m` values) and `howMany_value_count` (the how-many label has `m`)
+  (Model/NaryAssemblage.lean). axioms: {propext, Classical.choice, Quot.sound}.
+
+The classification's setting, cited and not claimed. The structural readings are the ORBITALS of the
+cross-stable group, that is its orbits on ordered pairs; an invariant-block partition of the pair set is a
+COHERENT CONFIGURATION; and the equinumerosity-typed count is the class scheme of a PRODUCT OF HAMMING SCHEMES
+grouped by alphabet TYPE rather than alphabet SIZE, which is the infinite-friendly form and reduces to the
+Hamming scheme on equal finite alphabets. `crossStable_equinumerous` is the standard fact that a Hamming-graph
+automorphism permutes coordinate directions only within equal-alphabet classes, proved here without
+identifying the automorphism group. Nothing in this section is claimed as new relative to that literature.
+
 ## Registers
 
 Domain instances, marked READING, defeasible, kept in this chart. A register instantiates the structure by
