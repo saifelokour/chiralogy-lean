@@ -16,6 +16,8 @@ import Chiralogy.Model.Permitted
 import Chiralogy.Model.Tower
 import Chiralogy.Model.GroundForensics
 import Chiralogy.Model.Assemblage
+import Chiralogy.Model.Stance
+import Chiralogy.Model.StanceContent
 import Chiralogy.Protocol.Membership
 import Chiralogy.Protocol.GroundTemplates
 import Chiralogy.Registers.Physics
@@ -55,6 +57,8 @@ produce, the guard as an observation seeing one bit (`guard_uniformity_is_observ
 - `Model/Assemblage` the construction relating several objects to a new one alongside them.
 - `Model/Cataphatic` the free skeleton.
 - `Model/Cataphatic/Instances` the borrowed fillings.
+- `Model/Stance` the rules that act on a classification, one direction and two.
+- `Model/StanceContent` the ones that read what is held, on the present-support notion.
 - `Model/Boundary` the interface where the arms meet.
 - `Model/Permitted` the ethics on the declared grounds.
 - `Protocol/Membership` the conformance interface a domain submits to.
