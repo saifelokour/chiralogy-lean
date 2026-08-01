@@ -8,12 +8,16 @@ period-two periodic orbit (`there_is_a_cycle`, `an_invariant_band_without_a_rest
 `the_two_extremes_are_distinct_failures`, and `restoreTo` with its constant-map behaviour. To
 `Model/StanceContent`: `the_return_is_to_a_supported_position`. Spec 4.a.19, 4.a.20.
 
-NOT GRADUATED, retained here as the record: the whole REVERSE-ORDER half (`applyStanceRev`, `formStep`,
-`the_orders_differ`, `the_reverse_admits_a_null_step`, `applyStance_can_reassign_where_reverse_cannot`,
-`there_is_a_reverse_cycle`, `restoreToRev_second_application_reaches_target`). It is carrier-general and it
-verifies, but it is a SECOND operator on the same object whose place in the module is not settled: the
-within-application order is a definitional choice, and graduating one order as canonical while the other lives
-in an experiment would assert a priority the arc has not established. It stays a live finding.
+THE REVERSE-ORDER HALF WAS SUBSEQUENTLY SETTLED and its order-neutral content graduated to `Model/Stance`,
+section Orders, via `Experiments/StanceOrder` (spec 4.a.21). The obstacle recorded here, that graduating one
+order would assert an unestablished priority, was removed by stating the relation between the orders instead of
+choosing between them: they differ exactly at the cells a stance both releases and forms, agree off them, and
+agree outright on every conflict-free stance. No priority was graduated.
+
+What remains here and did NOT graduate: the specific reverse-order constructions of this file
+(`the_reverse_admits_a_null_step`, `there_is_a_reverse_cycle`, `restoreToRev_second_application_reaches_target`),
+which show the reverse composite supports cycles and two-application return. They are carrier-general and they
+verify; they are retained as the record that the reverse order is not degenerate.
 
 `Saturated` was dropped as a re-derivation of canonical `isTotal`.
 

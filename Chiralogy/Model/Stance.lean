@@ -611,6 +611,222 @@ theorem restoreTo_returns_from_anywhere (t c : Pt X → Pt X → Option Bool) :
 
 end Band
 
+/-! ## The two within-application orders
+
+`applyStance` withdraws then forms. The opposite composite, form then withdraw, is `applyStanceRev`. This
+section derives the relation between them WITHOUT asserting that either is canonical, and what it establishes
+is that the question is narrower than it looks: the two agree everywhere except at the cells a stance both
+releases and forms, they agree outright on every stance that never does both at one cell, and at a cell where
+both directions do fire NO single value satisfies them, so an order is a resolution of a real disagreement and
+not an artefact removable by a better definition.
+
+What is NOT established, and is deliberately not stated as a theorem anywhere: that the kernel forces the
+forward order. The forward order is the only one of the two in which the release can make room for the form
+(`the_reverse_ignores_the_form_at_released_cells`), which explains why `applyStance` is defined as it is, but
+explaining a choice is not forcing it. The reverse composite is coherent and supports both cycles and return. -/
+
+section Orders
+
+variable {n : ℕ} {X : Fin n → Type} [∀ i, DecidableEq (X i)] [∀ i, Fintype (X i)]
+
+/-- Forming first: write the instruction into whatever is open, leave what is held. -/
+def formStep (T : Stance X) (c : Pt X → Pt X → Option Bool) : Pt X → Pt X → Option Bool :=
+  fun x y => if c x y = none then T.form c x y else c x y
+
+/-- The reverse application: form first, then release. -/
+def applyStanceRev (T : Stance X) (c : Pt X → Pt X → Option Bool) : Pt X → Pt X → Option Bool :=
+  partialization (T.drop c) (formStep T c)
+
+theorem formStep_of_open {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (h : c x y = none) : formStep T c x y = T.form c x y := by simp [formStep, h]
+
+theorem formStep_of_held {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (h : c x y ≠ none) : formStep T c x y = c x y := by simp [formStep, h]
+
+theorem applyStanceRev_of_dropped {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (h : T.drop c x y = true) : applyStanceRev T c x y = none := by
+  simp [applyStanceRev, partialization, h]
+
+theorem applyStanceRev_of_kept {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (h : T.drop c x y = false) : applyStanceRev T c x y = formStep T c x y := by
+  simp [applyStanceRev, partialization, h]
+
+/-! ## Part 1: where the two orders differ, exactly -/
+
+/-- **OFF THE RELEASED CELLS THE TWO ORDERS AGREE.** Wherever the stance keeps a cell, sequencing is
+immaterial. Carrier-general. -/
+theorem the_orders_agree_off_the_release {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (h : T.drop c x y = false) : applyStance T c x y = applyStanceRev T c x y := by
+  rw [applyStanceRev_of_kept h]
+  by_cases hv : c x y = none
+  · rw [applyStance_of_kept_open h hv, formStep_of_open hv]
+  · rcases hb : c x y with - | v
+    · exact absurd hb hv
+    · rw [forming_is_powerless_at_a_held_cell h hb, formStep_of_held hv, hb]
+
+/-- **AND AT A RELEASED CELL THEY DIVERGE COMPLETELY.** One writes what the stance would form there, the other
+leaves nothing. So the whole difference between the orders is confined to the cells the stance releases.
+Carrier-general. -/
+theorem at_a_released_cell {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (h : T.drop c x y = true) :
+    applyStance T c x y = T.form c x y ∧ applyStanceRev T c x y = none :=
+  ⟨applyStance_of_dropped h, applyStanceRev_of_dropped h⟩
+
+/-- **THE REVERSE IS THE FORWARD WITH THE RELEASE APPLIED AGAIN.** Form-then-release is exactly
+release-then-form followed by re-imposing the same mask, which is what discards the forming done at released
+cells. Carrier-general. -/
+theorem the_reverse_is_the_forward_remasked (T : Stance X) (c : Pt X → Pt X → Option Bool) :
+    applyStanceRev T c = partialization (T.drop c) (applyStance T c) := by
+  funext x y
+  by_cases h : T.drop c x y = true
+  · rw [applyStanceRev_of_dropped h]
+    simp [partialization, h]
+  · rw [Bool.not_eq_true] at h
+    rw [← the_orders_agree_off_the_release h]
+    simp [partialization, h]
+
+/-- **SO THE REVERSE ALWAYS LANDS AT OR BELOW THE FORWARD.** Carrier-general, from canonical
+`partialization_le_c`. -/
+theorem the_reverse_is_dominated (T : Stance X) (c : Pt X → Pt X → Option Bool) :
+    cLE (applyStanceRev T c) (applyStance T c) := by
+  rw [the_reverse_is_the_forward_remasked]
+  exact partialization_le_c _ _
+
+/-! ## Part 2: the conflict, and whether an order-neutral operation exists -/
+
+/-- A cell where the stance's two directions disagree: it releases there and would also form there. -/
+def Conflicted (T : Stance X) (c : Pt X → Pt X → Option Bool) (x y : Pt X) : Prop :=
+  T.drop c x y = true ∧ T.form c x y ≠ none
+
+/-- A stance whose two directions never both fire at the same cell. -/
+def ConflictFree (T : Stance X) : Prop :=
+  ∀ c x y, T.drop c x y = true → T.form c x y = none
+
+/-- **THE TWO ORDERS COINCIDE EXACTLY OFF THE CONFLICT.** They give the same result at a classification
+precisely when the stance forms nothing at any cell it releases there. So the order is not a global choice: it
+is a choice only about cells where the two directions disagree. Carrier-general. -/
+theorem the_orders_agree_iff_no_conflict (T : Stance X) (c : Pt X → Pt X → Option Bool) :
+    applyStance T c = applyStanceRev T c ↔ ∀ x y : Pt X, T.drop c x y = true → T.form c x y = none := by
+  constructor
+  · intro h x y hd
+    have hc := congrFun (congrFun h x) y
+    rw [(at_a_released_cell hd).1, (at_a_released_cell hd).2] at hc
+    exact hc
+  · intro h
+    funext x y
+    by_cases hd : T.drop c x y = true
+    · rw [(at_a_released_cell hd).1, (at_a_released_cell hd).2, h x y hd]
+    · rw [Bool.not_eq_true] at hd
+      exact the_orders_agree_off_the_release hd
+
+/-- **A CONFLICT-FREE STANCE IS ORDER-INVARIANT.** Carrier-general. -/
+theorem conflictFree_is_order_invariant {T : Stance X} (h : ConflictFree T)
+    (c : Pt X → Pt X → Option Bool) : applyStance T c = applyStanceRev T c :=
+  (the_orders_agree_iff_no_conflict T c).mpr (fun x y hd => h c x y hd)
+
+/-- Release a named cell and form there, whatever the classification: the two directions collide. -/
+def coincident (a b : Pt X) : Stance X :=
+  ⟨fun _ x y => decide (x = a ∧ y = b), fun _ x y => if x = a ∧ y = b then some true else none⟩
+
+theorem coincident_conflicts (a b : Pt X) (c : Pt X → Pt X → Option Bool) :
+    Conflicted (coincident a b) c a b := by
+  refine ⟨by simp [coincident], ?_⟩
+  simp only [coincident]
+  exact Option.some_ne_none _
+
+/-- **AT A CONFLICTED CELL NO SINGLE VALUE SATISFIES BOTH DIRECTIONS.** The forward order writes what the
+stance forms, the reverse leaves nothing, and those differ. So sequencing is not an artefact to be removed by a
+cleverer definition: it is the RESOLUTION of a genuine disagreement, and an order-neutral operation would have
+to decide the same question by another name. Carrier-general. -/
+theorem the_conflict_admits_no_neutral_value {T : Stance X} {c : Pt X → Pt X → Option Bool}
+    {x y : Pt X} (h : Conflicted T c x y) :
+    applyStance T c x y ≠ applyStanceRev T c x y := by
+  rw [(at_a_released_cell h.1).1, (at_a_released_cell h.1).2]
+  exact h.2
+
+/-- **AND THE CONFLICT IS NOT VACUOUS.** A stance releasing and forming the same named cell conflicts there at
+every classification. Carrier-general, given a cell. -/
+theorem the_conflict_is_real (a b : Pt X) (c : Pt X → Pt X → Option Bool) :
+    applyStance (coincident a b) c a b ≠ applyStanceRev (coincident a b) c a b :=
+  the_conflict_admits_no_neutral_value (coincident_conflicts a b c)
+
+/-! ## Part 3: what the reverse order does with its own forming -/
+
+/-- **THE REVERSE ORDER IGNORES WHAT THE STANCE WOULD FORM AT THE CELLS IT RELEASES.** Two stances with the
+same release, whose forming agrees only off the released cells, act identically under the reverse order. So
+under form-then-release the forming at a released cell is not merely discarded, it is invisible: the two
+directions never interact. Carrier-general. -/
+theorem the_reverse_ignores_the_form_at_released_cells (T : Stance X)
+    (g : (Pt X → Pt X → Option Bool) → Pt X → Pt X → Option Bool)
+    (c : Pt X → Pt X → Option Bool)
+    (h : ∀ x y : Pt X, T.drop c x y = false → g c x y = T.form c x y) :
+    applyStanceRev ⟨T.drop, g⟩ c = applyStanceRev T c := by
+  funext x y
+  by_cases hd : T.drop c x y = true
+  · rw [applyStanceRev_of_dropped (T := ⟨T.drop, g⟩) hd, applyStanceRev_of_dropped hd]
+  · rw [Bool.not_eq_true] at hd
+    rw [applyStanceRev_of_kept (T := ⟨T.drop, g⟩) hd, applyStanceRev_of_kept hd]
+    by_cases hv : c x y = none
+    · rw [formStep_of_open (T := ⟨T.drop, g⟩) hv, formStep_of_open hv]
+      exact h x y hd
+    · rw [formStep_of_held (T := ⟨T.drop, g⟩) hv, formStep_of_held hv]
+
+/-- **THE FORWARD ORDER DOES NOT IGNORE IT.** The same two stances differ under release-then-form, so the
+interaction the reverse order lacks is real and is the forward order's. Carrier-general, given a cell. -/
+theorem the_forward_order_uses_it (a b : Pt X) (c : Pt X → Pt X → Option Bool) :
+    applyStance (coincident a b) c a b
+      ≠ applyStance (⟨(coincident a b).drop, fun _ _ _ => none⟩ : Stance X) c a b := by
+  rw [applyStance_of_dropped (T := coincident a b) (by simp [coincident]),
+    applyStance_of_dropped (T := (⟨(coincident a b).drop, fun _ _ _ => none⟩ : Stance X))
+      (by simp [coincident])]
+  simp only [coincident]
+  exact Option.some_ne_none _
+
+/-- **A HELD CELL CANNOT BE CARRIED TO A NEW VALUE BY THE REVERSE ORDER.** In one application it can only be
+kept or emptied. This is the capability the release-first order has and the form-first order does not, and it
+follows from the same fact: the reverse order's forming runs before the release, so it never sees the opening
+the release makes. Carrier-general. -/
+theorem the_reverse_cannot_reassign {T : Stance X} {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (hv : c x y ≠ none) : applyStanceRev T c x y = c x y ∨ applyStanceRev T c x y = none := by
+  by_cases hd : T.drop c x y = true
+  · exact Or.inr (applyStanceRev_of_dropped hd)
+  · rw [Bool.not_eq_true] at hd
+    rw [applyStanceRev_of_kept hd, formStep_of_held hv]
+    exact Or.inl rfl
+
+/-! ### The framework's own three extremes are conflict-free -/
+
+theorem dropAll_conflictFree : ConflictFree (dropAll : Stance X) := fun _ _ _ _ => rfl
+
+theorem holdAll_conflictFree : ConflictFree (holdAll : Stance X) := fun _ _ _ _ => rfl
+
+theorem formAll_conflictFree : ConflictFree (formAll : Stance X) := by
+  intro c x y h
+  exact absurd h (by simp [formAll])
+
+/-- **SO THE THREE EXTREMES ARE ORDER-INVARIANT.** Releasing everything, keeping everything and forming
+everywhere give the same result under either order, because none of them ever releases and forms the same cell.
+The two failure modes the arc identified are therefore properties of the stance, not of the sequencing.
+Carrier-general. -/
+theorem the_extremes_are_order_invariant (c : Pt X → Pt X → Option Bool) :
+    applyStance (dropAll : Stance X) c = applyStanceRev (dropAll : Stance X) c
+      ∧ applyStance (holdAll : Stance X) c = applyStanceRev (holdAll : Stance X) c
+      ∧ applyStance (formAll : Stance X) c = applyStanceRev (formAll : Stance X) c :=
+  ⟨conflictFree_is_order_invariant dropAll_conflictFree c,
+   conflictFree_is_order_invariant holdAll_conflictFree c,
+   conflictFree_is_order_invariant formAll_conflictFree c⟩
+
+/-- **AND SO IS EVERY ONE-DIRECTIONAL RULE.** A policy read as a stance forms nothing, so it never conflicts:
+the whole earlier one-directional space is order-invariant, and the question of sequencing arises only once
+both directions are present. Carrier-general. -/
+theorem the_one_directional_space_is_order_invariant (S : Policy X)
+    (c : Pt X → Pt X → Option Bool) :
+    applyStance (ofMask S) c = applyStanceRev (ofMask S) c :=
+  conflictFree_is_order_invariant (fun _ _ _ _ => rfl) c
+
+
+end Orders
+
 
 #print axioms release_of_dropped
 #print axioms release_of_kept
@@ -665,5 +881,26 @@ end Band
 #print axioms an_invariant_band_without_a_resting_place
 #print axioms the_two_extremes_are_distinct_failures
 #print axioms restoreTo_returns_from_anywhere
+#print axioms formStep_of_open
+#print axioms formStep_of_held
+#print axioms applyStanceRev_of_dropped
+#print axioms applyStanceRev_of_kept
+#print axioms the_orders_agree_off_the_release
+#print axioms at_a_released_cell
+#print axioms the_reverse_is_the_forward_remasked
+#print axioms the_reverse_is_dominated
+#print axioms the_orders_agree_iff_no_conflict
+#print axioms conflictFree_is_order_invariant
+#print axioms coincident_conflicts
+#print axioms the_conflict_admits_no_neutral_value
+#print axioms the_conflict_is_real
+#print axioms the_reverse_ignores_the_form_at_released_cells
+#print axioms the_forward_order_uses_it
+#print axioms the_reverse_cannot_reassign
+#print axioms dropAll_conflictFree
+#print axioms holdAll_conflictFree
+#print axioms formAll_conflictFree
+#print axioms the_extremes_are_order_invariant
+#print axioms the_one_directional_space_is_order_invariant
 
 end Chiralogy
