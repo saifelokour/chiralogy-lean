@@ -493,8 +493,102 @@ theorem they_are_independent {a b : Pt X} (hab : a ≠ b) :
    ⟨keepSupported_is_not_a_structure_reader hab, keepSupported_has_a_standing_rest hab⟩,
    ⟨(takeTrueFirst_is_not_a_structure_reader hab).1, takeTrueFirst_has_no_standing_rest.1⟩⟩
 
-end Content
+/-! ## What it costs to keep an unsupported cell standing
 
+An unsupported held cell is one the examining rule takes: held off the diagonal and not held apart by present
+values. The dichotomy below is carrier-general, for an arbitrary classification, an arbitrary such cell and an
+arbitrary maintainer.
+
+Either the maintainer releases the cell, and then fixing the classification forces it to form the value back in
+the same application (`a_fixed_release_forces_a_conflict`), which is a conflict and so a disagreement between
+the two within-application orders; or it does not release the cell, and then it is not the thing doing the
+examining, since the examining rule opens that very cell. There is no third arrangement.
+
+The inert stance shows the self-examining hypothesis is needed rather than decorative: it keeps everything and
+conflicts nowhere, but it examines nothing. A fully supported classification faces neither horn, being fixed by
+the examining rule itself. -/
+
+/-- A classification every one of whose held cells is held apart by present values. -/
+def FullySupported (c : Pt X → Pt X → Option Bool) : Prop :=
+  ∀ x y : Pt X, x ≠ y → c x y ≠ none → presentCarried c x y
+
+/-- **AND THE EXAMINING RULE LEAVES NO UNSUPPORTED CELL HELD.** The held hypothesis turns out to be
+unnecessary: off the diagonal, an unsupported cell is open after one application whether or not it was held
+before. Carrier-general. -/
+theorem the_rule_opens_every_unsupported_cell {c : Pt X → Pt X → Option Bool} {x y : Pt X}
+    (hxy : x ≠ y) (hns : ¬ presentCarried c x y) :
+    step (keepSupported : Policy X) c x y = none := by
+  rw [step, partialization, if_pos (keepSupported_takes hxy hns)]
+
+/-- A maintainer that does its own examining: it releases at least wherever the examining rule would. -/
+def ReleasesWhatTheRuleReleases (S : Stance X) (c : Pt X → Pt X → Option Bool) : Prop :=
+  ∀ x y : Pt X, (keepSupported : Policy X) c x y = true → S.drop c x y = true
+
+/-- **SO A MAINTAINER THAT DOES ITS OWN EXAMINING MUST COLLIDE AT EVERY UNSUPPORTED HELD CELL.** This is the
+seal, carrier-general: not for one construction but for ANY stance that both fixes the classification and
+strips what the examining rule strips. Carrier-general. -/
+theorem a_self_examining_maintainer_must_conflict {S : Stance X} {c : Pt X → Pt X → Option Bool}
+    (hstrip : ReleasesWhatTheRuleReleases S c) (hfix : applyStance S c = c)
+    {x y : Pt X} (hxy : x ≠ y) (hv : c x y ≠ none) (hns : ¬ presentCarried c x y) :
+    Conflicted S c x y :=
+  a_fixed_release_forces_a_conflict hfix hv (hstrip x y (keepSupported_takes hxy hns))
+
+/-- **AND THEN THE TWO WITHIN-APPLICATION ORDERS DISAGREE THERE.** Canonical
+`the_conflict_admits_no_neutral_value`, so a self-examining maintainer of an unsupported cell is
+order-detectable at that cell. Carrier-general. -/
+theorem a_self_examining_maintainer_is_order_detectable {S : Stance X}
+    {c : Pt X → Pt X → Option Bool} (hstrip : ReleasesWhatTheRuleReleases S c)
+    (hfix : applyStance S c = c) {x y : Pt X} (hxy : x ≠ y) (hv : c x y ≠ none)
+    (hns : ¬ presentCarried c x y) :
+    applyStance S c x y ≠ applyStanceRev S c x y :=
+  the_conflict_admits_no_neutral_value
+    (a_self_examining_maintainer_must_conflict hstrip hfix hxy hv hns)
+
+/-- **THE DICHOTOMY, CARRIER-GENERAL.** At any unsupported held cell of any classification, any maintainer that
+fixes it either collides there, and is order-detectable there, or does not release there, and then it is not
+the thing doing the examining, since the examining rule opens that very cell. There is no third arrangement
+that keeps such a cell standing through its own examination without colliding. Carrier-general. -/
+theorem the_trade_off_is_general {S : Stance X} {c : Pt X → Pt X → Option Bool}
+    (hfix : applyStance S c = c) {x y : Pt X} (hxy : x ≠ y) (hv : c x y ≠ none)
+    (hns : ¬ presentCarried c x y) :
+    (Conflicted S c x y ∧ applyStance S c x y ≠ applyStanceRev S c x y)
+      ∨ (S.drop c x y = false ∧ step (keepSupported : Policy X) c x y = none) := by
+  by_cases hd : S.drop c x y = true
+  · have hcf := a_fixed_release_forces_a_conflict hfix hv hd
+    exact Or.inl ⟨hcf, the_conflict_admits_no_neutral_value hcf⟩
+  · rw [Bool.not_eq_true] at hd
+    exact Or.inr ⟨hd, the_rule_opens_every_unsupported_cell hxy hns⟩
+
+/-- **WHERE A SUPPORTED CLASSIFICATION NEVER LAPSES.** Examination with the forming removed leaves it exactly
+where it was, so it is present at every step without anything laying it back. Carrier-general. -/
+theorem the_supported_ground_never_lapses {c : Pt X → Pt X → Option Bool} (h : FullySupported c) :
+    applyStance (ofMask (keepSupported : Policy X)) c = c := by
+  rw [applyStance_ofMask_eq_step]
+  exact (keepSupported_fixed_iff c).mpr h
+
+/-- **THE SELF-EXAMINING HYPOTHESIS CANNOT BE DROPPED, AND WHAT DROPPING IT MEANS.** The stance that keeps
+whatever it is handed fixes every classification and is conflict-free everywhere, so it does keep an
+unsupported cell standing without colliding. It is not a counterexample: at such a cell the examining rule
+would release and this stance does not, so it examines nothing. A stance that examines nothing maintains
+nothing. Carrier-general. -/
+theorem the_inert_stance_is_not_a_third_arrangement {c : Pt X → Pt X → Option Bool}
+    {x y : Pt X} (hxy : x ≠ y) (hns : ¬ presentCarried c x y) :
+    applyStance (holdAll : Stance X) c = c
+      ∧ ConflictFree (holdAll : Stance X)
+      ∧ ¬ ReleasesWhatTheRuleReleases (holdAll : Stance X) c := by
+  refine ⟨applyStance_holdAll c, fun _ _ _ h => absurd h (by simp [holdAll]), fun hstrip => ?_⟩
+  exact absurd (hstrip x y (keepSupported_takes hxy hns)) (by simp [holdAll])
+
+/-- **AND THE SUPPORTED CASE FACES NEITHER HORN.** A fully supported classification is fixed by the examining
+rule read as a stance, which releases nothing and forms nothing, so it neither collides nor lapses.
+Carrier-general. -/
+theorem the_supported_case_faces_neither_horn {c : Pt X → Pt X → Option Bool}
+    (h : FullySupported c) :
+    applyStance (ofMask (keepSupported : Policy X)) c = c
+      ∧ ConflictFree (ofMask (keepSupported : Policy X)) :=
+  ⟨the_supported_ground_never_lapses h, fun _ _ _ _ => rfl⟩
+
+end Content
 
 #print axioms keepSupported_declines
 #print axioms keepSupported_takes
@@ -541,5 +635,12 @@ end Content
 #print axioms takeTrueFirst_rests_only_when_empty
 #print axioms takeTrueFirst_has_no_standing_rest
 #print axioms they_are_independent
+#print axioms the_rule_opens_every_unsupported_cell
+#print axioms a_self_examining_maintainer_must_conflict
+#print axioms a_self_examining_maintainer_is_order_detectable
+#print axioms the_trade_off_is_general
+#print axioms the_supported_ground_never_lapses
+#print axioms the_inert_stance_is_not_a_third_arrangement
+#print axioms the_supported_case_faces_neither_horn
 
 end Chiralogy

@@ -825,8 +825,21 @@ theorem the_one_directional_space_is_order_invariant (S : Policy X)
   conflictFree_is_order_invariant (fun _ _ _ _ => rfl) c
 
 
-end Orders
+omit [∀ i, Fintype (X i)] in
+/-- **FIXING A CLASSIFICATION WHILE RELEASING A HELD CELL FORCES A CONFLICT THERE.** Fully general: no support
+notion, no named construction. Once a stance releases a cell, what stands there afterwards is whatever it
+forms, so if the classification is unchanged the form must carry the cell's own value, and a stance that
+releases and forms the same cell is conflicted at it. Carrier-general. -/
+theorem a_fixed_release_forces_a_conflict {T : Stance X} {c : Pt X → Pt X → Option Bool}
+    {x y : Pt X} (hfix : applyStance T c = c) (hv : c x y ≠ none) (hd : T.drop c x y = true) :
+    Conflicted T c x y := by
+  refine ⟨hd, ?_⟩
+  have hc := congrFun (congrFun hfix x) y
+  rw [applyStance_of_dropped hd] at hc
+  rw [hc]
+  exact hv
 
+end Orders
 
 #print axioms release_of_dropped
 #print axioms release_of_kept
@@ -902,5 +915,6 @@ end Orders
 #print axioms formAll_conflictFree
 #print axioms the_extremes_are_order_invariant
 #print axioms the_one_directional_space_is_order_invariant
+#print axioms a_fixed_release_forces_a_conflict
 
 end Chiralogy
