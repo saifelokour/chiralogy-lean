@@ -78,7 +78,7 @@ theorem nary_region_independent (c : ∀ i, X i → X i → Option Bool)
   rw [nary_apply_differ c imp hi, nary_apply_differ c imp hi', ha, hb]
 
 /-- The intrinsic n-ary predicate: every differ-in-one cell depends only on its own coordinate. No factorization. -/
-def isAssemblageN (A : (∀ i, X i) → (∀ i, X i) → Option Bool) : Prop :=
+def isAssemblageN {V : Type} (A : (∀ i, X i) → (∀ i, X i) → V) : Prop :=
   ∀ (a b a' b' : ∀ i, X i) (i : Fin n), differsInOne a b i → differsInOne a' b' i →
     a i = a' i → b i = b' i → A a b = A a' b'
 
@@ -2802,5 +2802,344 @@ theorem orbit_partition_is_diffCard_of_homogeneous (r : ℕ) (hr : ∀ i, Fintyp
       rw [e1, e2]
 
 end FiniteReadings
+
+
+/-! ## Deconstruction, the free locus, and region coverage
+
+Three groups. What makes a classification reproducible from parts and a filling; where a value is undetermined
+by everything else; and when the two extreme fillings give wholes no relabelling can identify.
+
+BOUNDS, recorded with the results. The open-cell equivalence is the LOCAL sense, with the parts held: over
+varying parts it fails, and `a_shared_part_cell_blocks_openness` says why. It is also not licence, since
+admissibility can constrain cross cells jointly. The two region-coverage laws are SUFFICIENT and not
+necessary: `a_part_exchanging_permutation_collapses_the_tops` is a further route to collapse, and no converse
+from bare verdict-coverage is proved. Their hypotheses are unequal: the affirm case allows an arbitrary
+carrier map, the deny case needs an onto one. -/
+
+/-- The parts SEPARATE when some point has two single-move neighbours whose verdicts differ. -/
+def FactorsSeparate (c : ∀ i, X i → X i → Option Bool) : Prop :=
+  ∃ (a b q : Pt X) (i j : Fin n), differsInOne a q i ∧ differsInOne b q j ∧
+    c i (a i) (q i) ≠ c j (b j) (q j)
+
+/-- **SEPARATING PARTS DEFEAT EVERY FILLING.** Two rows are told apart at a single-move cell, which no filling reaches, so no filling collapses the whole. -/
+theorem separating_factors_defeat_every_import (c : ∀ i, X i → X i → Option Bool)
+    (h : FactorsSeparate c) (imp : Pt X → Pt X → Option Bool) : NonDegenerate (nary c imp) := by
+  obtain ⟨a, b, q, i, j, ha, hb, hne⟩ := h
+  refine ⟨a, b, fun hEq => hne ?_⟩
+  have hq := congrFun hEq q
+  rwa [nary_apply_differ c imp ha, nary_apply_differ c imp hb] at hq
+
+/-- **NO FILLING RESCUES A GRAIN VIOLATION.** A classification breaking the region grain is reproduced by no parts and no filling. The basis of deconstruction: a filling lives at cross cells, a grain violation at a single-move cell, and the two never meet. -/
+theorem no_filling_rescues_a_grain_violation (A : Pt X → Pt X → Option Bool)
+    (h : ¬ isAssemblageN A) (c : ∀ i, X i → X i → Option Bool)
+    (imp : Pt X → Pt X → Option Bool) : nary c imp ≠ A := by
+  intro hEq
+  exact h (hEq ▸ (fun _ _ _ _ _ hd hd' ha hb => nary_region_independent c imp hd hd' ha hb))
+
+/-- A cell is OPEN, given the parts, when two wholes over those parts agree at every other cell and differ there. -/
+def OpenGivenParts (c : ∀ i, X i → X i → Option Bool) (a b : Pt X) : Prop :=
+  ∃ imp imp' : Pt X → Pt X → Option Bool,
+    nary c imp a b ≠ nary c imp' a b ∧
+      ∀ p q : Pt X, (p, q) ≠ (a, b) → nary c imp p q = nary c imp' p q
+
+/-- **AN OPEN CELL IS A CROSS CELL.** Where a coordinate moved, the value is the part's verdict and no filling reaches it. -/
+theorem open_implies_cross (c : ∀ i, X i → X i → Option Bool) {a b : Pt X}
+    (h : OpenGivenParts c a b) : IsCross a b := by
+  rintro ⟨i, hi⟩
+  obtain ⟨imp, imp', hne, -⟩ := h
+  exact hne (by rw [nary_apply_differ c imp hi, nary_apply_differ c imp' hi])
+
+open scoped Classical in
+/-- **AND A CROSS CELL IS OPEN.** The empty filling against the filling that speaks at that one cell. -/
+theorem cross_implies_open (c : ∀ i, X i → X i → Option Bool) {a b : Pt X}
+    (h : IsCross a b) : OpenGivenParts c a b := by
+  refine ⟨fun _ _ => none, fun p q => if (p, q) = (a, b) then some true else none, ?_, ?_⟩
+  · rw [nary_apply_imp c _ h, nary_apply_imp c _ h]; simp
+  · intro p q hpq
+    by_cases hex : ∃ i, differsInOne p q i
+    · obtain ⟨i, hi⟩ := hex
+      rw [nary_apply_differ c _ hi, nary_apply_differ c _ hi]
+    · rw [nary_apply_imp c _ hex, nary_apply_imp c _ hex]; simp [hpq]
+
+/-- **THE OPEN CELLS ARE EXACTLY THE CROSS CELLS.** With the parts held, the cross region is precisely where a value is undetermined by everything else. Local sense: undetermined by the rest, not licence to take any value jointly. -/
+theorem the_open_cells_are_exactly_the_cross (c : ∀ i, X i → X i → Option Bool) (a b : Pt X) :
+    OpenGivenParts c a b ↔ IsCross a b :=
+  ⟨open_implies_cross c, cross_implies_open c⟩
+
+/-- **A SECOND CELL SHARING A PART'S CELL BLOCKS OPENNESS OVER VARYING PARTS.** Any change to that part shows at both, so the two cannot differ at one cell alone. This is why the equivalence above holds only with the parts held. -/
+theorem a_shared_part_cell_blocks_openness (c c' : ∀ i, X i → X i → Option Bool)
+    (imp : Pt X → Pt X → Option Bool) {a b p q : Pt X} {i : Fin n}
+    (hab : differsInOne a b i) (hpq : differsInOne p q i)
+    (h1 : p i = a i) (h2 : q i = b i) (hne : nary c imp a b ≠ nary c' imp a b) :
+    nary c imp p q ≠ nary c' imp p q := by
+  rw [nary_apply_differ c imp hpq, nary_apply_differ c' imp hpq, h1, h2]
+  rw [nary_apply_differ c imp hab, nary_apply_differ c' imp hab] at hne
+  exact hne
+
+omit [∀ i, DecidableEq (X i)] in
+/-- The grain forces agreement between two points sharing a coordinate value. -/
+theorem rows_agree_when_a_coordinate_is_shared {V : Type} (g : Pt X → V)
+    (h : isAssemblageN (fun a _ : Pt X => g a)) {a a' : Pt X} (i : Fin n)
+    (hi : a i = a' i) (t : X i) (ht : a i ≠ t) : g a = g a' := by
+  have hd : differsInOne a (Function.update a i t) i := by
+    refine ⟨?_, fun k hk => ?_⟩
+    · rw [Function.update_self]; exact ht
+    · exact (Function.update_of_ne hk t a).symm
+  have hd' : differsInOne a' (Function.update a' i t) i := by
+    refine ⟨?_, fun k hk => ?_⟩
+    · rw [Function.update_self, ← hi]; exact ht
+    · exact (Function.update_of_ne hk t a').symm
+  exact h a _ a' _ i hd hd' hi (by rw [Function.update_self, Function.update_self])
+
+/-- The path from one point to another, switching coordinates over one at a time. -/
+def coordPath (a a' : Pt X) (m : ℕ) : Pt X := fun k => if k.val < m then a' k else a k
+
+omit [∀ i, DecidableEq (X i)] in
+/-- The path starts where it should. -/
+theorem coordPath_zero (a a' : Pt X) : coordPath a a' 0 = a := by
+  funext k; simp [coordPath]
+
+omit [∀ i, DecidableEq (X i)] in
+/-- And ends where it should. -/
+theorem coordPath_full (a a' : Pt X) : coordPath a a' n = a' := by
+  funext k; simp [coordPath, k.isLt]
+
+omit [∀ i, DecidableEq (X i)] in
+/-- Consecutive points of the path agree at every coordinate but one. -/
+theorem coordPath_agree (a a' : Pt X) (m : ℕ) {j : Fin n} (hj : j.val ≠ m) :
+    coordPath a a' m j = coordPath a a' (m + 1) j := by
+  simp only [coordPath]
+  by_cases h : j.val < m
+  · rw [if_pos h, if_pos (by omega)]
+  · rw [if_neg h, if_neg (by omega)]
+
+/-- So the grain carries the value along each step. -/
+theorem coordPath_step {V : Type} (g : Pt X → V) (h : isAssemblageN (fun a _ : Pt X => g a))
+    (hn : 2 ≤ n) (hfib : ∀ i : Fin n, ∃ s t : X i, s ≠ t) (a a' : Pt X) (m : ℕ) :
+    g (coordPath a a' m) = g (coordPath a a' (m + 1)) := by
+  obtain ⟨j, hj⟩ : ∃ j : Fin n, j.val ≠ m := by
+    rcases eq_or_ne m 0 with h0 | h0
+    · exact ⟨⟨1, by omega⟩, by simp [h0]⟩
+    · exact ⟨⟨0, by omega⟩, Ne.symm h0⟩
+  obtain ⟨s, t, hst⟩ := hfib j
+  by_cases hv : coordPath a a' m j = s
+  · exact rows_agree_when_a_coordinate_is_shared g h j (coordPath_agree a a' m hj) t (by rw [hv]; exact hst)
+  · exact rows_agree_when_a_coordinate_is_shared g h j (coordPath_agree a a' m hj) s hv
+
+/-- And hence along the whole path. -/
+theorem coordPath_const {V : Type} (g : Pt X → V) (h : isAssemblageN (fun a _ : Pt X => g a))
+    (hn : 2 ≤ n) (hfib : ∀ i : Fin n, ∃ s t : X i, s ≠ t) (a a' : Pt X) :
+    ∀ m, g (coordPath a a' m) = g a := by
+  intro m
+  induction m with
+  | zero => rw [coordPath_zero]
+  | succ k ih => rw [← coordPath_step g h hn hfib a a' k]; exact ih
+
+/-- **A CONSTANT-ROW CLASSIFICATION IS NEVER AN ASSEMBLY.** On any product carrier with two or more coordinates and non-trivial fibres, reading only the first argument respects no grain unless it carries no distinction at all. At an arbitrary value space. -/
+theorem constant_row_registers_are_bases (hn : 2 ≤ n) (hfib : ∀ i : Fin n, ∃ s t : X i, s ≠ t)
+    {V : Type} (g : Pt X → V) (hg : ∃ a a' : Pt X, g a ≠ g a') :
+    ¬ isAssemblageN (fun a _ : Pt X => g a) := by
+  intro h
+  obtain ⟨a, a', hne⟩ := hg
+  have hc := coordPath_const g h hn hfib a a' n
+  rw [coordPath_full] at hc
+  exact hne hc.symm
+
+/-- **AND THE SHAPE SURVIVES EVERY RELABELLING.** Reading a constant-row classification through a relabelling gives another, so these resist under every presentation. -/
+theorem the_family_survives_every_relabelling (hn : 2 ≤ n)
+    (hfib : ∀ i : Fin n, ∃ s t : X i, s ≠ t) {V : Type} (g : Pt X → V) (f : Pt X → Pt X)
+    (hg : ∃ a a' : Pt X, g (f a) ≠ g (f a')) :
+    ¬ isAssemblageN (fun a _ : Pt X => g (f a)) :=
+  constant_row_registers_are_bases hn hfib (fun a => g (f a)) hg
+
+omit [∀ i, DecidableEq (X i)] in
+/-- Such a classification is a genuine object: its rows differ. -/
+theorem constant_row_registers_are_nondegenerate {V : Type} (g : Pt X → V)
+    (hg : ∃ a a' : Pt X, g a ≠ g a') : NonDegenerate (fun a _ : Pt X => g a) := by
+  obtain ⟨a, a', hne⟩ := hg
+  exact ⟨a, a', fun hEq => hne (congrFun hEq a)⟩
+
+/-- **THE PARTS HAVE A KERNEL.** Rules agreeing away from their diagonals give the same whole: a rule's diagonal is never read. -/
+theorem parts_agreeing_off_the_diagonal_give_the_same_whole
+    (c c' : ∀ i, X i → X i → Option Bool) (imp : Pt X → Pt X → Option Bool)
+    (h : ∀ (i : Fin n) (x y : X i), x ≠ y → c i x y = c' i x y) : nary c imp = nary c' imp := by
+  funext a b
+  by_cases hex : ∃ i, differsInOne a b i
+  · obtain ⟨i, hi⟩ := hex
+    rw [nary_apply_differ c imp hi, nary_apply_differ c' imp hi]
+    exact h i (a i) (b i) hi.1
+  · rw [nary_apply_imp c imp hex, nary_apply_imp c' imp hex]
+
+/-- **AND THE FILLING HAS A KERNEL TOO.** Fillings agreeing on the cross give the same whole. -/
+theorem fillings_agreeing_on_the_cross_give_the_same_whole
+    (c : ∀ i, X i → X i → Option Bool) (imp imp' : Pt X → Pt X → Option Bool)
+    (h : ∀ a b : Pt X, IsCross a b → imp a b = imp' a b) : nary c imp = nary c imp' := by
+  funext a b
+  by_cases hex : ∃ i, differsInOne a b i
+  · obtain ⟨i, hi⟩ := hex
+    rw [nary_apply_differ c imp hi, nary_apply_differ c imp' hi]
+  · rw [nary_apply_imp c imp hex, nary_apply_imp c imp' hex]; exact h a b hex
+
+/-- **SO THE OPERATION IS FREE ON NEITHER ARGUMENT.** What the parts generate is a term structure only after quotienting by both kernels. -/
+theorem the_operation_is_free_on_neither_argument
+    (c c' : ∀ i, X i → X i → Option Bool) (imp imp' : Pt X → Pt X → Option Bool)
+    (hc : ∀ (i : Fin n) (x y : X i), x ≠ y → c i x y = c' i x y)
+    (hi : ∀ a b : Pt X, IsCross a b → imp a b = imp' a b) :
+    nary c imp = nary c' imp ∧ nary c imp = nary c imp' :=
+  ⟨parts_agreeing_off_the_diagonal_give_the_same_whole c c' imp hc,
+   fillings_agreeing_on_the_cross_give_the_same_whole c imp imp' hi⟩
+
+omit [∀ i, DecidableEq (X i)] in
+/-- **THE GRAIN IS STABLE UNDER TRANSPOSE.** So the transpose of a base is a base, at any value space. -/
+theorem grain_is_transpose_stable {V : Type} (A : Pt X → Pt X → V) (h : isAssemblageN A) :
+    isAssemblageN (fun a b => A b a) := by
+  intro a b a' b' i hd hd' ha hb
+  exact h b a b' a' i ⟨Ne.symm hd.1, fun j hj => (hd.2 j hj).symm⟩
+    ⟨Ne.symm hd'.1, fun j hj => (hd'.2 j hj).symm⟩ hb ha
+
+/-- **THE EXTREME WHOLES ARE DISTINCT WHEN THE DETERMINED REGION NEVER AFFIRMS.** If no single-move cell affirms while some abstains and some denies, and some cell is free, no relabelling of carrier and values relates the two extreme wholes. The carrier map is arbitrary here. SUFFICIENT, not necessary. -/
+theorem the_tops_are_distinct_when_the_region_never_affirms
+    (c : ∀ i, X i → X i → Option Bool)
+    (hmiss : ∀ (a b : Pt X) (i : Fin n), differsInOne a b i → c i (a i) (b i) ≠ some true)
+    {p q : Pt X} {i : Fin n} (hpq : differsInOne p q i) (hnone : c i (p i) (q i) = none)
+    {r s : Pt X} {j : Fin n} (hrs : differsInOne r s j) (hfalse : c j (r j) (s j) = some false)
+    {u v : Pt X} (huv : IsCross u v)
+    (σ : Pt X → Pt X) (g : Option Bool → Option Bool) (hg : Function.Injective g)
+    (h : ∀ a b, g (nary c (fun _ _ => some true) a b)
+        = nary c (fun _ _ => some false) (σ a) (σ b)) : False := by
+  have hnever : ∀ a b : Pt X, nary c (fun _ _ => some false) a b ≠ some true := by
+    intro a b
+    by_cases hex : ∃ i, differsInOne a b i
+    · obtain ⟨k, hk⟩ := hex
+      rw [nary_apply_differ c _ hk]; exact hmiss a b k hk
+    · rw [nary_apply_imp c _ hex]; simp
+  have hT : nary c (fun _ _ => some true) u v = some true := by
+    rw [nary_apply_imp c _ huv]
+  have hN : nary c (fun _ _ => some true) p q = none := by
+    rw [nary_apply_differ c _ hpq]; exact hnone
+  have hF : nary c (fun _ _ => some true) r s = some false := by
+    rw [nary_apply_differ c _ hrs]; exact hfalse
+  have gn : g none ≠ some true := by
+    have e := h p q; rw [hN] at e; rw [e]; exact hnever _ _
+  have gf : g (some false) ≠ some true := by
+    have e := h r s; rw [hF] at e; rw [e]; exact hnever _ _
+  have gt : g (some true) ≠ some true := by
+    have e := h u v; rw [hT] at e; rw [e]; exact hnever _ _
+  have d12 : g none ≠ g (some false) := fun e => by simpa using hg e
+  have d13 : g none ≠ g (some true) := fun e => by simpa using hg e
+  have d23 : g (some false) ≠ g (some true) := fun e => by simpa using hg e
+  rcases hgn : g none with _ | b1
+  · rcases hgf : g (some false) with _ | b2
+    · exact d12 (by rw [hgn, hgf])
+    · rcases hgt : g (some true) with _ | b3
+      · exact d13 (by rw [hgn, hgt])
+      · cases b2 <;> cases b3
+        · exact d23 (by rw [hgf, hgt])
+        · exact gt (by rw [hgt])
+        · exact gf (by rw [hgf])
+        · exact gf (by rw [hgf])
+  · cases b1
+    · rcases hgf : g (some false) with _ | b2
+      · rcases hgt : g (some true) with _ | b3
+        · exact d23 (by rw [hgf, hgt])
+        · cases b3
+          · exact d13 (by rw [hgn, hgt])
+          · exact gt (by rw [hgt])
+      · cases b2
+        · exact d12 (by rw [hgn, hgf])
+        · exact gf (by rw [hgf])
+    · exact gn (by rw [hgn])
+
+/-- With no denial on the determined region, the affirming whole takes only two of the three values. -/
+theorem the_affirming_whole_is_two_valued (c : ∀ i, X i → X i → Option Bool)
+    (hmiss : ∀ (a b : Pt X) (i : Fin n), differsInOne a b i → c i (a i) (b i) ≠ some false)
+    (a b : Pt X) :
+    nary c (fun _ _ => some true) a b = none ∨ nary c (fun _ _ => some true) a b = some true := by
+  by_cases hex : ∃ i, differsInOne a b i
+  · obtain ⟨k, hk⟩ := hex
+    rw [nary_apply_differ c _ hk]
+    rcases hv : c k (a k) (b k) with _ | v
+    · exact Or.inl rfl
+    · cases v
+      · exact absurd hv (hmiss a b k hk)
+      · exact Or.inr rfl
+  · rw [nary_apply_imp c _ hex]; exact Or.inr rfl
+
+/-- **THE MIRROR, AND IT IS NOT FREE.** If the region never denies, some cell there abstains and some affirms, and some cell is free, then no relabelling with an ONTO carrier map relates the two extreme wholes. The surjectivity is load-bearing: the counting runs the other way here, and no condition on the value map is needed. -/
+theorem the_tops_are_distinct_when_the_region_never_denies (c : ∀ i, X i → X i → Option Bool)
+    (hmiss : ∀ (a b : Pt X) (i : Fin n), differsInOne a b i → c i (a i) (b i) ≠ some false)
+    {p q : Pt X} {i : Fin n} (hpq : differsInOne p q i) (hnone : c i (p i) (q i) = none)
+    {r s : Pt X} {j : Fin n} (hrs : differsInOne r s j) (htrue : c j (r j) (s j) = some true)
+    {u v : Pt X} (huv : IsCross u v)
+    (σ : Pt X → Pt X) (hσ : Function.Surjective σ)
+    (g : Option Bool → Option Bool)
+    (h : ∀ a b, g (nary c (fun _ _ => some true) a b)
+        = nary c (fun _ _ => some false) (σ a) (σ b)) : False := by
+  obtain ⟨a1, ha1⟩ := hσ p; obtain ⟨b1, hb1⟩ := hσ q
+  obtain ⟨a2, ha2⟩ := hσ r; obtain ⟨b2, hb2⟩ := hσ s
+  obtain ⟨a3, ha3⟩ := hσ u; obtain ⟨b3, hb3⟩ := hσ v
+  have e1 : g (nary c (fun _ _ => some true) a1 b1) = none := by
+    rw [h, ha1, hb1, nary_apply_differ c _ hpq]; exact hnone
+  have e2 : g (nary c (fun _ _ => some true) a2 b2) = some true := by
+    rw [h, ha2, hb2, nary_apply_differ c _ hrs]; exact htrue
+  have e3 : g (nary c (fun _ _ => some true) a3 b3) = some false := by
+    rw [h, ha3, hb3, nary_apply_imp c _ huv]
+  rcases the_affirming_whole_is_two_valued c hmiss a1 b1 with h1 | h1 <;>
+    rcases the_affirming_whole_is_two_valued c hmiss a2 b2 with h2 | h2 <;>
+      rcases the_affirming_whole_is_two_valued c hmiss a3 b3 with h3 | h3 <;>
+        rw [h1] at e1 <;> rw [h2] at e2 <;> rw [h3] at e3 <;>
+          simp_all
+
+section ConstantFibre
+
+variable {F : Type} [DecidableEq F]
+
+/-- A carrier whose fibres are all the same. -/
+abbrev CCar (n : ℕ) (F : Type) : Fin n → Type := fun _ => F
+
+/-- Relabelling a point by permuting its coordinates. -/
+def byCoord (τ : Fin n → Fin n) (p : Pt (CCar n F)) : Pt (CCar n F) := fun i => p (τ i)
+
+omit [∀ i, DecidableEq (X i)] [DecidableEq F] in
+/-- The relabelling carries a move in one coordinate to a move in another. -/
+theorem byCoord_differs {τ : Fin n → Fin n} (hτ : ∀ k, τ (τ k) = k)
+    {a b : Pt (CCar n F)} {i : Fin n} (h : differsInOne a b i) :
+    differsInOne (byCoord τ a) (byCoord τ b) (τ i) := by
+  refine ⟨?_, fun j hj => ?_⟩
+  · show a (τ (τ i)) ≠ b (τ (τ i))
+    rw [hτ]; exact h.1
+  · show a (τ j) = b (τ j)
+    refine h.2 (τ j) (fun he => hj ?_)
+    rw [← he, hτ]
+
+omit [∀ i, DecidableEq (X i)] [DecidableEq F] in
+/-- And it carries free cells to free cells. -/
+theorem byCoord_cross {τ : Fin n → Fin n} (hτ : ∀ k, τ (τ k) = k)
+    {a b : Pt (CCar n F)} (h : IsCross a b) :
+    IsCross (byCoord τ a) (byCoord τ b) := by
+  rintro ⟨k, hk⟩
+  refine h ⟨τ k, ?_⟩
+  have hb : ∀ p : Pt (CCar n F), byCoord τ (byCoord τ p) = p := by
+    intro p; funext m; show p (τ (τ m)) = p m; rw [hτ]
+  have := byCoord_differs hτ hk
+  rwa [hb, hb] at this
+
+/-- **A PART-EXCHANGING PERMUTATION COLLAPSES THE TWO EXTREME WHOLES.** An involutive permutation of coordinates under which each part becomes the next one's verdict-flip identifies them. A FURTHER route to collapse, which is why the two laws above are sufficient and not necessary. -/
+theorem a_part_exchanging_permutation_collapses_the_tops
+    (c : ∀ i, CCar n F i → CCar n F i → Option Bool) (τ : Fin n → Fin n) (hτ : ∀ k, τ (τ k) = k)
+    (hexch : ∀ (k : Fin n) (x y : F), x ≠ y → (c k x y).map (fun t => !t) = c (τ k) x y)
+    (a b : Pt (CCar n F)) :
+    (nary c (fun _ _ => some true) a b).map (fun t => !t)
+      = nary c (fun _ _ => some false) (byCoord τ a) (byCoord τ b) := by
+  by_cases hex : ∃ i, differsInOne a b i
+  · obtain ⟨i, hi⟩ := hex
+    rw [nary_apply_differ c _ hi, nary_apply_differ c _ (byCoord_differs hτ hi)]
+    show (c i (a i) (b i)).map (fun t => !t) = c (τ i) (a (τ (τ i))) (b (τ (τ i)))
+    rw [hτ]
+    exact hexch i (a i) (b i) hi.1
+  · rw [nary_apply_imp c _ hex, nary_apply_imp c _ (byCoord_cross hτ hex)]
+    rfl
+
+end ConstantFibre
 
 end Chiralogy
