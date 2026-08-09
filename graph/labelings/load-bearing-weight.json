@@ -9,6 +9,7 @@
  "derivation": "Transitive closure of the reversed edge set of the spine.",
  "derivedFrom": "canonical",
  "keyedBy": "canonical-name",
+ "kind": "node",
  "labeling": "load-bearing-weight",
  "title": "How many declarations depend on this one, directly or through others.",
  "values": {

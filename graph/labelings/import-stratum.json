@@ -11,6 +11,7 @@
  "derivation": "The stratum the extraction assigns from the declaring module's path.",
  "derivedFrom": "canonical",
  "keyedBy": "canonical-name",
+ "kind": "node",
  "labeling": "import-stratum",
  "title": "The layer of the framework a declaration lives in.",
  "values": {

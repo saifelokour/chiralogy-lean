@@ -8,6 +8,7 @@
   "labeling:conditionality"
  ],
  "keyedBy": "canonical-name",
+ "kind": "node",
  "labeling": "satisfaction-type-system",
  "title": "Whether the declaration lights up for the type-system register.",
  "values": {

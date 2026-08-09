@@ -28,18 +28,20 @@ canonical change is the only way it changes.
 One file per labeling, in `graph/labelings/<id>.json`:
 
     { "labeling":   "<id>",
+      "kind":       "node" | "edge",
       "title":      "<one line, what it is>",
       "derivedFrom": "canonical" | ["labeling:<id>", ...],
       "derivation": "<one line, how it is computed>",
       "attribute":  { "kind": "categorical" | "scalar" | "boolean" | "set",
                       "range": [...] | {"min": n, "max": n} | null },
-      "keyedBy":    "canonical-name",
+      "keyedBy":    "canonical-name" | "canonical-name-pair",
       "values":     { "<canonical name>": <attribute value>, ... } }
 
 Rules.
 
-1. KEY. Every key must be a node of the spine. Coverage may be partial: a node absent from `values` is
-   unlabelled by this labeling, which is different from being labelled with a null value.
+1. KEY. Every key must be a node of the spine, or for an edge labeling an edge of it. Coverage may be
+   partial: a key absent from `values` is unlabelled by this labeling, which is different from being
+   labelled with a null value.
 
 2. PURE DATA. A labeling carries attribute VALUES and no visual information. Which visual channel an
    attribute drives, and what colour or size or opacity it becomes, is the renderer's choice, made later
@@ -55,6 +57,23 @@ Rules.
 
 5. REGENERABLE. Running the derivation again must reproduce the file byte for byte. Any ordering is
    sorted; nothing carries a timestamp; any randomised step is seeded.
+
+## Two kinds of labeling
+
+A labeling is keyed either by NODE or by EDGE. The two kinds share the contract above without change; only
+what a key denotes differs.
+
+    "kind": "node"   keys are canonical names, as above
+    "kind": "edge"   keys are "<source>|<target>", the ordered pair of canonical names of a spine edge
+
+The separator is a pipe because canonical names never contain one. Every edge key must be an edge of the
+spine, exactly as every node key must be a node of it. All five rules carry over unchanged: partial coverage
+is allowed, values are pure data, the derivation source is canonical or other labelings, attributes are
+agnostic, and regeneration is byte identical.
+
+A labeling file declares its kind:
+
+    { "labeling": "...", "kind": "node" | "edge", ... }
 
 ## Adding a viewpoint
 

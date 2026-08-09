@@ -14,6 +14,7 @@
   "labeling:satisfaction-type-system"
  ],
  "keyedBy": "canonical-name",
+ "kind": "node",
  "labeling": "invariance-under-instantiation",
  "title": "Whether the declaration survives instantiation at every register, and on what grounds.",
  "values": {

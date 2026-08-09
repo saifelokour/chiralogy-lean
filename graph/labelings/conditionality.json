@@ -9,6 +9,7 @@
  "derivation": "The printed type is searched for a concrete instance: a carrier at a numeral, or a named object of the register layer. The value space Option Bool is masked first.",
  "derivedFrom": "canonical",
  "keyedBy": "canonical-name",
+ "kind": "node",
  "labeling": "conditionality",
  "title": "Whether the statement is quantified over all carriers or names a concrete one.",
  "values": {

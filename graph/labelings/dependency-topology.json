@@ -11,6 +11,7 @@
  "derivation": "Root as the extraction marks it; otherwise base when nothing is depended on, leaf when nothing depends on it, interior when both.",
  "derivedFrom": "canonical",
  "keyedBy": "canonical-name",
+ "kind": "node",
  "labeling": "dependency-topology",
  "title": "The node's role in the proof dependency graph.",
  "values": {

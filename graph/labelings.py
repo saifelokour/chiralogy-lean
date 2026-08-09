@@ -22,14 +22,15 @@ def emit(obj, path):
         f.write("\n")
 
 
-def labeling(lid, title, derived_from, derivation, kind, rng, values):
+def labeling(lid, title, derived_from, derivation, kind, rng, values, keyed="node"):
     return {
         "labeling": lid,
+        "kind": keyed,
         "title": title,
         "derivedFrom": derived_from,
         "derivation": derivation,
         "attribute": {"kind": kind, "range": rng},
-        "keyedBy": "canonical-name",
+        "keyedBy": "canonical-name" if keyed == "node" else "canonical-name-pair",
         "values": values,
     }
 
@@ -73,6 +74,24 @@ for n, e in zip(names, entries):
     if not e.lstrip("@").startswith(n):
         sys.exit(f"type dump misaligned at {n}")
     types[n] = e.split(" : ", 1)[1] if " : " in e else ""
+
+# ----------------------------------------------- per declaration facts (Lean)
+facts_out = subprocess.run(["lake", "env", "lean", os.path.join(GRAPH, "decl-facts.lean")],
+                           cwd=ROOT, capture_output=True, text=True).stdout
+typehash, proofhead, extdeps, extmod = {}, {}, {}, {}
+for line in facts_out.splitlines():
+    parts = line.split("\t")
+    if parts[0] == "MODULE" and len(parts) == 3:
+        extmod[parts[1]] = parts[2]
+        continue
+    if len(parts) != 4:
+        continue
+    nm, th, hd, ext = parts
+    typehash[nm] = th
+    proofhead[nm] = hd
+    extdeps[nm] = sorted(x for x in ext.split(",") if x)
+if not typehash:
+    sys.exit("declaration facts empty")
 
 # ------------------------------------------------------- 3a import stratum
 emit(labeling(
@@ -198,6 +217,64 @@ emit(labeling(
     "when it does. The two are kept apart so a finite register sample is never read as the unconditional core.",
     "categorical", ["unconditional", "invariant-across-sample", "varies"], inv),
     os.path.join(LAB, "invariance-under-instantiation.json"))
+
+# --------------------------------------------- A2 edge provenance and derivation
+edgekind = {}
+for e in G["edges"]:
+    if e["source"] in nodeset and e["target"] in nodeset:
+        edgekind[f"{e['source']}|{e['target']}"] = (
+            "proof-only" if e["kind"] == "proofOnly" else "statement")
+emit(labeling(
+    "edge-provenance", "Whether the dependency shows in the target's statement or only in its proof.",
+    "canonical",
+    "The extraction marks an edge proofOnly when the dependency is absent from the statement and present "
+    "in the proof term; statement otherwise.",
+    "categorical", ["statement", "proof-only"], edgekind, keyed="edge"),
+    os.path.join(LAB, "edge-provenance.json"))
+
+deriv = {}
+for s_, t_ in edges:
+    if proofhead.get(s_) == t_:
+        deriv[f"{s_}|{t_}"] = ("restatement" if typehash.get(s_) == typehash.get(t_)
+                               else "specialisation")
+    else:
+        deriv[f"{s_}|{t_}"] = "derived"
+emit(labeling(
+    "edge-derivation", "How the source stands to the target it depends on.",
+    "canonical",
+    "Restatement when the source's proof is headed by the target and the two types have the same "
+    "structural hash, so they state one proposition; specialisation when the proof is headed by the target "
+    "and the types differ, so the source is one application of it; derived otherwise.",
+    "categorical", ["restatement", "specialisation", "derived"], deriv, keyed="edge"),
+    os.path.join(LAB, "edge-derivation.json"))
+
+# ------------------------------------- B substrate check, one level below canonical
+# A substrate PARENT is a library result. A core primitive, a type former or an elimination rule from
+# Lean's own prelude, is not an ancestor in any structural sense: everything mentions it.
+def mathlib_parents(n):
+    return sorted(d for d in extdeps.get(n, []) if extmod.get(d, "").startswith("Mathlib"))
+
+roots = sorted(n for n in names if byname[n].get("isRoot"))
+shared = defaultdict(set)
+for r in roots:
+    for d in mathlib_parents(r):
+        shared[d].add(r)
+prov = {}
+for r in roots:
+    partners = sorted({q for d in mathlib_parents(r) for q in shared[d] if q != r})
+    prov[r] = partners
+emit({"diagnostic": "root-provenance",
+      "title": "Whether a canonical root stays independent when one level of substrate is shown.",
+      "derivedFrom": "canonical",
+      "derivation": "For each root, the library results it uses directly, one substrate level only, and "
+                    "the other roots sharing any of them. Constants from Lean's own prelude are excluded: "
+                    "a type former is not an ancestor, since everything mentions it.",
+      "keyedBy": "canonical-name",
+      "roots": len(roots),
+      "mathlibParents": {r: mathlib_parents(r) for r in roots},
+      "allExternalParents": {r: extdeps.get(r, []) for r in roots},
+      "sharesWith": prov},
+     os.path.join(GRAPH, "root-provenance.json"))
 
 os.remove(check)
 print(f"spine: {len(names)} nodes, {len(edges)} edges")

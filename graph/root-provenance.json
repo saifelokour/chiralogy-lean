@@ -1,0 +1,286 @@
+{
+ "allExternalParents": {
+  "Chiralogy.AbsenceStructure": [],
+  "Chiralogy.Arrow": [
+   "Bool",
+   "Prod"
+  ],
+  "Chiralogy.CataphaticConformant": [],
+  "Chiralogy.Equinumerous": [
+   "Equiv",
+   "Fin",
+   "Nat",
+   "Nonempty"
+  ],
+  "Chiralogy.LevelObj": [],
+  "Chiralogy.Member": [],
+  "Chiralogy.NonDegenerate": [
+   "Exists",
+   "Ne"
+  ],
+  "Chiralogy.Obj": [],
+  "Chiralogy.OpLevelObj": [],
+  "Chiralogy.Pt": [
+   "Fin",
+   "Nat"
+  ],
+  "Chiralogy.Rep": [
+   "Nat"
+  ],
+  "Chiralogy.Stance": [
+   "Fin",
+   "Nat"
+  ],
+  "Chiralogy.TypeSystem.TypeGround": [],
+  "Chiralogy.agreementLE": [
+   "Eq"
+  ],
+  "Chiralogy.assembleClassify": [
+   "Bool",
+   "DecidableEq",
+   "Eq",
+   "Option",
+   "Prod",
+   "Prod.fst",
+   "Prod.snd",
+   "ite"
+  ],
+  "Chiralogy.botC": [
+   "Bool",
+   "Option",
+   "Option.none"
+  ],
+  "Chiralogy.cfamS": [
+   "Bool",
+   "Bool.false",
+   "Bool.true",
+   "Eq",
+   "Fin",
+   "Fin.val",
+   "Finset",
+   "Finset.decidableMem",
+   "Finset.instSetLike",
+   "LT.lt",
+   "Membership.mem",
+   "Nat",
+   "Nat.decLt",
+   "Option",
+   "Option.none",
+   "Option.some",
+   "Prod",
+   "Prod.mk",
+   "SetLike.instMembership",
+   "instDecidableEqFin",
+   "instDecidableEqProd",
+   "instLTNat",
+   "ite"
+  ],
+  "Chiralogy.closeable": [
+   "Bool",
+   "Bool.true",
+   "Eq",
+   "Fin",
+   "Nat"
+  ],
+  "Chiralogy.differsInOne": [
+   "And",
+   "Eq",
+   "Fin",
+   "Nat",
+   "Ne"
+  ],
+  "Chiralogy.embed": [
+   "Bool",
+   "Bool.true",
+   "Eq",
+   "OfNat.ofNat",
+   "One",
+   "One.toOfNat1",
+   "Zero",
+   "Zero.toOfNat0",
+   "instDecidableEqBool",
+   "ite"
+  ],
+  "Chiralogy.fixedPoint_of_surjection": [
+   "Eq",
+   "Exists",
+   "Function.Surjective"
+  ],
+  "Chiralogy.imprecise": [
+   "And",
+   "Bool",
+   "Bool.false",
+   "Bool.true",
+   "Eq",
+   "Fin",
+   "Fin.instOfNat",
+   "Nat",
+   "OfNat.ofNat",
+   "Option",
+   "Option.none",
+   "Option.some",
+   "instDecidableAnd",
+   "instDecidableEqFin",
+   "instOfNatNat",
+   "ite"
+  ],
+  "Chiralogy.isTotal": [
+   "Bool",
+   "Ne",
+   "Option",
+   "Option.none"
+  ],
+  "Chiralogy.mzAppend": [
+   "Bool",
+   "HAppend.hAppend",
+   "List",
+   "List.instAppend",
+   "Option",
+   "Option.none",
+   "Option.some",
+   "instHAppendOfAppend"
+  ],
+  "Chiralogy.optCycle": [
+   "Bool",
+   "Bool.false",
+   "Bool.true",
+   "Option",
+   "Option.none",
+   "Option.some",
+   "Unit"
+  ],
+  "Chiralogy.optLE": [
+   "Bool",
+   "Eq",
+   "Option",
+   "Option.none",
+   "Or"
+  ],
+  "Chiralogy.optMeet": [
+   "Bool",
+   "Eq",
+   "Option",
+   "Option.none",
+   "Option.some",
+   "instDecidableEqBool",
+   "ite"
+  ],
+  "Chiralogy.partialization": [
+   "Bool",
+   "Bool.true",
+   "Eq",
+   "Option",
+   "Option.none",
+   "instDecidableEqBool",
+   "ite"
+  ],
+  "Chiralogy.presentCarried": [
+   "And",
+   "Bool",
+   "Eq",
+   "Exists",
+   "Ne",
+   "Option",
+   "Option.some"
+  ],
+  "Chiralogy.relabel": [
+   "Bool",
+   "Option"
+  ],
+  "Chiralogy.relabelW": [
+   "Bool"
+  ],
+  "Chiralogy.totalization": [
+   "Bool",
+   "Decidable.decide",
+   "LE.le",
+   "Nat",
+   "Nat.decLe",
+   "Option",
+   "Option.getD",
+   "Option.some",
+   "instLENat"
+  ]
+ },
+ "derivation": "For each root, the library results it uses directly, one substrate level only, and the other roots sharing any of them. Constants from Lean's own prelude are excluded: a type former is not an ancestor, since everything mentions it.",
+ "derivedFrom": "canonical",
+ "diagnostic": "root-provenance",
+ "keyedBy": "canonical-name",
+ "mathlibParents": {
+  "Chiralogy.AbsenceStructure": [],
+  "Chiralogy.Arrow": [],
+  "Chiralogy.CataphaticConformant": [],
+  "Chiralogy.Equinumerous": [
+   "Equiv"
+  ],
+  "Chiralogy.LevelObj": [],
+  "Chiralogy.Member": [],
+  "Chiralogy.NonDegenerate": [],
+  "Chiralogy.Obj": [],
+  "Chiralogy.OpLevelObj": [],
+  "Chiralogy.Pt": [],
+  "Chiralogy.Rep": [],
+  "Chiralogy.Stance": [],
+  "Chiralogy.TypeSystem.TypeGround": [],
+  "Chiralogy.agreementLE": [],
+  "Chiralogy.assembleClassify": [],
+  "Chiralogy.botC": [],
+  "Chiralogy.cfamS": [
+   "Finset",
+   "Finset.decidableMem",
+   "Finset.instSetLike",
+   "SetLike.instMembership"
+  ],
+  "Chiralogy.closeable": [],
+  "Chiralogy.differsInOne": [],
+  "Chiralogy.embed": [],
+  "Chiralogy.fixedPoint_of_surjection": [],
+  "Chiralogy.imprecise": [],
+  "Chiralogy.isTotal": [],
+  "Chiralogy.mzAppend": [],
+  "Chiralogy.optCycle": [],
+  "Chiralogy.optLE": [],
+  "Chiralogy.optMeet": [],
+  "Chiralogy.partialization": [],
+  "Chiralogy.presentCarried": [],
+  "Chiralogy.relabel": [],
+  "Chiralogy.relabelW": [],
+  "Chiralogy.totalization": []
+ },
+ "roots": 32,
+ "sharesWith": {
+  "Chiralogy.AbsenceStructure": [],
+  "Chiralogy.Arrow": [],
+  "Chiralogy.CataphaticConformant": [],
+  "Chiralogy.Equinumerous": [],
+  "Chiralogy.LevelObj": [],
+  "Chiralogy.Member": [],
+  "Chiralogy.NonDegenerate": [],
+  "Chiralogy.Obj": [],
+  "Chiralogy.OpLevelObj": [],
+  "Chiralogy.Pt": [],
+  "Chiralogy.Rep": [],
+  "Chiralogy.Stance": [],
+  "Chiralogy.TypeSystem.TypeGround": [],
+  "Chiralogy.agreementLE": [],
+  "Chiralogy.assembleClassify": [],
+  "Chiralogy.botC": [],
+  "Chiralogy.cfamS": [],
+  "Chiralogy.closeable": [],
+  "Chiralogy.differsInOne": [],
+  "Chiralogy.embed": [],
+  "Chiralogy.fixedPoint_of_surjection": [],
+  "Chiralogy.imprecise": [],
+  "Chiralogy.isTotal": [],
+  "Chiralogy.mzAppend": [],
+  "Chiralogy.optCycle": [],
+  "Chiralogy.optLE": [],
+  "Chiralogy.optMeet": [],
+  "Chiralogy.partialization": [],
+  "Chiralogy.presentCarried": [],
+  "Chiralogy.relabel": [],
+  "Chiralogy.relabelW": [],
+  "Chiralogy.totalization": []
+ },
+ "title": "Whether a canonical root stays independent when one level of substrate is shown."
+}
