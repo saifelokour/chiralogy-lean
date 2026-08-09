@@ -3142,4 +3142,226 @@ theorem a_part_exchanging_permutation_collapses_the_tops
 
 end ConstantFibre
 
+
+/-! ### The fine structure: what the parts decide and what the carrier only permits
+
+The four features of a filling's fine structure are governed by the PARTS, not by the carrier. Whether the
+floor cuts the fillings down, and whether the whole can be made total, each have an exact condition on the
+parts alone. The carrier enters only as a CEILING, through thinness: a thin carrier forces the floor to bite
+whatever the parts are, and a carrier that is not thin always permits parts that make it vacuous.
+
+BOUNDS. These are laws; the census of WHICH small carriers are thin is a finite observation and is not here.
+The maxima result assumes two distinct points. -/
+
+open scoped Classical in
+/-- The value the parts agree on around a point, when they agree on anything there. -/
+noncomputable def lvl (c : ∀ i, X i → X i → Option Bool) (q : Pt X) : Option Bool :=
+  if h : ∃ p : Pt X × Fin n, differsInOne p.1 q p.2
+    then c h.choose.2 (h.choose.1 h.choose.2) (q h.choose.2) else none
+
+/-- The filling that levels every cross cell to that value. -/
+noncomputable def levelling (c : ∀ i, X i → X i → Option Bool) : Pt X → Pt X → Option Bool :=
+  fun _ q => lvl c q
+
+/-- Under it every row takes the same value at every point. -/
+theorem levelled_rows_agree (c : ∀ i, X i → X i → Option Bool) (h : ¬ FactorsSeparate c)
+    (a q : Pt X) : nary c (levelling c) a q = lvl c q := by
+  by_cases hex : ∃ i, differsInOne a q i
+  · obtain ⟨i, hi⟩ := hex
+    rw [nary_apply_differ c _ hi]
+    have hp : ∃ p : Pt X × Fin n, differsInOne p.1 q p.2 := ⟨(a, i), hi⟩
+    rw [lvl, dif_pos hp]
+    by_contra hne
+    exact h ⟨a, hp.choose.1, q, i, hp.choose.2, hi, hp.choose_spec, hne⟩
+  · rw [nary_apply_imp c _ hex]; rfl
+
+/-- **NON-SEPARATING PARTS ADMIT A FILLING THAT COLLAPSES THE WHOLE.** The levelling filling is the explicit witness. -/
+theorem unseparating_factors_admit_a_levelling_import (c : ∀ i, X i → X i → Option Bool)
+    (h : ¬ FactorsSeparate c) : ¬ NonDegenerate (nary c (levelling c)) := by
+  rintro ⟨a, b, hne⟩
+  exact hne (funext fun q => by
+    rw [levelled_rows_agree c h a q, levelled_rows_agree c h b q])
+
+/-- **THE FLOOR IS VACUOUS EXACTLY WHEN THE PARTS SEPARATE.** Carrier-general, both directions. Whether the floor cuts the fillings down is decided by the PARTS; the carrier appears nowhere in the condition. -/
+theorem the_floor_is_vacuous_iff_the_factors_separate (c : ∀ i, X i → X i → Option Bool) :
+    (∀ imp, NonDegenerate (nary c imp)) ↔ FactorsSeparate c := by
+  refine ⟨fun hall => ?_, fun h imp => separating_factors_defeat_every_import c h imp⟩
+  by_contra h
+  exact unseparating_factors_admit_a_levelling_import c h (hall _)
+
+/-- A carrier is THIN when no point has two distinct single-move neighbours. This is what the coordinate count and the points-per-coordinate count collapse into. -/
+abbrev Thin (X : Fin n → Type) : Prop :=
+  ∀ (a b q : Pt X) (i j : Fin n), differsInOne a q i → differsInOne b q j → a = b
+
+omit [∀ i, DecidableEq (X i)] in
+/-- On a thin carrier no parts separate: the two neighbours are the same point and the same coordinate. -/
+theorem thin_carriers_admit_no_separating_factors (hT : Thin X)
+    (c : ∀ i, X i → X i → Option Bool) : ¬ FactorsSeparate c := by
+  rintro ⟨a, b, q, i, j, ha, hb, hne⟩
+  have hab : a = b := hT a b q i j ha hb
+  subst hab
+  have hij : i = j := differsInOne_unique ha hb
+  subst hij
+  exact hne rfl
+
+/-- **ON A THIN CARRIER THE FLOOR BITES WHATEVER THE PARTS ARE.** -/
+theorem the_floor_bites_at_every_factor_choice_on_a_thin_carrier (hT : Thin X)
+    (c : ∀ i, X i → X i → Option Bool) : ∃ imp, ¬ NonDegenerate (nary c imp) :=
+  ⟨levelling c, unseparating_factors_admit_a_levelling_import c
+    (thin_carriers_admit_no_separating_factors hT c)⟩
+
+/-- Parts built to answer one way on one named neighbour and the other way everywhere else. -/
+def sepFactors (i : Fin n) (u : X i) : ∀ k, X k → X k → Option Bool :=
+  fun k x _ => if h : k = i then some (decide (h ▸ x = u)) else some false
+
+/-- **A CARRIER THAT IS NOT THIN ADMITS SEPARATING PARTS.** So the ceiling is exact. -/
+theorem a_carrier_that_is_not_thin_admits_separating_factors (hT : ¬ Thin X) :
+    ∃ c : ∀ i, X i → X i → Option Bool, FactorsSeparate c := by
+  simp only [Thin, not_forall] at hT
+  obtain ⟨a, b, q, i, j, ha, hb, hab⟩ := hT
+  refine ⟨sepFactors i (a i), a, b, q, i, j, ha, hb, ?_⟩
+  have hleft : sepFactors i (a i) i (a i) (q i) = some true := by simp [sepFactors]
+  have hright : sepFactors i (a i) j (b j) (q j) = some false := by
+    by_cases hji : j = i
+    · subst hji
+      have hne : b j ≠ a j := by
+        intro hEq
+        exact hab (funext fun k => by
+          by_cases hk : k = j
+          · subst hk; exact hEq.symm
+          · rw [ha.2 k hk, ← hb.2 k hk])
+      simp [sepFactors, hne]
+    · simp [sepFactors, hji]
+  rw [hleft, hright]
+  simp
+
+/-- **THE CARRIER FORCES THE FLOOR TO BITE EXACTLY WHEN IT IS THIN.** Carrier-general, both directions. This is the whole of the carrier's contribution: it does not decide the feature, it decides whether the feature is still free to vary once the parts are chosen. -/
+theorem the_carrier_forces_the_floor_iff_it_is_thin :
+    (∀ c : ∀ i, X i → X i → Option Bool, ∃ imp, ¬ NonDegenerate (nary c imp)) ↔ Thin X := by
+  refine ⟨fun hall => ?_, fun hT c => the_floor_bites_at_every_factor_choice_on_a_thin_carrier hT c⟩
+  by_contra hT
+  obtain ⟨c, hc⟩ := a_carrier_that_is_not_thin_admits_separating_factors hT
+  obtain ⟨imp, himp⟩ := hall c
+  exact himp (separating_factors_defeat_every_import c hc imp)
+
+/-- **THE WHOLE CAN BE MADE TOTAL EXACTLY WHEN THE PARTS LEAVE NO ABSENCE ON THE REGION.** A filling can fill every cross cell and no region cell, so the region's absences are beyond every filling's reach. -/
+theorem the_whole_can_be_total_iff_the_factors_are_present_on_the_region
+    (c : ∀ i, X i → X i → Option Bool) :
+    (∃ imp, isTotal (nary c imp)) ↔
+      ∀ (a b : Pt X) (i : Fin n), differsInOne a b i → c i (a i) (b i) ≠ none := by
+  constructor
+  · rintro ⟨imp, hT⟩ a b i hi
+    have := hT a b
+    rwa [nary_apply_differ c imp hi] at this
+  · intro hpres
+    refine ⟨fun _ _ => some true, fun a b => ?_⟩
+    by_cases hex : ∃ i, differsInOne a b i
+    · obtain ⟨i, hi⟩ := hex
+      rw [nary_apply_differ c _ hi]; exact hpres a b i hi
+    · rw [nary_apply_imp c _ hex]; simp
+
+/-- A filling is a maximum of the admissible space when it clears the floor and nothing admissible sits strictly above it. -/
+def MaximalAdmissible (c : ∀ i, X i → X i → Option Bool) (imp : Pt X → Pt X → Option Bool) : Prop :=
+  NonDegenerate (nary c imp) ∧
+    ∀ imp', cLE imp imp' → NonDegenerate (nary c imp') → cLE imp' imp
+
+/-- A total filling is maximal in the information order, so an admissible total filling is a maximum. -/
+theorem a_total_admissible_import_is_a_maximum (c : ∀ i, X i → X i → Option Bool)
+    (imp : Pt X → Pt X → Option Bool) (ht : isTotal imp)
+    (ha : NonDegenerate (nary c imp)) : MaximalAdmissible c imp :=
+  ⟨ha, fun imp' h _ => (maximal_iff_total imp).2 ht imp' h⟩
+
+open scoped Classical in
+/-- The filling that answers one way at a single named cell and the other way everywhere else. -/
+noncomputable def spikeAt (a b : Pt X) : Pt X → Pt X → Option Bool :=
+  fun x y => if x = a ∧ y = b then some true else some false
+
+/-- **WHERE THE FLOOR IS VACUOUS AND THE CARRIER HAS TWO POINTS, THERE ARE AT LEAST THREE MAXIMA.** Every total filling is admissible, and three pairwise distinct ones are available as soon as two cells are. -/
+theorem a_vacuous_floor_has_at_least_three_maxima (c : ∀ i, X i → X i → Option Bool)
+    (hsep : FactorsSeparate c) {a b : Pt X} (hab : a ≠ b) :
+    ∃ i1 i2 i3 : Pt X → Pt X → Option Bool,
+      MaximalAdmissible c i1 ∧ MaximalAdmissible c i2 ∧ MaximalAdmissible c i3 ∧
+        i1 ≠ i2 ∧ i1 ≠ i3 ∧ i2 ≠ i3 := by
+  classical
+  refine ⟨fun _ _ => some true, fun _ _ => some false, spikeAt a a, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact a_total_admissible_import_is_a_maximum c _ (fun _ _ => by simp)
+      (separating_factors_defeat_every_import c hsep _)
+  · exact a_total_admissible_import_is_a_maximum c _ (fun _ _ => by simp)
+      (separating_factors_defeat_every_import c hsep _)
+  · refine a_total_admissible_import_is_a_maximum c _ (fun x y => ?_)
+      (separating_factors_defeat_every_import c hsep _)
+    by_cases h : x = a ∧ y = a <;> simp [spikeAt, h]
+  · intro h; have := congrFun (congrFun h a) a; simp at this
+  · intro h; have := congrFun (congrFun h b) b; simp [spikeAt, hab.symm] at this
+  · intro h; have := congrFun (congrFun h a) a; simp [spikeAt] at this
+
+/-- **SO A TWO-MAXIMA SHAPE REQUIRES A BITING FLOOR.** Two maxima related by a relabelling cannot occur where the parts separate. -/
+theorem the_two_maxima_shape_requires_a_biting_floor (c : ∀ i, X i → X i → Option Bool)
+    {a b : Pt X} (hab : a ≠ b)
+    (htwo : ∀ i1 i2 i3 : Pt X → Pt X → Option Bool, MaximalAdmissible c i1 →
+      MaximalAdmissible c i2 → MaximalAdmissible c i3 → i1 = i2 ∨ i1 = i3 ∨ i2 = i3) :
+    ∃ imp, ¬ NonDegenerate (nary c imp) := by
+  by_cases hsep : FactorsSeparate c
+  · obtain ⟨i1, i2, i3, h1, h2, h3, h12, h13, h23⟩ :=
+      a_vacuous_floor_has_at_least_three_maxima c hsep hab
+    rcases htwo i1 i2 i3 h1 h2 h3 with h | h | h
+    · exact absurd h h12
+    · exact absurd h h13
+    · exact absurd h h23
+  · exact ⟨levelling c, unseparating_factors_admit_a_levelling_import c hsep⟩
+
+/-- Every distinction between rows lives only at the cross: two rows never differ at a column where both of their cells are region cells. -/
+def DistinctionsLiveOnlyAtTheCross (c : ∀ i, X i → X i → Option Bool) : Prop :=
+  ∀ (imp : Pt X → Pt X → Option Bool) (a b q : Pt X) (i j : Fin n),
+    differsInOne a q i → differsInOne b q j → nary c imp a q = nary c imp b q
+
+/-- **THE PARTS FAIL TO SEPARATE EXACTLY WHEN EVERY DISTINCTION LIVES ONLY AT THE CROSS.** Carrier-general, an equivalence, so no particular carrier can make it answer falsely. -/
+theorem the_factors_fail_to_separate_iff_distinctions_live_only_at_the_cross
+    (c : ∀ i, X i → X i → Option Bool) :
+    ¬ FactorsSeparate c ↔ DistinctionsLiveOnlyAtTheCross c := by
+  constructor
+  · intro h imp a b q i j ha hb
+    rw [nary_apply_differ c imp ha, nary_apply_differ c imp hb]
+    by_contra hne
+    exact h ⟨a, b, q, i, j, ha, hb, hne⟩
+  · rintro h ⟨a, b, q, i, j, ha, hb, hne⟩
+    have := h (fun _ _ => none) a b q i j ha hb
+    rw [nary_apply_differ c _ ha, nary_apply_differ c _ hb] at this
+    exact hne this
+
+/-- The filling is LOAD-BEARING when the object's survival depends on it: some filling collapses the whole. -/
+def LoadBearing (c : ∀ i, X i → X i → Option Bool) : Prop :=
+  ∃ imp, ¬ NonDegenerate (nary c imp)
+
+/-- **LOAD-BEARING IS EXACTLY DISTINCTIONS-LIVING-ONLY-AT-THE-CROSS.** The filling matters to survival precisely when nothing the parts say singly tells two rows apart. -/
+theorem the_import_is_load_bearing_iff_distinctions_live_only_at_the_cross
+    (c : ∀ i, X i → X i → Option Bool) :
+    LoadBearing c ↔ DistinctionsLiveOnlyAtTheCross c := by
+  rw [← the_factors_fail_to_separate_iff_distinctions_live_only_at_the_cross c]
+  constructor
+  · rintro ⟨imp, himp⟩ hsep
+    exact himp (separating_factors_defeat_every_import c hsep imp)
+  · intro h
+    exact ⟨levelling c, unseparating_factors_admit_a_levelling_import c h⟩
+
+omit [∀ i, DecidableEq (X i)] in
+/-- **A TOTAL PART AND AN ABSENT PART SEPARATE.** Carrier-general: the two neighbours are built explicitly, one moving in each coordinate, and the verdicts differ because one is present and the other is not. -/
+theorem a_total_factor_and_an_absent_factor_separate (c : ∀ i, X i → X i → Option Bool)
+    (q0 : Pt X) {i j : Fin n} (hij : i ≠ j)
+    (htot : ∀ x y : X i, c i x y ≠ none)
+    {s t : X i} (hst : s ≠ t) {u w : X j} (huw : u ≠ w) (habs : c j u w = none) :
+    FactorsSeparate c := by
+  classical
+  set q : Pt X := Function.update (Function.update q0 i t) j w with hq
+  have hqi : q i = t := by
+    rw [hq, Function.update_of_ne hij, Function.update_self]
+  have hqj : q j = w := by rw [hq, Function.update_self]
+  refine ⟨Function.update q i s, Function.update q j u, q, i, j, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
+  · rw [Function.update_self, hqi]; exact hst
+  · intro k hk; exact Function.update_of_ne hk _ _
+  · rw [Function.update_self, hqj]; exact huw
+  · intro k hk; exact Function.update_of_ne hk _ _
+  · rw [Function.update_self, Function.update_self, hqi, hqj, habs]
+    exact htot s t
+
 end Chiralogy
