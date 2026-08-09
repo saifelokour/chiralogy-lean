@@ -82,6 +82,25 @@ beyond telling it which labeling to bind to which channel.
 
 ## What is deliberately not fixed here
 
-A labeling FAMILY indexed by a parameter, for instance one satisfaction labeling per register, is not part
-of this contract. Each member of such a family is an ordinary labeling with its own id, and whether the
-family needs first class support is an open question recorded in the report rather than pre-empted here.
+Three gaps, the first two of them found by building a renderer over this contract rather than reasoned
+about in advance.
+
+A labeling FAMILY indexed by a parameter, for instance one satisfaction labeling per register, has no
+first class support. Each member is an ordinary labeling with its own id, which works, but the renderer
+config then has to ENUMERATE the members of a family in order to sweep them, and membership is data, not
+a visual choice. That puts data in the authored layer, which is exactly what the layer is meant to
+exclude. The extension, when it is wanted, is for a labeling to declare its family and parameter value
+
+    "family": { "name": "satisfaction", "parameter": "register", "value": "physics" }
+
+so that a config can name the family and let the members be discovered.
+
+SET valued attributes are admitted by the contract and bindable to no channel. Colour, size and
+brightness each take one value per node; a set has no single value to give them. A set valued labeling
+is therefore derivable and conformant and not renderable, and it needs either a derived reduction to a
+categorical labeling or a multiple mark encoding that the renderer does not have.
+
+EDGE labelings are conformant and, at the present density of three thousand two hundred and fifty nine
+edges, not legible as a colour channel: the edge layer reads as texture. This is a renderer limitation
+rather than a schema one, and the fix is filtering or aggregation over an edge labeling, not a change
+here.

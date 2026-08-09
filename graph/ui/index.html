@@ -1,0 +1,286 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Chiralogy spine</title>
+<!--
+  The renderer. A pure function of (frozen layout, labelings, channel config): it reads data.js and
+  decides nothing. Every visual choice lives in graph/viewpoints.json. Two rules are enforced in code
+  rather than left to habit:
+
+    POSITIONS ARE READ, NEVER COMPUTED. There is no layout step here and no reflow. Changing viewpoint
+    or sweeping the registers changes channels only.
+
+    THE SWEEP MOVES ONE CHANNEL. While sweeping, brightness alone varies; colour and size hold at the
+    values the viewpoint fixed. That is the only way a subset that never dims is legible as such.
+-->
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #101014; color: #d8d8dc;
+               font: 13px/1.5 ui-sans-serif, system-ui, sans-serif; }
+  #wrap { display: grid; grid-template-columns: 1fr 300px; height: 100%; }
+  canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+  #side { border-left: 1px solid #2a2a32; padding: 14px 16px; overflow-y: auto; }
+  h1 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8a8a96;
+       margin: 0 0 12px; font-weight: 600; }
+  h2 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6f6f7c;
+       margin: 18px 0 6px; font-weight: 600; }
+  button { font: inherit; background: #1c1c24; color: #c8c8d0; border: 1px solid #33333e;
+           border-radius: 5px; padding: 5px 9px; margin: 0 4px 4px 0; cursor: pointer; }
+  button[aria-pressed="true"] { background: #33333e; color: #fff; border-color: #55556a; }
+  input[type=range] { width: 100%; }
+  #vpnote { color: #8a8a96; margin: 6px 0 0; min-height: 34px; }
+  .legend { display: flex; align-items: center; gap: 7px; margin: 2px 0; }
+  .sw { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+  #tip { color: #9a9aa6; }
+  #tip b { color: #e8e8ee; font-weight: 600; word-break: break-all; }
+  table { border-collapse: collapse; width: 100%; margin-top: 6px; }
+  td { padding: 1px 0; vertical-align: top; }
+  td:first-child { color: #6f6f7c; padding-right: 8px; white-space: nowrap; }
+  #counts { color: #8a8a96; margin-top: 6px; }
+  #counts b { color: #DDCC77; }
+</style>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="side">
+    <h1>Chiralogy spine</h1>
+    <div id="meta"></div>
+    <h2>Viewpoint</h2>
+    <div id="vps"></div>
+    <p id="vpnote"></p>
+    <div id="sweepbox" hidden>
+      <h2>Register sweep</h2>
+      <input type="range" id="sweep" min="0" max="1" step="0.01" value="0">
+      <div id="sweeplab"></div>
+      <div id="counts"></div>
+    </div>
+    <h2>Edges</h2>
+    <div id="edgectl"></div>
+    <h2>Legend</h2>
+    <div id="legend"></div>
+    <h2>Inspect</h2>
+    <div id="tip">Hover a node.</div>
+  </div>
+</div>
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.CHIRALOGY;
+  const CFG = D.viewpoints;
+  const POS = D.layout.positions;
+  const NODES = D.spine.nodes;
+  const EDGES = D.spine.edges;
+  const LAB = D.labelings;
+
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+
+  let vpIndex = 0, sweepT = 0, showEdges = true, hover = null;
+  let view = { s: 1, tx: 0, ty: 0 };
+
+  const val = (id, k) => (LAB[id] ? LAB[id].values[k] : undefined);
+
+  function sizeOf(n, ch) {
+    if (!ch) return 3;
+    const sc = CFG.scales[ch.labeling];
+    const L = LAB[ch.labeling], r = L.attribute.range;
+    const v = L.values[n];
+    if (v === undefined) return sc ? sc.min : 3;
+    const t = (r.max > r.min) ? (v - r.min) / (r.max - r.min) : 0;
+    const f = sc.kind === "sqrt" ? Math.sqrt(t) : t;
+    return sc.min + f * (sc.max - sc.min);
+  }
+
+  function colorOf(n, ch, fallback) {
+    if (!ch) return fallback;
+    const pal = CFG.palettes[ch.labeling] || {};
+    return pal[val(ch.labeling, n)] || fallback;
+  }
+
+  // The sweep: brightness only. Interpolates between adjacent members so that persistence of the
+  // never dimming subset reads as continuity rather than as a jump between two pictures.
+  function brightnessOf(n, sweep) {
+    if (!sweep) return 1;
+    const m = sweep.members, last = m.length - 1;
+    const t = sweepT * last, i = Math.min(Math.floor(t), last - 1), f = t - i;
+    const a = val(m[i].labeling, n) ? 1 : 0;
+    const b = val(m[i + 1].labeling, n) ? 1 : 0;
+    const lit = a + (b - a) * f;
+    const B = CFG.brightness;
+    return B.dark + (B.lit - B.dark) * lit;
+  }
+
+  function mix(hex, b) {
+    const v = parseInt(hex.slice(1), 16);
+    const r = Math.round(((v >> 16) & 255) * b), g = Math.round(((v >> 8) & 255) * b),
+          bl = Math.round((v & 255) * b);
+    return `rgb(${r},${g},${bl})`;
+  }
+
+  function frame() {
+    const w = canvas.clientWidth, h = canvas.clientHeight, dpr = devicePixelRatio || 1;
+    if (canvas.width !== w * dpr) { canvas.width = w * dpr; canvas.height = h * dpr; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    const pad = 26, side = Math.min(w, h) - pad * 2;
+    const X = n => (pad + POS[n][0] * side) * view.s + view.tx;
+    const Y = n => (pad + (1 - POS[n][1]) * side) * view.s + view.ty;
+
+    const vp = CFG.viewpoints[vpIndex];
+    const nodeCh = ch => vp.nodeChannels.find(c => c.channel === ch);
+    const colCh = nodeCh("color"), sizeCh = nodeCh("size");
+    const edgeCh = vp.edgeChannels && vp.edgeChannels[0];
+    const sweep = vp.sweep;
+
+    if (showEdges) {
+      ctx.lineWidth = 0.55;
+      for (const e of EDGES) {
+        if (!POS[e.source] || !POS[e.target]) continue;
+        const c = edgeCh ? (CFG.palettes[edgeCh.labeling] || {})[
+          val(edgeCh.labeling, e.source + "|" + e.target)] : null;
+        const b = sweep
+          ? Math.min(brightnessOf(e.source, sweep), brightnessOf(e.target, sweep))
+          : 1;
+        ctx.strokeStyle = mix(c || "#5a5a6a", 0.30 * b + 0.05);
+        ctx.beginPath();
+        ctx.moveTo(X(e.source), Y(e.source));
+        ctx.lineTo(X(e.target), Y(e.target));
+        ctx.stroke();
+      }
+    }
+
+    for (const n of NODES) {
+      if (!POS[n]) continue;
+      const b = brightnessOf(n, sweep);
+      ctx.fillStyle = mix(colorOf(n, colCh, "#8888aa"), b);
+      ctx.beginPath();
+      ctx.arc(X(n), Y(n), sizeOf(n, sizeCh) * view.s, 0, 6.2832);
+      ctx.fill();
+    }
+
+    if (hover && POS[hover]) {
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(X(hover), Y(hover), sizeOf(hover, sizeCh) * view.s + 3.5, 0, 6.2832);
+      ctx.stroke();
+    }
+
+    if (sweep) {
+      let litAlways = 0;
+      for (const n of NODES) if (sweep.members.every(m => val(m.labeling, n))) litAlways++;
+      document.getElementById("counts").innerHTML =
+        `lit under every register: <b>${litAlways}</b> of ${NODES.length}`;
+    }
+  }
+
+  function pick(mx, my) {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pad = 26, side = Math.min(w, h) - pad * 2;
+    const vp = CFG.viewpoints[vpIndex], sizeCh = vp.nodeChannels.find(c => c.channel === "size");
+    let best = null, bd = 1e9;
+    for (const n of NODES) {
+      if (!POS[n]) continue;
+      const x = (pad + POS[n][0] * side) * view.s + view.tx;
+      const y = (pad + (1 - POS[n][1]) * side) * view.s + view.ty;
+      const d = (x - mx) ** 2 + (y - my) ** 2, r = sizeOf(n, sizeCh) * view.s + 4;
+      if (d < r * r && d < bd) { bd = d; best = n; }
+    }
+    return best;
+  }
+
+  function inspect(n) {
+    const el = document.getElementById("tip");
+    if (!n) { el.innerHTML = "Hover a node."; return; }
+    let rows = "";
+    for (const id of Object.keys(LAB).sort()) {
+      if (LAB[id].kind !== "node") continue;
+      const v = LAB[id].values[n];
+      if (v !== undefined) rows += `<tr><td>${id}</td><td>${v}</td></tr>`;
+    }
+    el.innerHTML = `<b>${n}</b><table>${rows}</table>`;
+  }
+
+  function legend() {
+    const vp = CFG.viewpoints[vpIndex];
+    const col = vp.nodeChannels.find(c => c.channel === "color");
+    const eg = vp.edgeChannels && vp.edgeChannels[0];
+    let h = "";
+    const block = (title, id) => {
+      const pal = CFG.palettes[id] || {};
+      let s = `<div style="color:#6f6f7c;margin-top:6px">${title}: ${id}</div>`;
+      for (const k of Object.keys(pal)) {
+        const c = (LAB[id] ? Object.values(LAB[id].values).filter(v => v === k).length : 0);
+        if (!c) continue;
+        s += `<div class="legend"><span class="sw" style="background:${pal[k]}"></span>${k} <span style="color:#5f5f6c">${c}</span></div>`;
+      }
+      return s;
+    };
+    if (col) h += block("node colour", col.labeling);
+    if (eg) h += block("edge colour", eg.labeling);
+    const sz = vp.nodeChannels.find(c => c.channel === "size");
+    if (sz) h += `<div style="color:#6f6f7c;margin-top:8px">node size: ${sz.labeling}</div>`;
+    if (vp.sweep) h += `<div style="color:#6f6f7c;margin-top:8px">brightness: register satisfaction (swept)</div>`;
+    document.getElementById("legend").innerHTML = h;
+  }
+
+  function chrome() {
+    const vp = CFG.viewpoints[vpIndex];
+    document.getElementById("vpnote").textContent = vp.title;
+    document.getElementById("sweepbox").hidden = !vp.sweep;
+    if (vp.sweep) {
+      const m = vp.sweep.members, last = m.length - 1;
+      const t = sweepT * last, i = Math.round(t);
+      document.getElementById("sweeplab").textContent =
+        m.map((x, k) => (k === i ? "[" + x.label + "]" : x.label)).join("   ");
+    }
+    for (const b of document.querySelectorAll("#vps button"))
+      b.setAttribute("aria-pressed", String(+b.dataset.i === vpIndex));
+    legend();
+  }
+
+  document.getElementById("meta").innerHTML =
+    `${NODES.length} declarations, ${EDGES.length} dependencies<br>` +
+    `<span style="color:#6f6f7c">layout ${D.layout.layout}, frozen</span>`;
+
+  document.getElementById("vps").innerHTML = CFG.viewpoints
+    .map((v, i) => `<button data-i="${i}">${v.viewpoint}</button>`).join("");
+  document.getElementById("vps").onclick = e => {
+    if (!e.target.dataset.i) return;
+    vpIndex = +e.target.dataset.i; chrome(); frame();
+  };
+
+  document.getElementById("edgectl").innerHTML =
+    `<button id="etog" aria-pressed="true">edges on</button>`;
+  document.getElementById("etog").onclick = e => {
+    showEdges = !showEdges;
+    e.target.setAttribute("aria-pressed", String(showEdges));
+    e.target.textContent = showEdges ? "edges on" : "edges off";
+    frame();
+  };
+
+  document.getElementById("sweep").oninput = e => {
+    sweepT = +e.target.value; chrome(); frame();
+  };
+
+  canvas.onmousemove = e => {
+    const r = canvas.getBoundingClientRect();
+    const n = pick(e.clientX - r.left, e.clientY - r.top);
+    if (n !== hover) { hover = n; inspect(n); frame(); }
+  };
+  canvas.onwheel = e => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    const k = Math.exp(-e.deltaY * 0.0016);
+    view.tx = mx - (mx - view.tx) * k; view.ty = my - (my - view.ty) * k; view.s *= k;
+    frame();
+  };
+  let drag = null;
+  canvas.onmousedown = e => { drag = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty }; };
+  window.onmouseup = () => { drag = null; };
+  window.onmousemove = e => {
+    if (!drag) return;
+    view.tx = drag.tx + (e.clientX - drag.x); view.ty = drag.ty + (e.clientY - drag.y); frame();
+  };
+  window.onresize = frame;
+
+  chrome(); frame();
+})();
+</script>
