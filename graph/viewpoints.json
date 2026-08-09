@@ -11,7 +11,10 @@
   "write data here.",
   "",
   "A viewpoint names the frozen layout it uses. The authored choice is WHICH frozen layout, never the",
-  "positions themselves: no coordinate appears in this file, and the renderer computes none."
+  "positions themselves: no coordinate appears in this file, and the renderer computes none.",
+  "",
+  "A scalar bound to colour needs a scale rather than a palette. Its domain is taken from the range the",
+  "labeling itself declares, never from node values read off the data."
  ],
  "palettes": {
   "import-stratum": {
@@ -54,10 +57,21 @@
   "edge-locality": {
    "within": "#5566AA",
    "cross": "#CC6677"
+  },
+  "character": {
+   "apophatic": "#332288",
+   "cataphatic": "#CC6677",
+   "seam": "#DDCC77",
+   "neutral": "#4a4a56"
   }
  },
  "scales": {
   "load-bearing-weight": {
+   "kind": "sqrt",
+   "min": 1.4,
+   "max": 11.0
+  },
+  "proof-weight": {
    "kind": "sqrt",
    "min": 1.4,
    "max": 11.0
@@ -212,6 +226,66 @@
     ]
    },
    "layout": "territory-packed"
+  },
+  {
+   "viewpoint": "asymmetry",
+   "title": "Where a declaration's load is borne: proofs at one end, statements at the other, sized by proof weight.",
+   "layout": "territory-packed",
+   "nodeChannels": [
+    {
+     "labeling": "weight-asymmetry",
+     "channel": "color"
+    },
+    {
+     "labeling": "proof-weight",
+     "channel": "size"
+    }
+   ],
+   "edgeChannels": [
+    {
+     "labeling": "edge-provenance",
+     "channel": "color"
+    }
+   ],
+   "sweep": null
+  },
+  {
+   "viewpoint": "character",
+   "title": "Which hand a declaration's module places it in. Most modules name neither.",
+   "layout": "territory-packed",
+   "nodeChannels": [
+    {
+     "labeling": "character",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
+   ],
+   "edgeChannels": [
+    {
+     "labeling": "edge-locality",
+     "channel": "color"
+    }
+   ],
+   "sweep": null
   }
- ]
+ ],
+ "colorScales": {
+  "weight-asymmetry": {
+   "kind": "diverging",
+   "domain": [
+    -1,
+    0,
+    1
+   ],
+   "_domainNote": "the range weight-asymmetry declares: statement borne at minus one, balanced at zero, proof borne at plus one",
+   "colors": [
+    "#5566AA",
+    "#C8C8CC",
+    "#CC6677"
+   ]
+  }
+ }
 }

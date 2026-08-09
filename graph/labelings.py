@@ -30,7 +30,8 @@ def labeling(lid, title, derived_from, derivation, kind, rng, values, keyed="nod
         "derivedFrom": derived_from,
         "derivation": derivation,
         "attribute": {"kind": kind, "range": rng},
-        "keyedBy": "canonical-name" if keyed == "node" else "canonical-name-pair",
+        "keyedBy": {"node": "canonical-name", "edge": "canonical-name-pair",
+                    "territory": "territory-name"}[keyed],
         "values": values,
     }
 
@@ -401,6 +402,54 @@ emit(labeling(
     "endpoint as a consequence of the tie break, not as a fact about the dependency.",
     "categorical", ["within", "cross"], loc, keyed="edge"),
     os.path.join(LAB, "edge-locality.json"))
+
+# ----------------------------------------------------------------- character
+# The two hands, as the extraction already assigns them: from the declaring module's name. This is not
+# a community assignment. The dependency measurement found emergent communities aligning with this
+# label at 0.82, which validates the label rather than producing it. Four valued on purpose: most
+# declarations sit in modules that name neither hand, and forcing them into one would be an authored
+# guess rather than a derivation.
+char = {n: byname[n]["character"] for n in names}
+emit(labeling(
+    "character", "Which hand a declaration's module places it in.",
+    "canonical",
+    "Assigned by the extraction from the declaring module's name: apophatic where the module names the "
+    "apophatic side or is the center, cataphatic where it names the cataphatic side, seam at the "
+    "boundary, neutral where the module names neither. Emergent communities align with this at 0.82, "
+    "which is a check on the label and not its source.",
+    "categorical", sorted(set(char.values())), char),
+    os.path.join(LAB, "character.json"))
+
+# ------------------------------------------------ territory summary, keyed by territory
+# A labeling whose keys are neither nodes nor edges but the VALUES of another labeling. The summary is
+# a composition of counts and shares; it carries no interpretation of what a territory is for.
+tmembers = defaultdict(list)
+for n in names:
+    tmembers[territory[n]].append(n)
+summary = {}
+for t, ms in tmembers.items():
+    cc = defaultdict(int)
+    sc = defaultdict(int)
+    for m in ms:
+        cc[char[m]] += 1
+        sc[byname[m]["stratum"]] += 1
+    k = len(ms)
+    summary[t] = {
+        "root": None if t == "unrooted" else t,
+        "size": k,
+        "character": {a: round(b / k, 4) for a, b in sorted(cc.items())},
+        "stratum": {a: round(b / k, 4) for a, b in sorted(sc.items())},
+        "shared": sum(1 for m in ms if sharing[m] == "shared"),
+    }
+emit(labeling(
+    "territory-summary", "What each territory is made of, in counts and shares.",
+    ["labeling:territory", "labeling:character", "labeling:import-stratum",
+     "labeling:territory-sharing"],
+    "For each value of the territory labeling: its root, how many declarations it holds, how many of "
+    "those lie in more than one territory, and the share of each character and each stratum among "
+    "them. Counts and shares only; nothing here says what a territory is about.",
+    "record", None, summary, keyed="territory"),
+    os.path.join(LAB, "territory-summary.json"))
 
 # ------------------------------------- B substrate check, one level below canonical
 # A substrate PARENT is a library result. A core primitive, a type former or an elimination rule from

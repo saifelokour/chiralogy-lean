@@ -1,0 +1,418 @@
+{
+ "attribute": {
+  "kind": "record",
+  "range": null
+ },
+ "derivation": "For each value of the territory labeling: its root, how many declarations it holds, how many of those lie in more than one territory, and the share of each character and each stratum among them. Counts and shares only; nothing here says what a territory is about.",
+ "derivedFrom": [
+  "labeling:territory",
+  "labeling:character",
+  "labeling:import-stratum",
+  "labeling:territory-sharing"
+ ],
+ "keyedBy": "territory-name",
+ "kind": "territory",
+ "labeling": "territory-summary",
+ "title": "What each territory is made of, in counts and shares.",
+ "values": {
+  "Chiralogy.AbsenceStructure": {
+   "character": {
+    "apophatic": 1.0
+   },
+   "root": "Chiralogy.AbsenceStructure",
+   "shared": 5,
+   "size": 20,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.Arrow": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.Arrow",
+   "shared": 4,
+   "size": 6,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.CataphaticConformant": {
+   "character": {
+    "cataphatic": 0.7826,
+    "seam": 0.2174
+   },
+   "root": "Chiralogy.CataphaticConformant",
+   "shared": 2,
+   "size": 23,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.Equinumerous": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.Equinumerous",
+   "shared": 5,
+   "size": 9,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.LevelObj": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.LevelObj",
+   "shared": 9,
+   "size": 24,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.Member": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.Member",
+   "shared": 13,
+   "size": 18,
+   "stratum": {
+    "protocol": 0.4444,
+    "register": 0.5556
+   }
+  },
+  "Chiralogy.NonDegenerate": {
+   "character": {
+    "apophatic": 0.25,
+    "neutral": 0.6667,
+    "seam": 0.0833
+   },
+   "root": "Chiralogy.NonDegenerate",
+   "shared": 17,
+   "size": 24,
+   "stratum": {
+    "kernel": 0.2083,
+    "model": 0.6667,
+    "protocol": 0.125
+   }
+  },
+  "Chiralogy.Obj": {
+   "character": {
+    "apophatic": 0.6,
+    "neutral": 0.25,
+    "seam": 0.15
+   },
+   "root": "Chiralogy.Obj",
+   "shared": 7,
+   "size": 20,
+   "stratum": {
+    "kernel": 0.6,
+    "model": 0.4
+   }
+  },
+  "Chiralogy.OpLevelObj": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.OpLevelObj",
+   "shared": 4,
+   "size": 15,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.Pt": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.Pt",
+   "shared": 67,
+   "size": 145,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.Rep": {
+   "character": {
+    "apophatic": 1.0
+   },
+   "root": "Chiralogy.Rep",
+   "shared": 3,
+   "size": 5,
+   "stratum": {
+    "kernel": 1.0
+   }
+  },
+  "Chiralogy.Stance": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.Stance",
+   "shared": 52,
+   "size": 53,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.TypeSystem.TypeGround": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.TypeSystem.TypeGround",
+   "shared": 2,
+   "size": 15,
+   "stratum": {
+    "register": 1.0
+   }
+  },
+  "Chiralogy.agreementLE": {
+   "character": {
+    "apophatic": 0.9091,
+    "seam": 0.0909
+   },
+   "root": "Chiralogy.agreementLE",
+   "shared": 0,
+   "size": 11,
+   "stratum": {
+    "kernel": 0.9091,
+    "model": 0.0909
+   }
+  },
+  "Chiralogy.assembleClassify": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.assembleClassify",
+   "shared": 29,
+   "size": 56,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.botC": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.botC",
+   "shared": 39,
+   "size": 45,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.cfamS": {
+   "character": {
+    "apophatic": 1.0
+   },
+   "root": "Chiralogy.cfamS",
+   "shared": 5,
+   "size": 11,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.closeable": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.closeable",
+   "shared": 5,
+   "size": 22,
+   "stratum": {
+    "model": 0.8182,
+    "register": 0.1818
+   }
+  },
+  "Chiralogy.differsInOne": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.differsInOne",
+   "shared": 55,
+   "size": 84,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.embed": {
+   "character": {
+    "cataphatic": 1.0
+   },
+   "root": "Chiralogy.embed",
+   "shared": 1,
+   "size": 14,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.fixedPoint_of_surjection": {
+   "character": {
+    "apophatic": 0.7037,
+    "neutral": 0.037,
+    "seam": 0.2593
+   },
+   "root": "Chiralogy.fixedPoint_of_surjection",
+   "shared": 0,
+   "size": 27,
+   "stratum": {
+    "kernel": 0.6667,
+    "model": 0.2963,
+    "protocol": 0.037
+   }
+  },
+  "Chiralogy.imprecise": {
+   "character": {
+    "apophatic": 0.3,
+    "neutral": 0.15,
+    "seam": 0.55
+   },
+   "root": "Chiralogy.imprecise",
+   "shared": 11,
+   "size": 20,
+   "stratum": {
+    "model": 0.85,
+    "register": 0.15
+   }
+  },
+  "Chiralogy.isTotal": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.isTotal",
+   "shared": 18,
+   "size": 19,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.mzAppend": {
+   "character": {
+    "cataphatic": 0.1818,
+    "neutral": 0.6364,
+    "seam": 0.1818
+   },
+   "root": "Chiralogy.mzAppend",
+   "shared": 1,
+   "size": 11,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.optCycle": {
+   "character": {
+    "apophatic": 0.6429,
+    "neutral": 0.0714,
+    "seam": 0.2857
+   },
+   "root": "Chiralogy.optCycle",
+   "shared": 11,
+   "size": 14,
+   "stratum": {
+    "kernel": 0.4286,
+    "model": 0.5714
+   }
+  },
+  "Chiralogy.optLE": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.optLE",
+   "shared": 9,
+   "size": 19,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.optMeet": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.optMeet",
+   "shared": 7,
+   "size": 10,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.partialization": {
+   "character": {
+    "apophatic": 0.0385,
+    "neutral": 0.8462,
+    "seam": 0.1154
+   },
+   "root": "Chiralogy.partialization",
+   "shared": 11,
+   "size": 26,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.presentCarried": {
+   "character": {
+    "apophatic": 0.3158,
+    "neutral": 0.6842
+   },
+   "root": "Chiralogy.presentCarried",
+   "shared": 28,
+   "size": 38,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.relabel": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.relabel",
+   "shared": 11,
+   "size": 19,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.relabelW": {
+   "character": {
+    "neutral": 1.0
+   },
+   "root": "Chiralogy.relabelW",
+   "shared": 10,
+   "size": 13,
+   "stratum": {
+    "model": 1.0
+   }
+  },
+  "Chiralogy.totalization": {
+   "character": {
+    "apophatic": 0.0556,
+    "neutral": 0.8889,
+    "seam": 0.0556
+   },
+   "root": "Chiralogy.totalization",
+   "shared": 22,
+   "size": 36,
+   "stratum": {
+    "model": 0.9722,
+    "register": 0.0278
+   }
+  },
+  "unrooted": {
+   "character": {
+    "apophatic": 0.3322,
+    "cataphatic": 0.0526,
+    "neutral": 0.5855,
+    "seam": 0.0296
+   },
+   "root": null,
+   "shared": 0,
+   "size": 304,
+   "stratum": {
+    "kernel": 0.0921,
+    "model": 0.8651,
+    "protocol": 0.0164,
+    "register": 0.0263
+   }
+  }
+ }
+}

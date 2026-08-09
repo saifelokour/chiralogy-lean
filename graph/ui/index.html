@@ -62,6 +62,7 @@
     <h2>Territory</h2>
     <select id="terrsel"></select>
     <div id="terrctl" style="margin-top:5px"></div>
+    <div id="terrsum" class="note"></div>
     <h2>Focus</h2>
     <div id="focusbox" class="note">Click a node for its neighbours. Click empty space to clear.</div>
     <h2>Legend</h2>
@@ -81,6 +82,8 @@
   const ekey = e => e.source + "|" + e.target;
 
   let vpIndex = 0, sweepT = 0, showEdges = true, hover = null, focus = null;
+  // focus is the SELECTED declaration: set by click, persistent. hover is transient and the inspector
+  // falls back to the selection when the pointer leaves, so a neighbourhood can be read without losing it.
   let view = { s: 1, tx: 0, ty: 0 };
   let filt = { provenance: new Set(), derivation: new Set(), locality: new Set() };
   let terr = { id: "", mode: "" };
@@ -107,8 +110,22 @@
     const t = (r.max > r.min) ? (v - r.min) / (r.max - r.min) : 0;
     return sc.min + (sc.kind === "sqrt" ? Math.sqrt(t) : t) * (sc.max - sc.min);
   }
+  function lerpHex(a, b, t) {
+    const A = parseInt(a.slice(1), 16), B = parseInt(b.slice(1), 16);
+    const c = i => Math.round(((A >> i) & 255) + (((B >> i) & 255) - ((A >> i) & 255)) * t);
+    return "#" + [16, 8, 0].map(i => c(i).toString(16).padStart(2, "0")).join("");
+  }
   function colorOf(n, ch, fb) {
     if (!ch) return fb;
+    const sc = (CFG.colorScales || {})[ch.labeling];
+    if (sc) {
+      const v = val(ch.labeling, n);
+      if (v === undefined) return "#3a3a44";
+      const [lo, mid, hi] = sc.domain;
+      const t = v < mid ? (v - lo) / (mid - lo || 1) : (v - mid) / (hi - mid || 1);
+      return v < mid ? lerpHex(sc.colors[0], sc.colors[1], t)
+                     : lerpHex(sc.colors[1], sc.colors[2], t);
+    }
     return (CFG.palettes[ch.labeling] || {})[val(ch.labeling, n)] || fb;
   }
   function sweepLit(n, sweep) {
@@ -257,7 +274,13 @@
     };
     const col = vp.nodeChannels.find(c => c.channel === "color");
     const eg = vp.edgeChannels && vp.edgeChannels[0];
-    let h = col ? block("node colour", col.labeling) : "";
+    let h = "";
+    if (col && (CFG.colorScales || {})[col.labeling]) {
+      const sc = CFG.colorScales[col.labeling];
+      h += `<div style="color:#6f6f7c;margin-top:6px">node colour: ${col.labeling}</div>` +
+        `<div style="height:10px;border-radius:2px;margin:3px 0;background:linear-gradient(90deg,${sc.colors[0]},${sc.colors[1]},${sc.colors[2]})"></div>` +
+        `<div style="display:flex;justify-content:space-between"><small>${sc.domain[0]}</small><small>${sc.domain[1]}</small><small>+${sc.domain[2]}</small></div>`;
+    } else if (col) h += block("node colour", col.labeling);
     if (eg) h += block("edge colour", eg.labeling);
     const sz = vp.nodeChannels.find(c => c.channel === "size");
     if (sz) h += `<div style="color:#6f6f7c;margin-top:8px">node size: ${sz.labeling}</div>`;
@@ -327,7 +350,23 @@
   document.getElementById("terrsel").innerHTML =
     `<option value="">no territory selected</option>` +
     terrs.map(t => `<option value="${t}">${t.replace(/^Chiralogy\./, "")}</option>`).join("");
-  document.getElementById("terrsel").onchange = e => { terr.id = e.target.value; chrome(); frame(); };
+  function terrSummary() {
+    const el = document.getElementById("terrsum");
+    const S = LAB["territory-summary"];
+    if (!terr.id || !S || !S.values[terr.id]) { el.innerHTML = ""; return; }
+    const v = S.values[terr.id];
+    const share = d => Object.entries(d).sort((a, b) => b[1] - a[1])
+      .filter(([, x]) => x >= 0.01)
+      .map(([k, x]) => `${k} ${Math.round(x * 100)}%`).join(", ");
+    el.innerHTML = `<table>` +
+      `<tr><td>size</td><td>${v.size}</td></tr>` +
+      `<tr><td>shared</td><td>${v.shared}</td></tr>` +
+      `<tr><td>character</td><td>${share(v.character)}</td></tr>` +
+      `<tr><td>stratum</td><td>${share(v.stratum)}</td></tr></table>`;
+  }
+  document.getElementById("terrsel").onchange = e => {
+    terr.id = e.target.value; terrSummary(); chrome(); frame();
+  };
   document.getElementById("terrctl").innerHTML =
     `<button data-m="within">internals</button><button data-m="outward">outward</button>`;
   document.getElementById("terrctl").onclick = e => {
@@ -343,12 +382,14 @@
   canvas.onmousemove = e => {
     const r = canvas.getBoundingClientRect();
     const n = pick(e.clientX - r.left, e.clientY - r.top);
-    if (n !== hover) { hover = n; inspect(n); frame(); }
+    if (n !== hover) { hover = n; inspect(n || focus); frame(); }
   };
+  canvas.onmouseleave = () => { hover = null; inspect(focus); frame(); };
   canvas.onclick = e => {
     const r = canvas.getBoundingClientRect();
     const n = pick(e.clientX - r.left, e.clientY - r.top);
     focus = (n && n !== focus) ? n : null;
+    inspect(hover || focus);
     chrome(); frame();
   };
   canvas.onwheel = e => {

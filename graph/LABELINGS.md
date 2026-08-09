@@ -63,11 +63,14 @@ Rules.
 A labeling is keyed either by NODE or by EDGE. The two kinds share the contract above without change; only
 what a key denotes differs.
 
-    "kind": "node"   keys are canonical names, as above
-    "kind": "edge"   keys are "<source>|<target>", the ordered pair of canonical names of a spine edge
+    "kind": "node"        keys are canonical names, as above
+    "kind": "edge"        keys are "<source>|<target>", the ordered pair of canonical names of a spine edge
+    "kind": "territory"   keys are the VALUES of the territory labeling
 
 The separator is a pipe because canonical names never contain one. Every edge key must be an edge of the
-spine, exactly as every node key must be a node of it. All five rules carry over unchanged: partial coverage
+spine, exactly as every node key must be a node of it. The third kind generalises further: its keys are
+drawn from the value set of another labeling rather than from the spine, which is the pattern any future
+key kind will follow. All five rules carry over unchanged: partial coverage
 is allowed, values are pure data, the derivation source is canonical or other labelings, attributes are
 agnostic, and regeneration is byte identical.
 
@@ -94,6 +97,10 @@ exclude. The extension, when it is wanted, is for a labeling to declare its fami
     "family": { "name": "satisfaction", "parameter": "register", "value": "physics" }
 
 so that a config can name the family and let the members be discovered.
+
+RECORD valued attributes were added for the territory summary, whose value is a root, a count and two
+share tables rather than a single value. They are display only and bind to no channel, joining set
+valued attributes in that class.
 
 SET valued attributes are admitted by the contract and bindable to no channel. Colour, size and
 brightness each take one value per node; a set has no single value to give them. A set valued labeling
