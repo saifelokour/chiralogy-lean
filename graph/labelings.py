@@ -8,7 +8,7 @@ labeling under graph/labelings/. Deterministic: every ordering sorted, no timest
 Run from the repo root:  python3 graph/labelings.py
 """
 import json, os, re, subprocess, sys
-from collections import defaultdict
+from collections import defaultdict, deque
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GRAPH = os.path.join(ROOT, "graph")
@@ -247,6 +247,74 @@ emit(labeling(
     "and the types differ, so the source is one application of it; derived otherwise.",
     "categorical", ["restatement", "specialisation", "derived"], deriv, keyed="edge"),
     os.path.join(LAB, "edge-derivation.json"))
+
+# ------------------------------------------------ territory, by root reachability
+# The decomposition the graph findings already use: a ROOT is a sink whose territory reaches at least
+# ten declarations, and the territory of a root is everything that depends on it, transitively. A node
+# lies in as many territories as there are roots reaching it, so for a single valued labeling one is
+# chosen: the nearest root by dependency distance, then the smaller territory, then the least name.
+succ = defaultdict(list)
+pred = defaultdict(list)
+for s_, t_ in edges:
+    succ[s_].append(t_)
+    pred[t_].append(s_)
+sinks = [n for n in names if not succ[n]]
+
+
+def reach_up(r):
+    seen, q = set(), deque([r])
+    while q:
+        m = q.popleft()
+        for p in pred[m]:
+            if p not in seen:
+                seen.add(p)
+                q.append(p)
+    return seen
+
+
+terr = {r: reach_up(r) for r in sinks}
+troots = sorted((r for r in sinks if len(terr[r]) >= 10), key=lambda r: (-len(terr[r]), r))
+dist = {}
+for r in troots:
+    d, q = {r: 0}, deque([r])
+    while q:
+        m = q.popleft()
+        for p in pred[m]:
+            if p not in d:
+                d[p] = d[m] + 1
+                q.append(p)
+    dist[r] = d
+holders = defaultdict(list)
+for r in troots:
+    for n in terr[r]:
+        holders[n].append(r)
+territory, sharing = {}, {}
+for n in names:
+    hs = holders.get(n, [])
+    if not hs:
+        territory[n] = "unrooted"
+        sharing[n] = "unrooted"
+    else:
+        territory[n] = min(hs, key=lambda r: (dist[r].get(n, 10 ** 6), len(terr[r]), r))
+        sharing[n] = "private" if len(hs) == 1 else "shared"
+for r in troots:
+    territory[r] = r
+    sharing.setdefault(r, "private")
+emit(labeling(
+    "territory", "The root territory a declaration is placed in.",
+    "canonical",
+    "A root is a sink whose territory reaches at least ten declarations; its territory is everything "
+    "depending on it transitively. Where several roots reach a declaration, the nearest by dependency "
+    "distance is chosen, then the smaller territory, then the least name. Declarations no root reaches "
+    "are unrooted.",
+    "categorical", sorted(set(territory.values())), territory),
+    os.path.join(LAB, "territory.json"))
+emit(labeling(
+    "territory-sharing", "Whether a declaration lies in one territory, several, or none.",
+    "canonical",
+    "Private when exactly one root reaches it, shared when more than one, unrooted when none.",
+    "categorical", ["private", "shared", "unrooted"], sharing),
+    os.path.join(LAB, "territory-sharing.json"))
 
 # ------------------------------------- B substrate check, one level below canonical
 # A substrate PARENT is a library result. A core primitive, a type former or an elimination rule from
