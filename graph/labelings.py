@@ -31,7 +31,8 @@ def labeling(lid, title, derived_from, derivation, kind, rng, values, keyed="nod
         "derivation": derivation,
         "attribute": {"kind": kind, "range": rng},
         "keyedBy": {"node": "canonical-name", "edge": "canonical-name-pair",
-                    "territory": "territory-name"}[keyed],
+                    "territory": "territory-name",
+                    "territory-pair": "territory-name-pair"}[keyed],
         "values": values,
     }
 
@@ -450,6 +451,26 @@ emit(labeling(
     "them. Counts and shares only; nothing here says what a territory is about.",
     "record", None, summary, keyed="territory"),
     os.path.join(LAB, "territory-summary.json"))
+
+# ------------------------------------- territory adjacency, keyed by territory pair
+# The cross territory edges reduced by the territory of each endpoint. Directed, because a dependency
+# is: the key A|B counts the edges whose depending end lies in A and whose depended on end lies in B,
+# so it reads as A rests on B. Keys are pairs of territory names joined by a pipe, generalising the
+# territory key kind exactly as edge keys generalise node keys.
+adjc = defaultdict(int)
+for s_, t_ in edges:
+    a, b = territory[s_], territory[t_]
+    if a != b:
+        adjc[f"{a}|{b}"] += 1
+emit(labeling(
+    "territory-adjacency", "How many dependencies run from one territory to another.",
+    ["labeling:territory", "labeling:edge-locality"],
+    "Every cross territory edge counted under the pair of its endpoints' territories, directed: the key "
+    "A|B counts edges whose depending end lies in A and whose depended on end lies in B, so it reads as "
+    "A rests on B. Pairs absent from the values carry no dependency in that direction.",
+    "scalar", {"min": min(adjc.values()), "max": max(adjc.values())}, dict(adjc),
+    keyed="territory-pair"),
+    os.path.join(LAB, "territory-adjacency.json"))
 
 # ------------------------------------- B substrate check, one level below canonical
 # A substrate PARENT is a library result. A core primitive, a type former or an elimination rule from
