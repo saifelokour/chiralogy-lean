@@ -316,6 +316,23 @@ emit(labeling(
     "categorical", ["private", "shared", "unrooted"], sharing),
     os.path.join(LAB, "territory-sharing.json"))
 
+# ------------------------------------------- edge locality, projected from territory
+# A node labeling projected onto edges: the same generalization as a reduction over labelings, in the
+# other direction. Within when both ends sit in one territory, cross when the edge binds two.
+loc = {}
+for s_, t_ in edges:
+    loc[f"{s_}|{t_}"] = "within" if territory[s_] == territory[t_] else "cross"
+emit(labeling(
+    "edge-locality", "Whether a dependency stays inside one territory or binds two together.",
+    ["labeling:territory"],
+    "Within when the two ends carry the same territory, cross otherwise. CAVEAT: a declaration reached "
+    "by several roots was assigned one territory by the tie break of the territory labeling, nearest "
+    "root then smaller territory then least name, so the locality of an edge touching such a "
+    "declaration follows that choice and is not independent structure. Read a cross edge at a shared "
+    "endpoint as a consequence of the tie break, not as a fact about the dependency.",
+    "categorical", ["within", "cross"], loc, keyed="edge"),
+    os.path.join(LAB, "edge-locality.json"))
+
 # ------------------------------------- B substrate check, one level below canonical
 # A substrate PARENT is a library result. A core primitive, a type former or an elimination rule from
 # Lean's own prelude, is not an ancestor in any structural sense: everything mentions it.

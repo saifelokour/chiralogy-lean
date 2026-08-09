@@ -1,19 +1,19 @@
 {
- "derivation": "Territories from the territory labeling, ordered by size then name, packed as a squarified treemap of the unit square with area proportional to territory size. No iterative embedding is used anywhere, so the result is reproducible across processes. Center free: no region is central, no radius is used, and distance from the middle carries no meaning. Declarations no root reaches form the unrooted region, packed alongside the others rather than set apart. Within a region declarations are sorted by dependency depth from that territory's root, then by how much rests on them, then by name, and filled into a grid. The unrooted region has no root to measure depth from, so its declarations are ordered by connected component.",
+ "derivation": "Territories from the territory labeling, ordered by size then name, packed as a squarified treemap of the unit square with area proportional to territory size. No iterative embedding is used anywhere, so the result is reproducible across processes. Center free: no region is central, no radius is used, and distance from the middle carries no meaning. Declarations no root reaches form the unrooted region, packed alongside the others rather than set apart. Within a region declarations are sorted by how much rests on them, heaviest first, then by name, and filled into a grid, so each region reads as a local weight gradient. The gradient runs to a region EDGE and never to a middle, so nothing is made central by carrying weight and the acentricity of the whole is untouched.",
  "derivedFrom": [
   "spine",
   "labeling:territory",
   "labeling:load-bearing-weight"
  ],
- "layout": "territory-packed",
+ "layout": "territory-weight",
  "positions": {
   "Chiralogy.Absence": [
-   0.046404,
+   0.166818,
    0.512027
   ],
   "Chiralogy.Absence.ctorElimType": [
-   0.311316,
-   0.350097
+   0.166818,
+   0.280698
   ],
   "Chiralogy.AbsenceStructure": [
    0.880833,
@@ -25,26 +25,26 @@
   ],
   "Chiralogy.Aopen": [
    0.335399,
-   0.442628
+   0.419495
   ],
   "Chiralogy.Apin": [
    0.046404,
-   0.419495
+   0.396362
   ],
   "Chiralogy.ArePeersIn": [
-   0.540847,
-   0.056546
+   0.467304,
+   0.165391
   ],
   "Chiralogy.ArePeersIn_irrefl": [
    0.565361,
-   0.056546
+   0.100084
   ],
   "Chiralogy.ArePeersIn_symm": [
    0.589876,
-   0.056546
+   0.100084
   ],
   "Chiralogy.ArePeersIn_transport_totalization": [
-   0.842593,
+   0.868153,
    0.358503
   ],
   "Chiralogy.Arr": [
@@ -52,7 +52,7 @@
    0.581425
   ],
   "Chiralogy.Arr.mk.congr_simp": [
-   0.962389,
+   0.98295,
    0.89566
   ],
   "Chiralogy.Arr.par_ext": [
@@ -64,7 +64,7 @@
    0.923469
   ],
   "Chiralogy.Bound": [
-   0.311316,
+   0.335399,
    0.805429
   ],
   "Chiralogy.BraidStmt": [
@@ -72,19 +72,19 @@
    0.73333
   ],
   "Chiralogy.CCar": [
-   0.311316,
-   0.558293
+   0.046404,
+   0.53516
   ],
   "Chiralogy.CataphaticConformant": [
    0.558461,
    0.524581
   ],
   "Chiralogy.ChiasmType": [
-   0.653576,
-   0.685741
+   0.605517,
+   0.73333
   ],
   "Chiralogy.Comparable": [
-   0.070487,
+   0.190901,
    0.512027
   ],
   "Chiralogy.ConflictFree": [
@@ -96,8 +96,8 @@
    0.181113
   ],
   "Chiralogy.Cont": [
-   0.287233,
-   0.234432
+   0.26315,
+   0.465761
   ],
   "Chiralogy.CrossStable": [
    0.142735,
@@ -112,7 +112,7 @@
    0.937834
   ],
   "Chiralogy.DistinctionsLiveOnlyAtTheCross": [
-   0.467304,
+   0.491818,
    0.143622
   ],
   "Chiralogy.Equinumerous": [
@@ -124,12 +124,12 @@
    0.661306
   ],
   "Chiralogy.ExceptOverState": [
-   0.335399,
-   0.257565
+   0.287233,
+   0.465761
   ],
   "Chiralogy.ExceptOverWriter": [
    0.070487,
-   0.234432
+   0.396362
   ],
   "Chiralogy.FactorsSeparate": [
    0.467304,
@@ -144,11 +144,11 @@
    0.871631
   ],
   "Chiralogy.Fib_cross": [
-   0.565361,
+   0.589876,
    0.165391
   ],
   "Chiralogy.Fib_differsInOne": [
-   0.467304,
+   0.491818,
    0.165391
   ],
   "Chiralogy.FormsNothing": [
@@ -160,15 +160,15 @@
    0.380873
   ],
   "Chiralogy.GroundTemplate": [
-   0.046404,
+   0.09457,
    0.558293
   ],
   "Chiralogy.HasNonBottomFixedPoint": [
-   0.414823,
+   0.462746,
    0.336133
   ],
   "Chiralogy.Het": [
-   0.070487,
+   0.118653,
    0.558293
   ],
   "Chiralogy.Hom": [
@@ -180,7 +180,7 @@
    0.230697
   ],
   "Chiralogy.IsFactor1B": [
-   0.09457,
+   0.142735,
    0.558293
   ],
   "Chiralogy.IsFactor1B_absence_immune": [
@@ -200,11 +200,11 @@
    0.165391
   ],
   "Chiralogy.IsFactor1B_unique": [
-   0.335399,
-   0.350097
+   0.190901,
+   0.280698
   ],
   "Chiralogy.IsFactor2B": [
-   0.118653,
+   0.166818,
    0.558293
   ],
   "Chiralogy.IsFactor2B_absence_immune": [
@@ -232,40 +232,40 @@
    0.208928
   ],
   "Chiralogy.IsFactorAt_imp_region_independent": [
-   0.491818,
-   0.143622
-  ],
-  "Chiralogy.IsFactorAt_not_unique": [
-   0.540847,
-   0.100084
-  ],
-  "Chiralogy.IsFactorAt_of_nary": [
    0.516333,
    0.143622
   ],
-  "Chiralogy.IsFactorAt_offdiag_unique": [
-   0.565361,
+  "Chiralogy.IsFactorAt_not_unique": [
+   0.61439,
    0.100084
   ],
+  "Chiralogy.IsFactorAt_of_nary": [
+   0.540847,
+   0.143622
+  ],
+  "Chiralogy.IsFactorAt_offdiag_unique": [
+   0.418275,
+   0.078315
+  ],
   "Chiralogy.IsFactorAt_transport_totalization": [
-   0.94483,
+   0.970389,
    0.380873
   ],
   "Chiralogy.IsFactorOf": [
-   0.61439,
-   0.056546
+   0.44279,
+   0.078315
   ],
   "Chiralogy.IsUniverseClassifier": [
-   0.070487,
-   0.419495
+   0.09457,
+   0.396362
   ],
   "Chiralogy.KernelChiasmStmt": [
    0.605517,
    0.641055
   ],
   "Chiralogy.Level": [
-   0.09457,
-   0.419495
+   0.118653,
+   0.396362
   ],
   "Chiralogy.LevelHom": [
    0.432355,
@@ -288,16 +288,16 @@
    0.976669
   ],
   "Chiralogy.Magma": [
-   0.26315,
-   0.234432
+   0.190901,
+   0.581425
   ],
   "Chiralogy.Magma.ctorElimType": [
-   0.070487,
-   0.211299
+   0.214984,
+   0.280698
   ],
   "Chiralogy.MarkingPassing": [
-   0.311316,
-   0.165033
+   0.142735,
+   0.396362
   ],
   "Chiralogy.MaximalAdmissible": [
    0.481703,
@@ -324,16 +324,16 @@
    0.641055
   ],
   "Chiralogy.OpHom": [
-   0.335399,
-   0.558293
+   0.070487,
+   0.53516
   ],
   "Chiralogy.OpHom.comp": [
-   0.118653,
-   0.419495
+   0.166818,
+   0.396362
   ],
   "Chiralogy.OpHom.id": [
-   0.142735,
-   0.419495
+   0.190901,
+   0.396362
   ],
   "Chiralogy.OpLevelHom": [
    0.95367,
@@ -344,7 +344,7 @@
    0.661306
   ],
   "Chiralogy.OpObj": [
-   0.190901,
+   0.214984,
    0.581425
   ],
   "Chiralogy.OpenGivenParts": [
@@ -352,59 +352,59 @@
    0.849564
   ],
   "Chiralogy.OperatorFaithful": [
-   0.166818,
-   0.419495
+   0.214984,
+   0.396362
   ],
   "Chiralogy.OrderedLevelHom": [
-   0.046404,
-   0.188166
+   0.214984,
+   0.512027
   ],
   "Chiralogy.OrderedLevelHom.comp": [
-   0.070487,
-   0.188166
+   0.239067,
+   0.396362
   ],
   "Chiralogy.OrderedLevelHom.id": [
-   0.09457,
-   0.188166
+   0.26315,
+   0.396362
   ],
   "Chiralogy.OrderedLevelObj": [
-   0.335399,
-   0.211299
+   0.09457,
+   0.53516
   ],
   "Chiralogy.Physics.GRDeterminism": [
-   0.09457,
+   0.311316,
    0.465761
   ],
   "Chiralogy.Physics.MeasurementSchema": [
-   0.190901,
-   0.419495
+   0.287233,
+   0.396362
   ],
   "Chiralogy.Physics.QMSuperposition": [
-   0.046404,
+   0.118653,
    0.53516
   ],
   "Chiralogy.Physics.base_matches_its_founding_register": [
-   0.840346,
-   0.571005
-  ],
-  "Chiralogy.Physics.ethics_abstracts_over_levels": [
    0.817552,
    0.616156
   ],
-  "Chiralogy.Physics.gr_demand": [
-   0.118653,
-   0.465761
-  ],
-  "Chiralogy.Physics.gr_determinism_demand": [
+  "Chiralogy.Physics.ethics_abstracts_over_levels": [
    0.840346,
    0.616156
   ],
+  "Chiralogy.Physics.gr_demand": [
+   0.335399,
+   0.465761
+  ],
+  "Chiralogy.Physics.gr_determinism_demand": [
+   0.863141,
+   0.616156
+  ],
   "Chiralogy.Physics.gr_qm_boundary": [
-   0.868153,
+   0.893712,
    0.358503
   ],
   "Chiralogy.Physics.measurement_entails_attempt": [
-   0.629546,
+   0.653576,
    0.73333
   ],
   "Chiralogy.Physics.phys": [
@@ -412,7 +412,7 @@
    0.661306
   ],
   "Chiralogy.Physics.phys_conforms_to_both": [
-   0.863141,
+   0.885935,
    0.616156
   ],
   "Chiralogy.Physics.phys_has_cataphatic_half": [
@@ -420,27 +420,27 @@
    0.638731
   ],
   "Chiralogy.Physics.phys_qm_faithful": [
-   0.885935,
-   0.616156
+   0.817552,
+   0.59358
   ],
   "Chiralogy.Physics.physics_has_one_ground": [
    0.840346,
    0.638731
   ],
   "Chiralogy.Physics.qm_faithful": [
-   0.214984,
-   0.419495
+   0.311316,
+   0.396362
   ],
   "Chiralogy.Physics.qm_superposition_demand": [
-   0.817552,
+   0.840346,
    0.59358
   ],
   "Chiralogy.Physics.quantum_gravity_is_the_attempt": [
-   0.653576,
-   0.73333
+   0.557457,
+   0.709536
   ],
   "Chiralogy.Physics.schema_is_physics_reading": [
-   0.557457,
+   0.581487,
    0.709536
   ],
   "Chiralogy.Physics.secondLeveledMember": [
@@ -468,12 +468,12 @@
    0.604558
   ],
   "Chiralogy.Reachable": [
-   0.335399,
-   0.805429
+   0.046404,
+   0.783361
   ],
   "Chiralogy.ReaderOverWriter": [
-   0.09457,
-   0.234432
+   0.335399,
+   0.396362
   ],
   "Chiralogy.ReadsOnlyStructure": [
    0.166818,
@@ -488,12 +488,12 @@
    0.983326
   ],
   "Chiralogy.RespectsBinary": [
-   0.239067,
-   0.419495
+   0.046404,
+   0.373229
   ],
   "Chiralogy.RespectsUnary": [
-   0.26315,
-   0.419495
+   0.070487,
+   0.373229
   ],
   "Chiralogy.S1": [
    0.95367,
@@ -517,22 +517,22 @@
   ],
   "Chiralogy.StateOverExcept": [
    0.046404,
-   0.234432
+   0.442628
   ],
   "Chiralogy.StateOverState": [
-   0.166818,
-   0.165033
+   0.09457,
+   0.373229
   ],
   "Chiralogy.StateOverState'": [
-   0.190901,
-   0.165033
+   0.118653,
+   0.373229
   ],
   "Chiralogy.Steps": [
    0.118653,
    0.937834
   ],
   "Chiralogy.Structural": [
-   0.046404,
+   0.070487,
    0.783361
   ],
   "Chiralogy.T2": [
@@ -540,15 +540,15 @@
    0.638731
   ],
   "Chiralogy.Thin": [
-   0.491818,
+   0.516333,
    0.165391
   ],
   "Chiralogy.TowerLevel": [
    0.142735,
-   0.188166
+   0.53516
   ],
   "Chiralogy.TwoCoord": [
-   0.214984,
+   0.239067,
    0.581425
   ],
   "Chiralogy.TypeSystem.TypeGround": [
@@ -616,27 +616,27 @@
    0.849564
   ],
   "Chiralogy.UniverseClassifier": [
-   0.142735,
+   0.190901,
    0.558293
   ],
   "Chiralogy.WriterOverExcept": [
-   0.118653,
-   0.234432
+   0.142735,
+   0.373229
   ],
   "Chiralogy.WriterOverReader": [
-   0.142735,
-   0.234432
+   0.166818,
+   0.373229
   ],
   "Chiralogy.WriterOverWriter": [
-   0.166818,
-   0.234432
+   0.190901,
+   0.373229
   ],
   "Chiralogy.WriterOverWriter'": [
-   0.190901,
-   0.234432
+   0.214984,
+   0.373229
   ],
   "Chiralogy.a_carrier_that_is_not_thin_admits_separating_factors": [
-   0.491818,
+   0.516333,
    0.121853
   ],
   "Chiralogy.a_change_requires_a_release": [
@@ -648,11 +648,11 @@
    0.132737
   ],
   "Chiralogy.a_part_exchanging_permutation_collapses_the_tops": [
-   0.589876,
-   0.100084
+   0.467304,
+   0.078315
   ],
   "Chiralogy.a_self_examining_maintainer_is_order_detectable": [
-   0.668029,
+   0.691154,
    0.336133
   ],
   "Chiralogy.a_self_examining_maintainer_must_conflict": [
@@ -660,8 +660,8 @@
    0.358503
   ],
   "Chiralogy.a_shared_part_cell_blocks_openness": [
-   0.61439,
-   0.100084
+   0.491818,
+   0.078315
   ],
   "Chiralogy.a_single_limit_is_empty": [
    0.558593,
@@ -672,11 +672,11 @@
    0.868508
   ],
   "Chiralogy.a_total_factor_and_an_absent_factor_separate": [
-   0.418275,
+   0.516333,
    0.078315
   ],
   "Chiralogy.a_vacuous_floor_has_at_least_three_maxima": [
-   0.070487,
+   0.09457,
    0.783361
   ],
   "Chiralogy.a_verdict_never_firing_is_generic": [
@@ -692,15 +692,15 @@
    0.403244
   ],
   "Chiralogy.absenceCarriedCount.congr_simp": [
-   0.691154,
-   0.291392
+   0.714279,
+   0.358503
   ],
   "Chiralogy.absenceCarriedCount_cfamS": [
    0.814595,
    0.805131
   ],
   "Chiralogy.absenceCarriedCount_even": [
-   0.691154,
+   0.714279,
    0.336133
   ],
   "Chiralogy.absenceCarriedCount_relabel": [
@@ -708,7 +708,7 @@
    0.380873
   ],
   "Chiralogy.absenceCarried_offdiagonal": [
-   0.714279,
+   0.737403,
    0.336133
   ],
   "Chiralogy.absenceCarried_relabel": [
@@ -716,15 +716,15 @@
    0.380873
   ],
   "Chiralogy.absenceCarried_symm": [
-   0.737403,
+   0.760528,
    0.336133
   ],
   "Chiralogy.absenceMask": [
-   0.287233,
-   0.419495
+   0.239067,
+   0.373229
   ],
   "Chiralogy.absence_carried_downward_closed": [
-   0.714279,
+   0.737403,
    0.358503
   ],
   "Chiralogy.absence_carried_factor_immune_to_mask": [
@@ -732,7 +732,7 @@
    0.68536
   ],
   "Chiralogy.absent_row_absenceCarried": [
-   0.760528,
+   0.783653,
    0.336133
   ],
   "Chiralogy.absorbing_reaches_the_lattice": [
@@ -744,7 +744,7 @@
    0.923469
   ],
   "Chiralogy.act_comp": [
-   0.861801,
+   0.884582,
    0.744919
   ],
   "Chiralogy.act_hom_iff": [
@@ -781,10 +781,10 @@
   ],
   "Chiralogy.an_identity_is_permanently_invisible": [
    0.239067,
-   0.141901
+   0.280698
   ],
   "Chiralogy.an_invariant_band_without_a_resting_place": [
-   0.142735,
+   0.166818,
    0.761294
   ],
   "Chiralogy.apophatic_center_is_codomain": [
@@ -792,8 +792,8 @@
    0.515889
   ],
   "Chiralogy.apophatic_uniformity_is_channel_uniformity": [
-   0.772506,
-   0.980256
+   0.724916,
+   0.959231
   ],
   "Chiralogy.applyStance": [
    0.903517,
@@ -812,7 +812,7 @@
    0.2053
   ],
   "Chiralogy.applyStance_dropAll": [
-   0.438785,
+   0.462746,
    0.358503
   ],
   "Chiralogy.applyStance_formAll": [
@@ -852,39 +852,39 @@
    0.835642
   ],
   "Chiralogy.arrComp": [
-   0.839021,
-   0.724526
+   0.861801,
+   0.765312
   ],
   "Chiralogy.arrId": [
-   0.98295,
+   0.962389,
    0.89566
   ],
   "Chiralogy.arr_assoc": [
-   0.861801,
+   0.816241,
    0.724526
   ],
   "Chiralogy.arr_id_left": [
-   0.884582,
+   0.839021,
    0.724526
   ],
   "Chiralogy.arr_id_right": [
-   0.816241,
-   0.704133
+   0.861801,
+   0.724526
   ],
   "Chiralogy.arrowComp": [
    0.839021,
    0.765312
   ],
   "Chiralogy.arrowComp_assoc": [
-   0.861801,
-   0.765312
-  ],
-  "Chiralogy.arrowComp_id_left": [
    0.884582,
    0.765312
   ],
-  "Chiralogy.arrowComp_id_right": [
+  "Chiralogy.arrowComp_id_left": [
    0.816241,
+   0.744919
+  ],
+  "Chiralogy.arrowComp_id_right": [
+   0.839021,
    0.744919
   ],
   "Chiralogy.arrowId": [
@@ -900,11 +900,11 @@
    0.403244
   ],
   "Chiralogy.ascentPath": [
-   0.94483,
-   0.291392
+   0.919271,
+   0.403244
   ],
   "Chiralogy.ascentPath_ascends": [
-   0.893712,
+   0.919271,
    0.358503
   ],
   "Chiralogy.ascentPath_ceiling_isTotal": [
@@ -912,23 +912,23 @@
    0.845903
   ],
   "Chiralogy.ascentPath_isAssemblageN": [
-   0.970389,
-   0.291392
+   0.94483,
+   0.358503
   ],
   "Chiralogy.ascentPath_reaches_ceiling": [
-   0.868153,
+   0.893712,
    0.380873
   ],
   "Chiralogy.ascentPath_zero": [
-   0.919271,
+   0.970389,
    0.358503
   ],
   "Chiralogy.ascent_ceilings_incomparable": [
-   0.629546,
-   0.800694
+   0.605517,
+   0.823298
   ],
   "Chiralogy.assemblage_ceiling_is_maximal": [
-   0.605517,
+   0.629546,
    0.823298
   ],
   "Chiralogy.assemblage_conforms": [
@@ -936,7 +936,7 @@
    0.954423
   ],
   "Chiralogy.assemblage_floor_comes_apart": [
-   0.438785,
+   0.486708,
    0.336133
   ],
   "Chiralogy.assemblage_region1_independent": [
@@ -989,7 +989,7 @@
   ],
   "Chiralogy.assembly_order_matters": [
    0.26315,
-   0.141901
+   0.280698
   ],
   "Chiralogy.assertsFalse": [
    0.046404,
@@ -1012,27 +1012,27 @@
    0.854982
   ],
   "Chiralogy.bOp": [
-   0.070487,
+   0.166818,
    0.53516
   ],
   "Chiralogy.base_collision_is_generic": [
-   0.975246,
-   0.451908
+   0.951642,
+   0.500357
   ],
   "Chiralogy.base_embeds_out": [
    0.287233,
-   0.141901
+   0.280698
   ],
   "Chiralogy.base_is_free_on_one_constant": [
-   0.046404,
-   0.326964
+   0.311316,
+   0.280698
   ],
   "Chiralogy.base_is_minimal": [
-   0.311316,
-   0.141901
+   0.335399,
+   0.280698
   ],
   "Chiralogy.below_iff_partialization": [
-   0.629546,
+   0.653576,
    0.956169
   ],
   "Chiralogy.binary_routes_beyond_absorption": [
@@ -1040,20 +1040,20 @@
    0.830057
   ],
   "Chiralogy.blocking_is_not_forcing": [
-   0.070487,
-   0.326964
+   0.046404,
+   0.257565
   ],
   "Chiralogy.blocking_outside_the_order_preserves_heyting": [
-   0.335399,
-   0.141901
+   0.070487,
+   0.257565
   ],
   "Chiralogy.blocking_removes_a_closure": [
    0.938198,
    0.854982
   ],
   "Chiralogy.boolean_because_free": [
-   0.046404,
-   0.118768
+   0.09457,
+   0.257565
   ],
   "Chiralogy.boolean_iff_free": [
    0.776922,
@@ -1068,19 +1068,19 @@
    0.403244
   ],
   "Chiralogy.both_cross": [
-   0.44279,
+   0.540847,
    0.078315
   ],
   "Chiralogy.bottom_is_unique": [
-   0.462746,
-   0.358503
-  ],
-  "Chiralogy.bottom_stays_in_form": [
    0.486708,
    0.358503
   ],
+  "Chiralogy.bottom_stays_in_form": [
+   0.51067,
+   0.358503
+  ],
   "Chiralogy.bound_of_factors": [
-   0.166818,
+   0.190901,
    0.761294
   ],
   "Chiralogy.boundary_braids_both_absences": [
@@ -1092,11 +1092,11 @@
    0.500357
   ],
   "Chiralogy.bounds_differ_in_kind_and_status": [
-   0.581487,
+   0.605517,
    0.709536
   ],
   "Chiralogy.bundle_selects_no_import": [
-   0.190901,
+   0.214984,
    0.761294
   ],
   "Chiralogy.byCoord": [
@@ -1104,11 +1104,11 @@
    0.849564
   ],
   "Chiralogy.byCoord_cross": [
-   0.516333,
+   0.540847,
    0.121853
   ],
   "Chiralogy.byCoord_differs": [
-   0.540847,
+   0.565361,
    0.143622
   ],
   "Chiralogy.cFalse": [
@@ -1120,16 +1120,16 @@
    0.978774
   ],
   "Chiralogy.cLE_antisymm": [
-   0.605517,
-   0.91096
+   0.557457,
+   0.933565
   ],
   "Chiralogy.cLE_refl": [
-   0.581487,
-   0.91096
+   0.557457,
+   0.956169
   ],
   "Chiralogy.cLE_trans": [
-   0.629546,
-   0.91096
+   0.653576,
+   0.933565
   ],
   "Chiralogy.cMeet": [
    0.84306,
@@ -1148,15 +1148,15 @@
    0.897039
   ],
   "Chiralogy.cResist": [
-   0.311316,
-   0.419495
+   0.26315,
+   0.373229
   ],
   "Chiralogy.cTrue": [
    0.070487,
    0.604558
   ],
   "Chiralogy.cTrue_ne_bot": [
-   0.51067,
+   0.534631,
    0.380873
   ],
   "Chiralogy.cTrue_not_mobile": [
@@ -1164,20 +1164,20 @@
    0.805429
   ],
   "Chiralogy.c_le_fillCell": [
-   0.605517,
-   0.933565
+   0.557457,
+   0.91096
   ],
   "Chiralogy.c_le_totalization": [
-   0.893712,
+   0.919271,
    0.380873
   ],
   "Chiralogy.can_a_constant_pin_an_operation": [
-   0.070487,
-   0.118768
+   0.118653,
+   0.257565
   ],
   "Chiralogy.can_a_unary_operation_reach_the_ethics": [
-   0.09457,
-   0.326964
+   0.142735,
+   0.257565
   ],
   "Chiralogy.can_assembly_clear_a_floor": [
    0.801835,
@@ -1188,16 +1188,16 @@
    0.121853
   ],
   "Chiralogy.card_fibre": [
-   0.118653,
-   0.326964
+   0.166818,
+   0.257565
   ],
   "Chiralogy.card_le_of_steps": [
    0.61439,
    0.208928
   ],
   "Chiralogy.cataphatic_center_is_domain": [
-   0.09457,
-   0.118768
+   0.190901,
+   0.257565
   ],
   "Chiralogy.cataphatic_form_reads_only_a_build": [
    0.558461,
@@ -1208,15 +1208,15 @@
    0.500357
   ],
   "Chiralogy.cataphatic_kernel_has_one_inversion": [
-   0.118653,
-   0.118768
+   0.214984,
+   0.257565
   ],
   "Chiralogy.cataphatic_model_chiasm": [
    0.724916,
    0.856667
   ],
   "Chiralogy.ceiling_coincides": [
-   0.629546,
+   0.653576,
    0.823298
   ],
   "Chiralogy.ceiling_of_an_assemblage": [
@@ -1224,12 +1224,12 @@
    0.527003
   ],
   "Chiralogy.cellMap": [
-   0.335399,
-   0.419495
+   0.287233,
+   0.373229
   ],
   "Chiralogy.center_fragments_by_reasons": [
-   0.070487,
-   0.141901
+   0.239067,
+   0.257565
   ],
   "Chiralogy.center_is_empty": [
    0.407681,
@@ -1272,12 +1272,12 @@
    0.830057
   ],
   "Chiralogy.chainTemplate": [
-   0.142735,
-   0.465761
+   0.070487,
+   0.442628
   ],
   "Chiralogy.channel_capacity_is_zero": [
-   0.407681,
-   0.474178
+   0.457029,
+   0.515889
   ],
   "Chiralogy.channel_is_certification": [
    0.581081,
@@ -1288,64 +1288,64 @@
    0.527003
   ],
   "Chiralogy.chiasm_of": [
-   0.629546,
+   0.653576,
    0.61726
   ],
   "Chiralogy.chimp": [
-   0.166818,
-   0.465761
+   0.09457,
+   0.442628
   ],
   "Chiralogy.chiralogy_under_its_own_boundary": [
-   0.724916,
-   0.91718
+   0.748711,
+   0.959231
   ],
   "Chiralogy.cimp3": [
-   0.046404,
-   0.396362
+   0.311316,
+   0.373229
   ],
   "Chiralogy.cjoin": [
    0.09457,
    0.581425
   ],
   "Chiralogy.cjoin3": [
-   0.070487,
-   0.396362
+   0.335399,
+   0.373229
   ],
   "Chiralogy.closeE": [
-   0.09457,
+   0.239067,
    0.512027
   ],
   "Chiralogy.closeLE": [
-   0.239067,
+   0.26315,
    0.581425
   ],
   "Chiralogy.closeReasonFalse": [
    0.046404,
-   0.141901
+   0.350097
   ],
   "Chiralogy.closeable": [
    0.724995,
    0.527003
   ],
   "Chiralogy.closeableG": [
-   0.166818,
-   0.211299
+   0.287233,
+   0.581425
   ],
   "Chiralogy.closeable_family_transports_or_not": [
-   0.142735,
-   0.326964
+   0.26315,
+   0.257565
   ],
   "Chiralogy.closeable_sets_factor": [
    0.724995,
    0.507624
   ],
   "Chiralogy.cmeet": [
-   0.166818,
+   0.214984,
    0.558293
   ],
   "Chiralogy.cmeet3": [
-   0.09457,
-   0.396362
+   0.070487,
+   0.350097
   ],
   "Chiralogy.coded_and_fully_deterritorialized_is_impossible": [
    0.750958,
@@ -1356,7 +1356,7 @@
    0.507624
   ],
   "Chiralogy.codomain_negation_not_canonical": [
-   0.701122,
+   0.772506,
    0.959231
   ],
   "Chiralogy.cofreeDeclare": [
@@ -1372,8 +1372,8 @@
    0.507624
   ],
   "Chiralogy.coh": [
-   0.118653,
-   0.396362
+   0.09457,
+   0.350097
   ],
   "Chiralogy.coincident": [
    0.926719,
@@ -1388,7 +1388,7 @@
    0.959902
   ],
   "Chiralogy.colCell.congr_simp": [
-   0.214984,
+   0.239067,
    0.761294
   ],
   "Chiralogy.colCell_at_a": [
@@ -1424,7 +1424,7 @@
    0.380873
   ],
   "Chiralogy.collapse": [
-   0.190901,
+   0.239067,
    0.558293
   ],
   "Chiralogy.collapseHom": [
@@ -1436,7 +1436,7 @@
    0.208928
   ],
   "Chiralogy.collision_without_concealment": [
-   0.118653,
+   0.26315,
    0.512027
   ],
   "Chiralogy.common_neighbours": [
@@ -1444,35 +1444,35 @@
    0.208928
   ],
   "Chiralogy.comparability_federates": [
-   0.605517,
+   0.629546,
    0.709536
   ],
   "Chiralogy.comparability_has_cut_vertex": [
-   0.118653,
-   0.141901
+   0.287233,
+   0.257565
   ],
   "Chiralogy.complete_and_faithful_is_impossible": [
    0.581487,
    0.757124
   ],
   "Chiralogy.completeness_is_unreachable": [
-   0.748711,
+   0.701122,
    0.959231
   ],
   "Chiralogy.compose": [
-   0.142735,
+   0.287233,
    0.512027
   ],
   "Chiralogy.composite_fill_not_a_factor_operation": [
-   0.94483,
-   0.358503
+   0.842593,
+   0.336133
   ],
   "Chiralogy.composite_fill_overwrites_absent_cross": [
-   0.919271,
+   0.94483,
    0.380873
   ],
   "Chiralogy.composite_fill_writes_cross": [
-   0.94483,
+   0.970389,
    0.403244
   ],
   "Chiralogy.conflictFree_is_order_invariant": [
@@ -1480,7 +1480,7 @@
    0.10855
   ],
   "Chiralogy.constant_row_registers_are_bases": [
-   0.09457,
+   0.118653,
    0.783361
   ],
   "Chiralogy.constant_row_registers_are_nondegenerate": [
@@ -1492,15 +1492,15 @@
    0.208928
   ],
   "Chiralogy.cont_absence_is_stipulated": [
-   0.335399,
-   0.234432
+   0.118653,
+   0.350097
   ],
   "Chiralogy.continuity_collapses_to_metric": [
-   0.142735,
-   0.118768
+   0.311316,
+   0.257565
   ],
   "Chiralogy.coordCell": [
-   0.118653,
+   0.142735,
    0.783361
   ],
   "Chiralogy.coordPath": [
@@ -1536,31 +1536,31 @@
    0.893699
   ],
   "Chiralogy.copy": [
-   0.26315,
-   0.188166
+   0.190901,
+   0.53516
   ],
   "Chiralogy.copy_is_free": [
-   0.287233,
-   0.188166
+   0.335399,
+   0.257565
   ],
   "Chiralogy.crossMask": [
    0.491818,
    0.18716
   ],
   "Chiralogy.crossMask.congr_simp": [
-   0.418275,
-   0.034777
+   0.565361,
+   0.078315
   ],
   "Chiralogy.crossSlice": [
    0.481703,
    0.705443
   ],
   "Chiralogy.crossSlice_apply": [
-   0.565361,
+   0.589876,
    0.143622
   ],
   "Chiralogy.crossSlice_reads_import": [
-   0.467304,
+   0.589876,
    0.078315
   ],
   "Chiralogy.crossStable_adjacent": [
@@ -1592,11 +1592,11 @@
    0.915767
   ],
   "Chiralogy.cross_absence_carried_of_absent_factor": [
-   0.783653,
-   0.336133
+   0.644904,
+   0.313762
   ],
   "Chiralogy.cross_implies_open": [
-   0.540847,
+   0.565361,
    0.121853
   ],
   "Chiralogy.cross_is_free_over_all_factors": [
@@ -1604,31 +1604,31 @@
    0.208928
   ],
   "Chiralogy.cycle_is_not_the_hole": [
-   0.772506,
-   0.959231
-  ],
-  "Chiralogy.cyclic": [
-   0.09457,
-   0.53516
-  ],
-  "Chiralogy.cyclic_also_has_hole": [
    0.701122,
    0.938205
   ],
+  "Chiralogy.cyclic": [
+   0.214984,
+   0.53516
+  ],
+  "Chiralogy.cyclic_also_has_hole": [
+   0.724916,
+   0.938205
+  ],
   "Chiralogy.cyclic_is_total": [
-   0.166818,
-   0.326964
+   0.046404,
+   0.234432
   ],
   "Chiralogy.cyclic_no_maximum": [
-   0.190901,
-   0.326964
+   0.070487,
+   0.234432
   ],
   "Chiralogy.cyclic_witness": [
-   0.214984,
-   0.326964
+   0.09457,
+   0.234432
   ],
   "Chiralogy.decAdjacent": [
-   0.516333,
+   0.540847,
    0.165391
   ],
   "Chiralogy.decDiffersInOne": [
@@ -1636,23 +1636,23 @@
    0.230697
   ],
   "Chiralogy.degenerate_morphism_permitted": [
-   0.653576,
-   0.61726
+   0.557457,
+   0.593466
   ],
   "Chiralogy.departures_interact": [
-   0.239067,
-   0.326964
+   0.118653,
+   0.234432
   ],
   "Chiralogy.dependence_adds_reasons": [
-   0.190901,
-   0.465761
+   0.118653,
+   0.442628
   ],
   "Chiralogy.dependence_is_one_dimension": [
-   0.951642,
+   0.975246,
    0.500357
   ],
   "Chiralogy.descentBySet": [
-   0.462746,
+   0.51067,
    0.336133
   ],
   "Chiralogy.descentFactors": [
@@ -1664,47 +1664,47 @@
    0.403244
   ],
   "Chiralogy.descentPath": [
-   0.462746,
-   0.291392
+   0.414823,
+   0.380873
   ],
   "Chiralogy.descentPath_descends": [
-   0.486708,
+   0.534631,
    0.336133
   ],
   "Chiralogy.descentPath_isAssemblageN": [
-   0.51067,
-   0.291392
+   0.558593,
+   0.336133
   ],
   "Chiralogy.descentPath_reaches_bot": [
-   0.51067,
+   0.582554,
    0.336133
   ],
   "Chiralogy.descentPath_zero": [
-   0.534631,
-   0.336133
+   0.414823,
+   0.313762
   ],
   "Chiralogy.descent_path_is_a_family": [
    0.728292,
    0.121853
   ],
   "Chiralogy.descent_path_is_a_family_nary": [
-   0.491818,
+   0.61439,
    0.078315
   ],
   "Chiralogy.diagAt": [
-   0.589876,
+   0.61439,
    0.165391
   ],
   "Chiralogy.diagonal_factors_through_copy": [
-   0.311316,
-   0.188166
+   0.142735,
+   0.234432
   ],
   "Chiralogy.diffSet": [
    0.09457,
    0.959902
   ],
   "Chiralogy.diffSet.congr_simp": [
-   0.239067,
+   0.26315,
    0.761294
   ],
   "Chiralogy.diffSet_fibEquiv": [
@@ -1712,8 +1712,8 @@
    0.915767
   ],
   "Chiralogy.diffSet_oneOn": [
-   0.070487,
-   0.717159
+   0.166818,
+   0.805429
   ],
   "Chiralogy.diffSet_stepAt_left": [
    0.287233,
@@ -1745,22 +1745,22 @@
   ],
   "Chiralogy.distinctRows": [
    0.166818,
-   0.118768
+   0.234432
   ],
   "Chiralogy.distinct_maxima_incomparable": [
    0.629546,
    0.845903
   ],
   "Chiralogy.does_the_pattern_hold_or_break": [
-   0.166818,
-   0.141901
+   0.190901,
+   0.234432
   ],
   "Chiralogy.double_chiasm_conjunction": [
-   0.557457,
+   0.581487,
    0.593466
   ],
   "Chiralogy.double_chiasm_does_not_compose": [
-   0.629546,
+   0.653576,
    0.709536
   ],
   "Chiralogy.dropAll": [
@@ -1772,11 +1772,11 @@
    0.084362
   ],
   "Chiralogy.dropUniform": [
-   0.142735,
+   0.166818,
    0.783361
   ],
   "Chiralogy.dropUniform_le_keepSupported": [
-   0.26315,
+   0.287233,
    0.761294
   ],
   "Chiralogy.dropUnsupported": [
@@ -1784,7 +1784,7 @@
    0.380873
   ],
   "Chiralogy.dropUnsupported_le_keepSupported": [
-   0.644904,
+   0.668029,
    0.313762
   ],
   "Chiralogy.dummyClass": [
@@ -1816,12 +1816,12 @@
    0.877693
   ],
   "Chiralogy.embedding_buys_in_rich_ambient": [
-   0.118653,
+   0.239067,
    0.53516
   ],
   "Chiralogy.embedding_buys_nothing_in_trivial": [
-   0.190901,
-   0.118768
+   0.214984,
+   0.234432
   ],
   "Chiralogy.embedding_not_iso": [
    0.748711,
@@ -1829,19 +1829,19 @@
   ],
   "Chiralogy.emptyCenterAt": [
    0.142735,
-   0.396362
+   0.350097
   ],
   "Chiralogy.emptyFactor": [
-   0.414823,
+   0.438785,
    0.380873
   ],
   "Chiralogy.emptyFactor_comm": [
-   0.558593,
-   0.336133
+   0.438785,
+   0.313762
   ],
   "Chiralogy.emptyFactor_idem": [
-   0.582554,
-   0.336133
+   0.462746,
+   0.313762
   ],
   "Chiralogy.empty_center": [
    0.457029,
@@ -1852,8 +1852,8 @@
    0.5576
   ],
   "Chiralogy.empty_fibre_never_totalized": [
-   0.970389,
-   0.358503
+   0.868153,
+   0.336133
   ],
   "Chiralogy.enumerate_small": [
    0.828849,
@@ -1872,7 +1872,7 @@
    0.897039
   ],
   "Chiralogy.eqTypedCount_is_finest_structural": [
-   0.287233,
+   0.311316,
    0.761294
   ],
   "Chiralogy.eqTypedCount_swapT": [
@@ -1880,7 +1880,7 @@
    0.937826
   ],
   "Chiralogy.equational_relations_weld": [
-   0.26315,
+   0.311316,
    0.581425
   ],
   "Chiralogy.equinumerous_refl": [
@@ -1896,7 +1896,7 @@
    0.958219
   ],
   "Chiralogy.equiv_of_punctured": [
-   0.287233,
+   0.335399,
    0.581425
   ],
   "Chiralogy.equivariant_determiner_invariant": [
@@ -1904,36 +1904,36 @@
    0.638731
   ],
   "Chiralogy.erasure_forces_nondependence": [
-   0.26315,
-   0.165033
+   0.166818,
+   0.350097
   ],
   "Chiralogy.ethical_center_is_distinct": [
-   0.724916,
-   0.959231
+   0.772506,
+   0.980256
   ],
   "Chiralogy.ethical_is_apophatic_shaped": [
-   0.653576,
-   0.709536
+   0.557457,
+   0.685741
   ],
   "Chiralogy.ethics_transports_here": [
-   0.214984,
-   0.118768
+   0.239067,
+   0.234432
   ],
   "Chiralogy.every_policy_reaches_a_rest": [
    0.070487,
    0.849564
   ],
   "Chiralogy.every_target_is_defeasible": [
-   0.457029,
+   0.481703,
    0.515889
   ],
   "Chiralogy.exCycle": [
-   0.166818,
-   0.396362
+   0.190901,
+   0.350097
   ],
   "Chiralogy.exactly_one_prohibited": [
-   0.190901,
-   0.396362
+   0.214984,
+   0.350097
   ],
   "Chiralogy.exceeding_requires_location": [
    0.752807,
@@ -1952,8 +1952,8 @@
    0.524581
   ],
   "Chiralogy.except_center_is_plural": [
-   0.975246,
-   0.500357
+   0.880833,
+   0.476132
   ],
   "Chiralogy.exists_differsInOne_iff_card": [
    0.516333,
@@ -1968,15 +1968,15 @@
    0.954423
   ],
   "Chiralogy.externality": [
-   0.166818,
+   0.190901,
    0.805429
   ],
   "Chiralogy.f1": [
-   0.214984,
-   0.465761
+   0.142735,
+   0.442628
   ],
   "Chiralogy.f2": [
-   0.166818,
+   0.311316,
    0.512027
   ],
   "Chiralogy.fabrication_cost_by_part": [
@@ -1984,8 +1984,8 @@
    0.488245
   ],
   "Chiralogy.factor_condition_is_local": [
-   0.239067,
-   0.118768
+   0.26315,
+   0.234432
   ],
   "Chiralogy.factors_determine_the_shared_region": [
    0.703778,
@@ -1996,11 +1996,11 @@
    0.121853
   ],
   "Chiralogy.factors_remain_unchanged": [
-   0.724916,
+   0.748711,
    0.938205
   ],
   "Chiralogy.factorwise_reaches_bottom_in_form": [
-   0.414823,
+   0.486708,
    0.313762
   ],
   "Chiralogy.factorwise_step_stays_in_form": [
@@ -2008,11 +2008,11 @@
    0.121853
   ],
   "Chiralogy.failMaybe": [
-   0.190901,
+   0.335399,
    0.512027
   ],
   "Chiralogy.false_diagonal_survives_every_fill": [
-   0.842593,
+   0.893712,
    0.336133
   ],
   "Chiralogy.fibEquiv": [
@@ -2032,31 +2032,31 @@
    0.527003
   ],
   "Chiralogy.fibre_is_nonconstant": [
-   0.868153,
+   0.919271,
    0.336133
   ],
   "Chiralogy.fillCell": [
-   0.214984,
+   0.26315,
    0.558293
   ],
   "Chiralogy.fillCell_at": [
-   0.893712,
+   0.94483,
    0.336133
   ],
   "Chiralogy.fillCell_other": [
-   0.214984,
-   0.396362
+   0.239067,
+   0.350097
   ],
   "Chiralogy.fill_at_order_bottom_forced": [
    0.749493,
    0.616156
   ],
   "Chiralogy.fill_has_no_identity": [
-   0.919271,
+   0.970389,
    0.336133
   ],
   "Chiralogy.fill_operator_ext_iff": [
-   0.438785,
+   0.51067,
    0.313762
   ],
   "Chiralogy.fillableCells": [
@@ -2068,24 +2068,24 @@
    0.893699
   ],
   "Chiralogy.fillings_agreeing_on_the_cross_give_the_same_whole": [
-   0.565361,
+   0.589876,
    0.121853
   ],
   "Chiralogy.fills_at_different_cells_commute": [
-   0.26315,
-   0.326964
+   0.287233,
+   0.234432
   ],
   "Chiralogy.fills_at_same_cell_absorb": [
-   0.287233,
-   0.326964
+   0.311316,
+   0.234432
   ],
   "Chiralogy.fin2_add_one_add_one": [
-   0.142735,
+   0.26315,
    0.53516
   ],
   "Chiralogy.fin2_ne_iff": [
-   0.214984,
-   0.512027
+   0.046404,
+   0.488894
   ],
   "Chiralogy.fixedPoint_of_surjection": [
    0.407681,
@@ -2108,7 +2108,7 @@
    0.100084
   ],
   "Chiralogy.floor_predicate_ne_order_bottom": [
-   0.462746,
+   0.534631,
    0.313762
   ],
   "Chiralogy.flow_global": [
@@ -2120,12 +2120,12 @@
    0.451908
   ],
   "Chiralogy.forced_levels_are_not_constructible": [
-   0.311316,
-   0.326964
+   0.335399,
+   0.234432
   ],
   "Chiralogy.forcing_gives_heyting": [
-   0.335399,
-   0.326964
+   0.046404,
+   0.211299
   ],
   "Chiralogy.forget": [
    0.457029,
@@ -2140,20 +2140,20 @@
    0.641055
   ],
   "Chiralogy.forgetOpHom": [
-   0.653576,
-   0.569672
+   0.557457,
+   0.61726
   ],
   "Chiralogy.forget_the_declaration": [
    0.457029,
    0.774287
   ],
   "Chiralogy.forget_the_operations": [
-   0.581487,
+   0.605517,
    0.593466
   ],
   "Chiralogy.forget_the_order": [
-   0.046404,
-   0.303831
+   0.070487,
+   0.211299
   ],
   "Chiralogy.forgetting_loses_the_reason_count": [
    0.481703,
@@ -2168,8 +2168,8 @@
    0.084362
   ],
   "Chiralogy.formAll_fixes_the_saturated": [
-   0.653576,
-   0.823298
+   0.557457,
+   0.800694
   ],
   "Chiralogy.formAll_saturates": [
    0.653576,
@@ -2212,8 +2212,8 @@
    0.932178
   ],
   "Chiralogy.fpf_of_canDiffer": [
-   0.311316,
-   0.581425
+   0.046404,
+   0.558293
   ],
   "Chiralogy.freeDeclare": [
    0.432355,
@@ -2232,19 +2232,19 @@
    0.488245
   ],
   "Chiralogy.freedom": [
-   0.311316,
+   0.335399,
    0.761294
   ],
   "Chiralogy.full_closure_is_the_top": [
-   0.239067,
-   0.396362
+   0.26315,
+   0.350097
   ],
   "Chiralogy.full_group_not_determined_by_factors": [
    0.701372,
    0.59358
   ],
   "Chiralogy.full_partialization_is_bot": [
-   0.438785,
+   0.462746,
    0.380873
   ],
   "Chiralogy.full_product_when_unconstrained": [
@@ -2252,36 +2252,36 @@
    0.59358
   ],
   "Chiralogy.full_totality_collides": [
-   0.239067,
-   0.465761
+   0.166818,
+   0.442628
   ],
   "Chiralogy.gC": [
-   0.239067,
-   0.512027
+   0.070487,
+   0.488894
   ],
   "Chiralogy.genuineFam": [
-   0.166818,
+   0.287233,
    0.53516
   ],
   "Chiralogy.grade": [
-   0.166818,
-   0.188166
+   0.287233,
+   0.350097
   ],
   "Chiralogy.grade_adds": [
-   0.214984,
-   0.188166
+   0.09457,
+   0.211299
   ],
   "Chiralogy.grain_is_transpose_stable": [
-   0.516333,
-   0.078315
+   0.418275,
+   0.056546
   ],
   "Chiralogy.grounds_are_derivable_not_imported": [
    0.728292,
    0.100084
   ],
   "Chiralogy.groupInverse": [
-   0.26315,
-   0.512027
+   0.09457,
+   0.488894
   ],
   "Chiralogy.group_buys_inverses": [
    0.64894,
@@ -2292,12 +2292,12 @@
    0.524581
   ],
   "Chiralogy.grouping_respects_operations": [
-   0.335399,
-   0.165033
+   0.118653,
+   0.211299
   ],
   "Chiralogy.guard_erases": [
-   0.239067,
-   0.165033
+   0.190901,
+   0.442628
   ],
   "Chiralogy.guard_is_the_uniform_hole": [
    0.64894,
@@ -2308,12 +2308,12 @@
    0.5576
   ],
   "Chiralogy.guard_uniformity_is_observational_coarseness": [
-   0.287233,
-   0.165033
+   0.142735,
+   0.211299
   ],
   "Chiralogy.hamming3": [
-   0.287233,
-   0.512027
+   0.118653,
+   0.488894
   ],
   "Chiralogy.heldCells": [
    0.166818,
@@ -2332,16 +2332,16 @@
    0.084362
   ],
   "Chiralogy.hole_is_codomain_generic": [
-   0.481703,
+   0.506378,
    0.515889
   ],
   "Chiralogy.hole_scope_uniform": [
-   0.748711,
+   0.772506,
    0.938205
   ],
   "Chiralogy.hole_survives_op": [
-   0.506378,
-   0.515889
+   0.407681,
+   0.495034
   ],
   "Chiralogy.hole_transports": [
    0.457029,
@@ -2356,8 +2356,8 @@
    0.500357
   ],
   "Chiralogy.howMany_value_count": [
-   0.26315,
-   0.118768
+   0.166818,
+   0.211299
   ],
   "Chiralogy.image_step_adjacent": [
    0.418275,
@@ -2376,35 +2376,35 @@
    0.488245
   ],
   "Chiralogy.impD": [
-   0.26315,
-   0.465761
+   0.214984,
+   0.442628
   ],
   "Chiralogy.impPin": [
-   0.287233,
-   0.465761
+   0.239067,
+   0.442628
   ],
   "Chiralogy.importMap": [
    0.214984,
    0.871631
   ],
   "Chiralogy.importMap_injective_on_crossSupported": [
-   0.589876,
+   0.61439,
    0.143622
   ],
   "Chiralogy.importMap_is_a_meet_embedding": [
-   0.653576,
-   0.956169
+   0.581487,
+   0.933565
   ],
   "Chiralogy.importMap_kernel": [
-   0.61439,
-   0.165391
+   0.418275,
+   0.143622
   ],
   "Chiralogy.importMap_singles_out_emptiness": [
-   0.486708,
+   0.558593,
    0.313762
   ],
   "Chiralogy.import_bottom": [
-   0.534631,
+   0.558593,
    0.380873
   ],
   "Chiralogy.import_is_the_complement": [
@@ -2420,7 +2420,7 @@
    0.757124
   ],
   "Chiralogy.imprecise_is_partial_mode": [
-   0.605517,
+   0.629546,
    0.73333
   ],
   "Chiralogy.incoherent_mask_no_factor": [
@@ -2428,28 +2428,28 @@
    0.665277
   ],
   "Chiralogy.incoherent_scale_no_factor": [
-   0.94483,
-   0.336133
+   0.842593,
+   0.313762
   ],
   "Chiralogy.independence_is_not_set_visible": [
-   0.287233,
-   0.118768
+   0.190901,
+   0.211299
   ],
   "Chiralogy.infinite_grounds": [
    0.214984,
    0.211299
   ],
   "Chiralogy.instCategoryObj": [
-   0.605517,
+   0.629546,
    0.593466
   ],
   "Chiralogy.instDecidableEqMagma": [
-   0.09457,
+   0.239067,
    0.211299
   ],
   "Chiralogy.instDecidableEqMagma.decEq": [
-   0.046404,
-   0.211299
+   0.311316,
+   0.350097
   ],
   "Chiralogy.inter_object_forced_cell_is_empty": [
    0.752807,
@@ -2468,16 +2468,16 @@
    0.932178
   ],
   "Chiralogy.intransitivity_is_measure_free": [
-   0.070487,
-   0.303831
+   0.26315,
+   0.211299
   ],
   "Chiralogy.irreducibility": [
-   0.970389,
-   0.336133
+   0.868153,
+   0.313762
   ],
   "Chiralogy.isAssemblage2": [
-   0.311316,
-   0.465761
+   0.26315,
+   0.442628
   ],
   "Chiralogy.isAssemblage2_iff": [
    0.777321,
@@ -2488,19 +2488,19 @@
    0.208928
   ],
   "Chiralogy.isBlockable": [
-   0.311316,
-   0.512027
+   0.142735,
+   0.488894
   ],
   "Chiralogy.isCombined": [
-   0.26315,
-   0.396362
+   0.335399,
+   0.350097
   ],
   "Chiralogy.isFree": [
-   0.190901,
+   0.311316,
    0.53516
   ],
   "Chiralogy.isFull": [
-   0.239067,
+   0.287233,
    0.558293
   ],
   "Chiralogy.isTotal": [
@@ -2508,40 +2508,40 @@
    0.868508
   ],
   "Chiralogy.isUpSet": [
-   0.335399,
-   0.512027
+   0.166818,
+   0.488894
   ],
   "Chiralogy.isVerdict": [
    0.26315,
    0.604558
   ],
   "Chiralogy.is_anything_left_over": [
-   0.287233,
-   0.396362
+   0.046404,
+   0.326964
   ],
   "Chiralogy.is_blocking_the_only_binary_route": [
    0.938198,
    0.830057
   ],
   "Chiralogy.is_there_a_pair_without_one": [
-   0.335399,
-   0.465761
+   0.287233,
+   0.442628
   ],
   "Chiralogy.join_is_joint_imposition": [
-   0.09457,
-   0.303831
+   0.287233,
+   0.211299
   ],
   "Chiralogy.judgement_is_constant": [
    0.432355,
-   0.474178
+   0.495034
   ],
   "Chiralogy.keepSupported": [
    0.668029,
    0.403244
   ],
   "Chiralogy.keepSupported.congr_simp": [
-   0.335399,
-   0.761294
+   0.046404,
+   0.739226
   ],
   "Chiralogy.keepSupported_declines": [
    0.737403,
@@ -2552,19 +2552,19 @@
    0.380873
   ],
   "Chiralogy.keepSupported_has_a_standing_rest": [
-   0.737403,
+   0.760528,
    0.358503
   ],
   "Chiralogy.keepSupported_is_neither_pole": [
-   0.046404,
+   0.070487,
    0.739226
   ],
   "Chiralogy.keepSupported_is_not_a_structure_reader": [
-   0.166818,
+   0.190901,
    0.783361
   ],
   "Chiralogy.keepSupported_reads_content": [
-   0.070487,
+   0.09457,
    0.739226
   ],
   "Chiralogy.keepSupported_takes": [
@@ -2572,51 +2572,51 @@
    0.403244
   ],
   "Chiralogy.keepsSome": [
-   0.311316,
-   0.396362
+   0.070487,
+   0.326964
   ],
   "Chiralogy.kernel_survives_except": [
-   0.880833,
-   0.476132
-  ],
-  "Chiralogy.kernel_survives_list": [
    0.904436,
    0.476132
   ],
-  "Chiralogy.kernel_survives_reader": [
+  "Chiralogy.kernel_survives_list": [
    0.928039,
    0.476132
   ],
-  "Chiralogy.kernel_survives_state": [
+  "Chiralogy.kernel_survives_reader": [
    0.951642,
    0.476132
   ],
-  "Chiralogy.kernel_survives_writer": [
+  "Chiralogy.kernel_survives_state": [
    0.975246,
    0.476132
   ],
+  "Chiralogy.kernel_survives_writer": [
+   0.880833,
+   0.451908
+  ],
   "Chiralogy.keystone": [
    0.457029,
-   0.474178
+   0.495034
   ],
   "Chiralogy.lattice_collapses_to_order": [
    0.311316,
-   0.118768
+   0.211299
   ],
   "Chiralogy.lazy_leg_no_mediator": [
    0.432355,
    0.665277
   ],
   "Chiralogy.leReasons": [
-   0.190901,
-   0.141901
+   0.09457,
+   0.326964
   ],
   "Chiralogy.leg_of_total": [
    0.432355,
    0.68536
   ],
   "Chiralogy.less": [
-   0.046404,
+   0.190901,
    0.488894
   ],
   "Chiralogy.level1_center_in_composite": [
@@ -2632,8 +2632,8 @@
    0.796533
   ],
   "Chiralogy.levelCompose": [
-   0.190901,
-   0.188166
+   0.118653,
+   0.326964
   ],
   "Chiralogy.level_category": [
    0.407681,
@@ -2652,36 +2652,36 @@
    0.893699
   ],
   "Chiralogy.levels_are_free_or_welded": [
-   0.118653,
-   0.303831
+   0.335399,
+   0.211299
   ],
   "Chiralogy.lie_fragility_is_boundary_derived": [
-   0.557457,
+   0.581487,
    0.685741
   ],
   "Chiralogy.lift": [
-   0.214984,
+   0.335399,
    0.53516
   ],
   "Chiralogy.lift_idempotent": [
-   0.142735,
-   0.303831
+   0.046404,
+   0.188166
   ],
   "Chiralogy.lift_is_basepoint_parametric": [
-   0.335399,
-   0.118768
+   0.070487,
+   0.188166
   ],
   "Chiralogy.lift_not_injective": [
-   0.046404,
+   0.311316,
    0.442628
   ],
   "Chiralogy.lineAt": [
-   0.418275,
+   0.44279,
    0.143622
   ],
   "Chiralogy.lineAt_card": [
-   0.61439,
-   0.143622
+   0.418275,
+   0.121853
   ],
   "Chiralogy.lineEquiv": [
    0.565361,
@@ -2696,19 +2696,19 @@
    0.18716
   ],
   "Chiralogy.linear": [
-   0.335399,
-   0.396362
+   0.142735,
+   0.326964
   ],
   "Chiralogy.linkCount": [
    0.142735,
    0.827496
   ],
   "Chiralogy.linkCount_eq": [
-   0.589876,
+   0.61439,
    0.121853
   ],
   "Chiralogy.linkCount_invariant": [
-   0.190901,
+   0.214984,
    0.783361
   ],
   "Chiralogy.listAbsence": [
@@ -2716,7 +2716,7 @@
    0.524581
   ],
   "Chiralogy.list_center_is_singular": [
-   0.880833,
+   0.904436,
    0.451908
   ],
   "Chiralogy.local_partialization_not_prohibited": [
@@ -2724,7 +2724,7 @@
    0.665277
   ],
   "Chiralogy.located": [
-   0.070487,
+   0.214984,
    0.488894
   ],
   "Chiralogy.location_is_not_sufficient": [
@@ -2740,24 +2740,24 @@
    0.18716
   ],
   "Chiralogy.magma_has_no_constant": [
-   0.311316,
-   0.234432
+   0.335399,
+   0.442628
   ],
   "Chiralogy.magnitude": [
-   0.09457,
+   0.239067,
    0.488894
   ],
   "Chiralogy.markedness_inflates_values_not_reasons": [
-   0.046404,
-   0.095635
+   0.09457,
+   0.188166
   ],
   "Chiralogy.marking_is_orthogonal_to_the_ethics": [
-   0.166818,
-   0.303831
+   0.118653,
+   0.188166
   ],
   "Chiralogy.marking_is_the_visibility_axis": [
-   0.190901,
-   0.303831
+   0.142735,
+   0.188166
   ],
   "Chiralogy.mask_hom_freedom": [
    0.481703,
@@ -2768,7 +2768,7 @@
    0.705443
   ],
   "Chiralogy.maxima_are_plural": [
-   0.557457,
+   0.605517,
    0.933565
   ],
   "Chiralogy.maximal_iff_total": [
@@ -2780,8 +2780,8 @@
    0.524581
   ],
   "Chiralogy.maybe_free_pointed": [
-   0.046404,
-   0.373229
+   0.166818,
+   0.326964
   ],
   "Chiralogy.measure_hosts_magnitude": [
    0.558461,
@@ -2796,12 +2796,12 @@
    0.665277
   ],
   "Chiralogy.mediator_unique": [
-   0.540847,
-   0.078315
+   0.44279,
+   0.056546
   ],
   "Chiralogy.meet_is_common_ground": [
-   0.214984,
-   0.303831
+   0.166818,
+   0.188166
   ],
   "Chiralogy.mem_diffSet": [
    0.118653,
@@ -2824,31 +2824,31 @@
    0.893699
   ],
   "Chiralogy.member_requires_a_kernel_condition": [
-   0.840346,
+   0.863141,
    0.59358
   ],
   "Chiralogy.minMask": [
-   0.070487,
-   0.442628
+   0.046404,
+   0.419495
   ],
   "Chiralogy.minMask_least": [
    0.407681,
    0.645194
   ],
   "Chiralogy.minMask_realizes": [
-   0.629546,
-   0.933565
+   0.581487,
+   0.91096
   ],
   "Chiralogy.mixed": [
-   0.118653,
+   0.26315,
    0.488894
   ],
   "Chiralogy.mixing_not_closed": [
-   0.239067,
-   0.303831
+   0.190901,
+   0.188166
   ],
   "Chiralogy.mk2": [
-   0.142735,
+   0.287233,
    0.488894
   ],
   "Chiralogy.mobile_iff": [
@@ -2860,7 +2860,7 @@
    0.73333
   ],
   "Chiralogy.model_center_is_the_none": [
-   0.842593,
+   0.893712,
    0.313762
   ],
   "Chiralogy.monoid_buys_composition": [
@@ -2872,8 +2872,8 @@
    0.524581
   ],
   "Chiralogy.morphisms_do_not_preserve_absence": [
-   0.070487,
-   0.095635
+   0.214984,
+   0.188166
   ],
   "Chiralogy.movePair": [
    0.09457,
@@ -2888,7 +2888,7 @@
    0.581425
   ],
   "Chiralogy.moves_generate_no_incomparable": [
-   0.868153,
+   0.919271,
    0.313762
   ],
   "Chiralogy.mzAppend": [
@@ -2896,16 +2896,16 @@
    0.854982
   ],
   "Chiralogy.mzAppend'": [
-   0.070487,
-   0.373229
+   0.190901,
+   0.326964
   ],
   "Chiralogy.nary": [
    0.44279,
    0.230697
   ],
   "Chiralogy.nary.congr_simp": [
-   0.44279,
-   0.034777
+   0.467304,
+   0.056546
   ],
   "Chiralogy.nary_apply_differ": [
    0.491818,
@@ -2924,11 +2924,11 @@
    0.68536
   ],
   "Chiralogy.nary_bot": [
-   0.51067,
+   0.534631,
    0.358503
   ],
   "Chiralogy.nary_form_iff": [
-   0.418275,
+   0.44279,
    0.121853
   ],
   "Chiralogy.nary_isTotal": [
@@ -2940,7 +2940,7 @@
    0.958219
   ],
   "Chiralogy.nary_mono": [
-   0.581487,
+   0.605517,
    0.956169
   ],
   "Chiralogy.nary_partialization_commutation_forces_presence_coherence": [
@@ -2956,48 +2956,48 @@
    0.18716
   ],
   "Chiralogy.nary_sum_scale_coherent": [
-   0.61439,
-   0.121853
+   0.418275,
+   0.100084
   ],
   "Chiralogy.nary_totalization_commutation_forces_absence_coherence": [
-   0.893712,
-   0.313762
-  ],
-  "Chiralogy.nary_totalization_commutes": [
-   0.970389,
-   0.403244
-  ],
-  "Chiralogy.nary_totalization_commutes_on_absences": [
-   0.919271,
-   0.313762
-  ],
-  "Chiralogy.nary_totalization_commutes_sum": [
    0.94483,
    0.313762
   ],
+  "Chiralogy.nary_totalization_commutes": [
+   0.842593,
+   0.380873
+  ],
+  "Chiralogy.nary_totalization_commutes_on_absences": [
+   0.970389,
+   0.313762
+  ],
+  "Chiralogy.nary_totalization_commutes_sum": [
+   0.842593,
+   0.291392
+  ],
   "Chiralogy.negInterior": [
-   0.190901,
-   0.211299
+   0.070487,
+   0.419495
   ],
   "Chiralogy.negation_is_complementary_closure": [
-   0.26315,
-   0.303831
+   0.239067,
+   0.188166
   ],
   "Chiralogy.negation_is_interior_of_complement": [
-   0.239067,
-   0.211299
+   0.26315,
+   0.188166
   ],
   "Chiralogy.nested_factor_reads": [
    0.679263,
    0.078315
   ],
   "Chiralogy.no_common_upper_bound": [
-   0.653576,
-   0.933565
+   0.605517,
+   0.91096
   ],
   "Chiralogy.no_crossStable_relates": [
-   0.565361,
-   0.078315
+   0.491818,
+   0.056546
   ],
   "Chiralogy.no_factor_forces_the_cross": [
    0.703778,
@@ -3008,15 +3008,15 @@
    0.932178
   ],
   "Chiralogy.no_fifth_axiom_shape": [
-   0.09457,
-   0.095635
+   0.287233,
+   0.188166
   ],
   "Chiralogy.no_filling_rescues_a_grain_violation": [
-   0.589876,
-   0.078315
+   0.516333,
+   0.056546
   ],
   "Chiralogy.no_final_coalgebra_for_the_classifier": [
-   0.407681,
+   0.481703,
    0.495034
   ],
   "Chiralogy.no_forced_inter_object_obstruction": [
@@ -3024,52 +3024,52 @@
    0.18716
   ],
   "Chiralogy.no_generation": [
-   0.927286,
-   0.704133
+   0.952986,
+   0.724526
   ],
   "Chiralogy.no_global_center": [
-   0.629546,
+   0.653576,
    0.593466
   ],
   "Chiralogy.no_reading_is_fixed": [
-   0.61439,
-   0.078315
+   0.540847,
+   0.056546
   ],
   "Chiralogy.no_recovery": [
-   0.09457,
-   0.373229
+   0.214984,
+   0.326964
   ],
   "Chiralogy.no_reflexive_object": [
    0.432355,
    0.5576
   ],
   "Chiralogy.no_right_adjoint": [
-   0.287233,
-   0.303831
+   0.311316,
+   0.188166
   ],
   "Chiralogy.no_self_description_equiv": [
-   0.481703,
-   0.474178
+   0.506378,
+   0.495034
   ],
   "Chiralogy.no_small_universe": [
    0.09457,
-   0.442628
+   0.419495
   ],
   "Chiralogy.no_total_internal_self_description": [
    0.481703,
    0.536744
   ],
   "Chiralogy.no_total_self_description_of_the_object_condition": [
-   0.863141,
+   0.885935,
    0.59358
   ],
   "Chiralogy.no_universe_classifier": [
-   0.166818,
+   0.311316,
    0.488894
   ],
   "Chiralogy.non_commutation_is_the_norm": [
-   0.214984,
-   0.234432
+   0.335399,
+   0.188166
   ],
   "Chiralogy.nondegeneracy_survives_every_fill": [
    0.506378,
@@ -3080,7 +3080,7 @@
    0.909932
   ],
   "Chiralogy.none_and_surplus_are_distinct": [
-   0.581487,
+   0.605517,
    0.685741
   ],
   "Chiralogy.not_a_morphism": [
@@ -3092,16 +3092,16 @@
    0.208928
   ],
   "Chiralogy.nothing_detects_totalization": [
-   0.118653,
-   0.095635
+   0.046404,
+   0.165033
   ],
   "Chiralogy.objProd": [
-   0.557457,
+   0.581487,
    0.61726
   ],
   "Chiralogy.obj_has_products": [
-   0.653576,
-   0.593466
+   0.557457,
+   0.569672
   ],
   "Chiralogy.objectivity_as_lateral_span": [
    0.95367,
@@ -3112,12 +3112,12 @@
    0.59358
   ],
   "Chiralogy.obstructions_independent": [
-   0.432355,
-   0.495034
+   0.407681,
+   0.474178
   ],
   "Chiralogy.occupancy_templates": [
-   0.311316,
-   0.303831
+   0.070487,
+   0.165033
   ],
   "Chiralogy.ofMask": [
    0.903517,
@@ -3128,7 +3128,7 @@
    0.060174
   ],
   "Chiralogy.onCarrier_is_wrong_direction": [
-   0.581487,
+   0.605517,
    0.61726
   ],
   "Chiralogy.oneCell": [
@@ -3136,7 +3136,7 @@
    0.937834
   ],
   "Chiralogy.oneCell.congr_simp": [
-   0.09457,
+   0.118653,
    0.739226
   ],
   "Chiralogy.oneCell_at": [
@@ -3148,15 +3148,15 @@
    0.849564
   ],
   "Chiralogy.oneCell_mobile": [
-   0.190901,
+   0.214984,
    0.805429
   ],
   "Chiralogy.oneCell_ne_bot": [
-   0.51067,
+   0.582554,
    0.313762
   ],
   "Chiralogy.oneOn": [
-   0.190901,
+   0.335399,
    0.488894
   ],
   "Chiralogy.one_map_two_ends": [
@@ -3164,27 +3164,27 @@
    0.536744
   ],
   "Chiralogy.one_prohibition_permitted_grew": [
-   0.335399,
-   0.303831
+   0.09457,
+   0.165033
   ],
   "Chiralogy.op_concrete": [
    0.118653,
-   0.442628
+   0.419495
   ],
   "Chiralogy.op_concrete_involutive": [
-   0.046404,
-   0.280698
+   0.118653,
+   0.165033
   ],
   "Chiralogy.op_fixes_empty_center": [
    0.506378,
    0.536744
   ],
   "Chiralogy.op_symmetry_is_op_action": [
-   0.457029,
-   0.495034
+   0.432355,
+   0.474178
   ],
   "Chiralogy.open_implies_cross": [
-   0.418275,
+   0.44279,
    0.100084
   ],
   "Chiralogy.open_operator_faithful": [
@@ -3192,24 +3192,24 @@
    0.645194
   ],
   "Chiralogy.opening_destroys_present_carried": [
-   0.970389,
-   0.313762
+   0.868153,
+   0.291392
   ],
   "Chiralogy.opening_is_monotone_on_distinction": [
    0.407681,
    0.625111
   ],
   "Chiralogy.operational_adjoints": [
-   0.142735,
-   0.141901
+   0.239067,
+   0.326964
   ],
   "Chiralogy.operations_generically": [
-   0.26315,
-   0.211299
+   0.142735,
+   0.165033
   ],
   "Chiralogy.operations_split_under_forcing": [
-   0.070487,
-   0.280698
+   0.166818,
+   0.165033
   ],
   "Chiralogy.optCycle": [
    0.701122,
@@ -3224,7 +3224,7 @@
    0.978774
   ],
   "Chiralogy.optLE_antisymm": [
-   0.605517,
+   0.629546,
    0.956169
   ],
   "Chiralogy.optLE_refl": [
@@ -3232,7 +3232,7 @@
    0.978774
   ],
   "Chiralogy.optLE_trans": [
-   0.581487,
+   0.629546,
    0.933565
   ],
   "Chiralogy.optMeet": [
@@ -3256,7 +3256,7 @@
    0.958219
   ],
   "Chiralogy.orbit_partition_is_diffCard_of_homogeneous": [
-   0.118653,
+   0.142735,
    0.739226
   ],
   "Chiralogy.orbit_partition_is_eqTypedCount": [
@@ -3264,7 +3264,7 @@
    0.827496
   ],
   "Chiralogy.orbit_partition_is_typedCount": [
-   0.214984,
+   0.239067,
    0.783361
   ],
   "Chiralogy.order_buys_comparison": [
@@ -3272,44 +3272,44 @@
    0.476132
   ],
   "Chiralogy.order_canonical": [
-   0.952986,
+   0.978687,
    0.724526
   ],
   "Chiralogy.order_constrains_the_fibre": [
-   0.750958,
-   0.449486
+   0.802885,
+   0.488245
   ],
   "Chiralogy.order_is_not_signature_data": [
-   0.09457,
-   0.280698
+   0.190901,
+   0.165033
   ],
   "Chiralogy.order_register": [
    0.558461,
    0.500357
   ],
   "Chiralogy.order_shapes_and_their_source": [
-   0.802885,
-   0.488245
-  ],
-  "Chiralogy.ordered_level_category": [
-   0.118653,
-   0.188166
-  ],
-  "Chiralogy.paradox": [
-   0.239067,
-   0.53516
-  ],
-  "Chiralogy.parameters_are_independent": [
    0.828849,
    0.488245
   ],
-  "Chiralogy.parameters_are_lossy": [
+  "Chiralogy.ordered_level_category": [
+   0.214984,
+   0.165033
+  ],
+  "Chiralogy.paradox": [
+   0.046404,
+   0.512027
+  ],
+  "Chiralogy.parameters_are_independent": [
    0.724995,
    0.468865
   ],
+  "Chiralogy.parameters_are_lossy": [
+   0.750958,
+   0.468865
+  ],
   "Chiralogy.partial_totalizations_are_ranked": [
-   0.118653,
-   0.280698
+   0.239067,
+   0.165033
   ],
   "Chiralogy.partialization": [
    0.407681,
@@ -3320,8 +3320,8 @@
    0.68536
   ],
   "Chiralogy.partialization_bot": [
-   0.534631,
-   0.313762
+   0.414823,
+   0.291392
   ],
   "Chiralogy.partialization_breaks_form": [
    0.728292,
@@ -3344,7 +3344,7 @@
    0.056546
   ],
   "Chiralogy.partialization_exists": [
-   0.904436,
+   0.928039,
    0.451908
   ],
   "Chiralogy.partialization_fixed_iff": [
@@ -3360,7 +3360,7 @@
    0.978774
   ],
   "Chiralogy.partialization_monotone": [
-   0.557457,
+   0.629546,
    0.91096
   ],
   "Chiralogy.partialization_union": [
@@ -3368,7 +3368,7 @@
    0.68536
   ],
   "Chiralogy.parts_agreeing_off_the_diagonal_give_the_same_whole": [
-   0.44279,
+   0.467304,
    0.100084
   ],
   "Chiralogy.payload": [
@@ -3376,111 +3376,111 @@
    0.661306
   ],
   "Chiralogy.payload_survives": [
-   0.772506,
-   0.938205
+   0.701122,
+   0.91718
   ],
   "Chiralogy.payload_uniform": [
-   0.481703,
-   0.495034
+   0.457029,
+   0.474178
   ],
   "Chiralogy.peers_can_be_equal": [
-   0.418275,
+   0.565361,
    0.056546
   ],
   "Chiralogy.permitted_are_the_proper_opens": [
-   0.287233,
-   0.211299
+   0.26315,
+   0.165033
   ],
   "Chiralogy.permitted_count": [
-   0.142735,
-   0.095635
+   0.287233,
+   0.165033
   ],
   "Chiralogy.permitted_count_factors": [
-   0.750958,
+   0.776922,
    0.468865
   ],
   "Chiralogy.permitted_count_is_by_reasons": [
-   0.166818,
-   0.095635
+   0.311316,
+   0.165033
   ],
   "Chiralogy.permitted_iff_not_full": [
-   0.142735,
-   0.280698
+   0.335399,
+   0.165033
   ],
   "Chiralogy.permitted_is_a_lattice": [
-   0.166818,
-   0.280698
+   0.046404,
+   0.141901
   ],
   "Chiralogy.permitted_is_boolean": [
-   0.190901,
-   0.280698
+   0.070487,
+   0.141901
   ],
   "Chiralogy.permitted_is_boolean_general": [
-   0.190901,
-   0.095635
+   0.09457,
+   0.141901
   ],
   "Chiralogy.permitted_lattice_from_reason_count": [
-   0.118653,
-   0.373229
+   0.26315,
+   0.326964
   ],
   "Chiralogy.pointObj": [
    0.653576,
    0.641055
   ],
   "Chiralogy.pointTemplate": [
-   0.142735,
-   0.373229
+   0.287233,
+   0.326964
   ],
   "Chiralogy.positions_are_two_and_a_middle": [
-   0.506378,
+   0.481703,
    0.474178
   ],
   "Chiralogy.prereq": [
    0.142735,
-   0.442628
+   0.419495
   ],
   "Chiralogy.prereqChain2": [
-   0.26315,
-   0.53516
+   0.070487,
+   0.512027
   ],
   "Chiralogy.prereqChain3": [
    0.118653,
    0.604558
   ],
   "Chiralogy.prereqChain3Free": [
-   0.166818,
-   0.373229
+   0.311316,
+   0.326964
   ],
   "Chiralogy.prereqChemistry": [
-   0.190901,
-   0.373229
+   0.335399,
+   0.326964
   ],
   "Chiralogy.prereqDiscrete": [
    0.142735,
    0.604558
   ],
   "Chiralogy.prereqLambda3": [
-   0.214984,
-   0.488894
+   0.046404,
+   0.465761
   ],
   "Chiralogy.prereqMixed3": [
    0.166818,
    0.604558
   ],
   "Chiralogy.prereqN4": [
-   0.214984,
-   0.373229
+   0.046404,
+   0.303831
   ],
   "Chiralogy.prereqTrust": [
-   0.239067,
-   0.373229
+   0.070487,
+   0.303831
   ],
   "Chiralogy.prereqTwoChain": [
    0.166818,
-   0.442628
+   0.419495
   ],
   "Chiralogy.prereqV3": [
-   0.26315,
+   0.311316,
    0.558293
   ],
   "Chiralogy.prerequisites_under_levelhom": [
@@ -3488,7 +3488,7 @@
    0.752041
   ],
   "Chiralogy.presence_carried_factor_immune_to_scale": [
-   0.557457,
+   0.581487,
    0.800694
   ],
   "Chiralogy.presentCarried": [
@@ -3500,20 +3500,20 @@
    0.358503
   ],
   "Chiralogy.present_forces_coord_eq": [
-   0.534631,
+   0.558593,
    0.358503
   ],
   "Chiralogy.present_verdicts_are_symmetric": [
-   0.842593,
+   0.893712,
    0.291392
   ],
   "Chiralogy.presents_needs_no_closure": [
-   0.885935,
-   0.59358
+   0.817552,
+   0.571005
   ],
   "Chiralogy.prime_carriers_admit_no_split": [
-   0.214984,
-   0.095635
+   0.118653,
+   0.141901
   ],
   "Chiralogy.products_give_a_span_always": [
    0.928343,
@@ -3524,8 +3524,8 @@
    0.625111
   ],
   "Chiralogy.prohibition_under_levelhom": [
-   0.214984,
-   0.280698
+   0.142735,
+   0.141901
   ],
   "Chiralogy.proposedAccount": [
    0.581081,
@@ -3540,7 +3540,7 @@
    0.959902
   ],
   "Chiralogy.punctured.congr_simp": [
-   0.142735,
+   0.166818,
    0.739226
   ],
   "Chiralogy.punctured_elsewhere": [
@@ -3548,7 +3548,7 @@
    0.937834
   ],
   "Chiralogy.punctured_hole": [
-   0.214984,
+   0.239067,
    0.805429
   ],
   "Chiralogy.punctured_is_supported": [
@@ -3556,107 +3556,107 @@
    0.403244
   ],
   "Chiralogy.punctured_mobile": [
-   0.239067,
+   0.26315,
    0.783361
   ],
   "Chiralogy.punctured_ne_bot": [
-   0.558593,
+   0.582554,
    0.380873
   ],
   "Chiralogy.qC": [
-   0.239067,
-   0.488894
+   0.070487,
+   0.465761
   ],
   "Chiralogy.ranking_is_partial_not_total": [
-   0.239067,
-   0.280698
+   0.166818,
+   0.141901
   ],
   "Chiralogy.rateWitness": [
-   0.26315,
-   0.373229
+   0.09457,
+   0.303831
   ],
   "Chiralogy.rate_imported": [
-   0.978687,
-   0.724526
+   0.927286,
+   0.704133
   ],
   "Chiralogy.reachable_targets_not_prohibited": [
    0.952986,
    0.704133
   ],
   "Chiralogy.reaching_the_top_is_generic": [
-   0.26315,
-   0.280698
+   0.190901,
+   0.141901
   ],
   "Chiralogy.readerAbsence": [
    0.975246,
    0.524581
   ],
   "Chiralogy.readerCloseFalse": [
-   0.26315,
-   0.488894
+   0.09457,
+   0.465761
   ],
   "Chiralogy.readerCloseTrue": [
-   0.287233,
-   0.488894
+   0.118653,
+   0.465761
   ],
   "Chiralogy.reason_count_under_levelhom": [
    0.457029,
    0.752041
   ],
   "Chiralogy.reasons_are_nullary_generators": [
-   0.287233,
-   0.373229
+   0.118653,
+   0.303831
   ],
   "Chiralogy.recordingTotalize": [
-   0.287233,
-   0.53516
+   0.09457,
+   0.512027
   ],
   "Chiralogy.refinement_orders_the_structures": [
-   0.776922,
+   0.802885,
    0.468865
   ],
   "Chiralogy.reflClassify": [
-   0.311316,
-   0.373229
+   0.142735,
+   0.303831
   ],
   "Chiralogy.reflClassify_degenerate": [
    0.432355,
    0.909932
   ],
   "Chiralogy.reflValues": [
-   0.311316,
-   0.488894
+   0.142735,
+   0.465761
   ],
   "Chiralogy.reflector_universal": [
-   0.287233,
-   0.280698
+   0.214984,
+   0.141901
   ],
   "Chiralogy.regionMask": [
    0.44279,
    0.18716
   ],
   "Chiralogy.regionMask.congr_simp": [
-   0.467304,
-   0.034777
+   0.589876,
+   0.056546
   ],
   "Chiralogy.regionSlice": [
    0.457029,
    0.705443
   ],
   "Chiralogy.regionSlice_apply": [
-   0.44279,
+   0.467304,
    0.143622
   ],
   "Chiralogy.regionSlice_reads_factor": [
-   0.44279,
+   0.61439,
    0.056546
   ],
   "Chiralogy.region_verdict_factors_through_coord": [
-   0.467304,
-   0.056546
+   0.418275,
+   0.034777
   ],
   "Chiralogy.register_at_a_level": [
-   0.817552,
+   0.840346,
    0.571005
   ],
   "Chiralogy.relabel": [
@@ -3669,11 +3669,11 @@
   ],
   "Chiralogy.relabelW_comp": [
    0.884582,
-   0.744919
+   0.724526
   ],
   "Chiralogy.relabelW_or": [
    0.816241,
-   0.724526
+   0.704133
   ],
   "Chiralogy.relabel_comp": [
    0.725432,
@@ -3689,7 +3689,7 @@
   ],
   "Chiralogy.relabel_unique": [
    0.239067,
-   0.095635
+   0.141901
   ],
   "Chiralogy.release": [
    0.880316,
@@ -3704,8 +3704,8 @@
    0.229488
   ],
   "Chiralogy.respecting_by_arity": [
-   0.311316,
-   0.280698
+   0.26315,
+   0.141901
   ],
   "Chiralogy.rest_within": [
    0.26315,
@@ -3724,8 +3724,8 @@
    0.604558
   ],
   "Chiralogy.restrictComp": [
-   0.335399,
-   0.373229
+   0.166818,
+   0.303831
   ],
   "Chiralogy.restrict_embed_id": [
    0.724916,
@@ -3736,11 +3736,11 @@
    0.571005
   ],
   "Chiralogy.robustness_blocks_one_fabricator_not_coordination": [
-   0.26315,
-   0.095635
+   0.287233,
+   0.141901
   ],
   "Chiralogy.rows_agree_when_a_coordinate_is_shared": [
-   0.540847,
+   0.565361,
    0.165391
   ],
   "Chiralogy.runPolicy": [
@@ -3788,7 +3788,7 @@
    0.871631
   ],
   "Chiralogy.same_reason_count_same_lattice": [
-   0.214984,
+   0.311316,
    0.141901
   ],
   "Chiralogy.same_signature_different_arity": [
@@ -3796,11 +3796,11 @@
    0.830057
   ],
   "Chiralogy.sampleClassify": [
-   0.311316,
-   0.53516
+   0.118653,
+   0.512027
   ],
   "Chiralogy.saturated_morphism_available": [
-   0.557457,
+   0.581487,
    0.569672
   ],
   "Chiralogy.saturation_is_free": [
@@ -3808,16 +3808,16 @@
    0.909932
   ],
   "Chiralogy.scale": [
-   0.335399,
-   0.488894
+   0.166818,
+   0.465761
   ],
   "Chiralogy.scope_is_algebraic_with_constants": [
-   0.118653,
-   0.211299
+   0.335399,
+   0.141901
   ],
   "Chiralogy.sdiff_after_swapT": [
-   0.335399,
-   0.581425
+   0.070487,
+   0.558293
   ],
   "Chiralogy.selfClassify": [
    0.962389,
@@ -3832,40 +3832,40 @@
    0.960152
   ],
   "Chiralogy.self_account_has_hole": [
-   0.581487,
+   0.605517,
    0.569672
   ],
   "Chiralogy.self_entry_regional": [
-   0.335399,
-   0.280698
+   0.046404,
+   0.118768
   ],
   "Chiralogy.sepFactors": [
    0.190901,
-   0.442628
+   0.419495
   ],
   "Chiralogy.separating_factors_defeat_every_import": [
    0.432355,
    0.976669
   ],
   "Chiralogy.sigma_hom_is_the_conjunction": [
-   0.287233,
-   0.095635
+   0.070487,
+   0.118768
   ],
   "Chiralogy.single_cell_partialization_leaves_form": [
    0.506378,
    0.625111
   ],
   "Chiralogy.singular_absence": [
-   0.928039,
+   0.951642,
    0.451908
   ],
   "Chiralogy.spikeAt": [
-   0.239067,
+   0.26315,
    0.805429
   ],
   "Chiralogy.spine_cataphatic_is_transpose": [
-   0.311316,
-   0.095635
+   0.09457,
+   0.118768
   ],
   "Chiralogy.srcObj": [
    0.481703,
@@ -3876,20 +3876,20 @@
    0.500357
   ],
   "Chiralogy.stateCloseHistFalse": [
-   0.046404,
-   0.350097
+   0.190901,
+   0.303831
   ],
   "Chiralogy.stateCloseHistTrue": [
-   0.070487,
-   0.350097
+   0.214984,
+   0.303831
   ],
   "Chiralogy.state_except_does_not_commute": [
-   0.239067,
-   0.234432
+   0.118653,
+   0.118768
   ],
   "Chiralogy.state_state_commutes": [
-   0.214984,
-   0.165033
+   0.142735,
+   0.118768
   ],
   "Chiralogy.step": [
    0.432355,
@@ -3920,15 +3920,15 @@
    0.959902
   ],
   "Chiralogy.step_takeAll": [
-   0.558593,
+   0.582554,
    0.358503
   ],
   "Chiralogy.step_takeAt_at": [
-   0.26315,
+   0.287233,
    0.783361
   ],
   "Chiralogy.step_takeAt_elsewhere": [
-   0.166818,
+   0.190901,
    0.739226
   ],
   "Chiralogy.step_takeNone": [
@@ -3948,19 +3948,19 @@
    0.515889
   ],
   "Chiralogy.strictPairs_double": [
-   0.09457,
-   0.350097
+   0.239067,
+   0.303831
   ],
   "Chiralogy.strict_descent": [
-   0.557457,
+   0.581487,
    0.956169
   ],
   "Chiralogy.structural_iff_orbit_constant": [
-   0.190901,
+   0.214984,
    0.739226
   ],
   "Chiralogy.structure_of_variance": [
-   0.668029,
+   0.691154,
    0.313762
   ],
   "Chiralogy.sufficiency_is_the_import": [
@@ -3968,44 +3968,44 @@
    0.056546
   ],
   "Chiralogy.survives_totalization": [
-   0.691154,
+   0.714279,
    0.313762
   ],
   "Chiralogy.swap": [
-   0.070487,
-   0.165033
+   0.190901,
+   0.465761
   ],
   "Chiralogy.swap01": [
-   0.335399,
-   0.53516
+   0.142735,
+   0.512027
   ],
   "Chiralogy.swapBetween": [
    0.94992,
    0.156925
   ],
   "Chiralogy.swapFactors": [
-   0.118653,
-   0.350097
+   0.26315,
+   0.303831
   ],
   "Chiralogy.swapHom": [
    0.407681,
    0.774287
   ],
   "Chiralogy.swapImp": [
-   0.142735,
-   0.350097
+   0.287233,
+   0.303831
   ],
   "Chiralogy.swapP": [
-   0.287233,
+   0.335399,
    0.558293
   ],
   "Chiralogy.swapP_differsInOne": [
-   0.44279,
+   0.467304,
    0.121853
   ],
   "Chiralogy.swapP_involutive": [
-   0.046404,
-   0.257565
+   0.166818,
+   0.118768
   ],
   "Chiralogy.swapSrc": [
    0.506378,
@@ -4036,15 +4036,15 @@
    0.796533
   ],
   "Chiralogy.swapU": [
-   0.166818,
-   0.350097
+   0.311316,
+   0.303831
   ],
   "Chiralogy.swapVerdicts": [
    0.214984,
-   0.442628
+   0.419495
   ],
   "Chiralogy.swap_fixes_cross": [
-   0.467304,
+   0.491818,
    0.100084
   ],
   "Chiralogy.swap_fixes_the_cross": [
@@ -4052,20 +4052,20 @@
    0.056546
   ],
   "Chiralogy.swap_invariant_scale_constant": [
-   0.190901,
-   0.350097
+   0.335399,
+   0.303831
   ],
   "Chiralogy.swap_involution": [
-   0.09457,
-   0.165033
+   0.190901,
+   0.118768
   ],
   "Chiralogy.swap_nontrivial": [
-   0.118653,
-   0.165033
+   0.214984,
+   0.118768
   ],
   "Chiralogy.swap_relates_absences": [
-   0.142735,
-   0.165033
+   0.239067,
+   0.118768
   ],
   "Chiralogy.swap_transport": [
    0.725432,
@@ -4076,12 +4076,12 @@
    0.604558
   ],
   "Chiralogy.sz_two_le": [
-   0.214984,
-   0.350097
+   0.046404,
+   0.280698
   ],
   "Chiralogy.tMaj": [
-   0.239067,
-   0.350097
+   0.070487,
+   0.280698
   ],
   "Chiralogy.takeAll": [
    0.311316,
@@ -4096,28 +4096,28 @@
    0.849564
   ],
   "Chiralogy.takeIfHeld_has_no_standing_rest": [
-   0.287233,
-   0.783361
-  ],
-  "Chiralogy.takeIfHeld_reads_structure": [
    0.311316,
    0.783361
   ],
+  "Chiralogy.takeIfHeld_reads_structure": [
+   0.335399,
+   0.783361
+  ],
   "Chiralogy.takeIfHeld_rests_only_when_empty": [
-   0.582554,
-   0.380873
+   0.414823,
+   0.358503
   ],
   "Chiralogy.takeIfMobile": [
    0.26315,
    0.827496
   ],
   "Chiralogy.takeIfMobile_has_a_standing_rest": [
-   0.582554,
-   0.358503
+   0.414823,
+   0.336133
   ],
   "Chiralogy.takeIfMobile_reads_structure": [
-   0.335399,
-   0.783361
+   0.046404,
+   0.761294
   ],
   "Chiralogy.takeNone": [
    0.335399,
@@ -4128,15 +4128,15 @@
    0.849564
   ],
   "Chiralogy.takeTrueFirst_has_no_standing_rest": [
-   0.486708,
-   0.291392
+   0.438785,
+   0.336133
   ],
   "Chiralogy.takeTrueFirst_is_not_a_structure_reader": [
-   0.046404,
+   0.070487,
    0.761294
   ],
   "Chiralogy.takeTrueFirst_rests_only_when_empty": [
-   0.414823,
+   0.438785,
    0.358503
   ],
   "Chiralogy.targetCoalgebra": [
@@ -4148,20 +4148,20 @@
    0.814616
   ],
   "Chiralogy.tensor_has_copy": [
-   0.335399,
-   0.188166
+   0.26315,
+   0.118768
   ],
   "Chiralogy.termination_or_continuation": [
    0.917171,
    0.805131
   ],
   "Chiralogy.territorialization_adds_the_family_multiplies": [
-   0.802885,
+   0.828849,
    0.468865
   ],
   "Chiralogy.territorialization_is_endpoint_count": [
-   0.070487,
-   0.257565
+   0.287233,
+   0.118768
   ],
   "Chiralogy.tforget": [
    0.928343,
@@ -4172,7 +4172,7 @@
    0.796533
   ],
   "Chiralogy.the_affirming_whole_is_two_valued": [
-   0.491818,
+   0.516333,
    0.100084
   ],
   "Chiralogy.the_band_has_two_exits": [
@@ -4180,11 +4180,11 @@
    0.823298
   ],
   "Chiralogy.the_bottom_pole_fixes_everything": [
-   0.26315,
+   0.287233,
    0.805429
   ],
   "Chiralogy.the_bottom_pole_never_restores": [
-   0.070487,
+   0.09457,
    0.761294
   ],
   "Chiralogy.the_carrier_forces_the_floor_iff_it_is_thin": [
@@ -4196,31 +4196,31 @@
    0.132737
   ],
   "Chiralogy.the_conflict_is_real": [
-   0.214984,
+   0.239067,
    0.739226
   ],
   "Chiralogy.the_criterion": [
-   0.558593,
-   0.313762
+   0.438785,
+   0.291392
   ],
   "Chiralogy.the_deflationary_stances_embed": [
    0.94992,
    0.060174
   ],
   "Chiralogy.the_diagonal_is_copy": [
-   0.046404,
-   0.165033
+   0.311316,
+   0.118768
   ],
   "Chiralogy.the_extremes_are_order_invariant": [
-   0.239067,
+   0.26315,
    0.739226
   ],
   "Chiralogy.the_factors_fail_to_separate_iff_distinctions_live_only_at_the_cross": [
-   0.516333,
+   0.540847,
    0.100084
   ],
   "Chiralogy.the_family_survives_every_relabelling": [
-   0.26315,
+   0.287233,
    0.739226
   ],
   "Chiralogy.the_floor_bites_at_every_factor_choice_on_a_thin_carrier": [
@@ -4236,15 +4236,15 @@
    0.060174
   ],
   "Chiralogy.the_frameworks_polarity_is_absence_against_presence": [
-   0.09457,
-   0.257565
+   0.335399,
+   0.118768
   ],
   "Chiralogy.the_import_is_load_bearing_iff_distinctions_live_only_at_the_cross": [
    0.407681,
    0.887686
   ],
   "Chiralogy.the_inert_stance_is_not_a_third_arrangement": [
-   0.714279,
+   0.737403,
    0.313762
   ],
   "Chiralogy.the_one_directional_space_is_order_invariant": [
@@ -4252,15 +4252,15 @@
    0.035987
   ],
   "Chiralogy.the_open_cells_are_exactly_the_cross": [
-   0.287233,
+   0.311316,
    0.739226
   ],
   "Chiralogy.the_open_seam": [
-   0.605517,
+   0.629546,
    0.685741
   ],
   "Chiralogy.the_operation_is_free_on_neither_argument": [
-   0.311316,
+   0.335399,
    0.739226
   ],
   "Chiralogy.the_orders_agree_iff_no_conflict": [
@@ -4272,15 +4272,15 @@
    0.156925
   ],
   "Chiralogy.the_properties_are_distinct": [
-   0.142735,
-   0.211299
+   0.046404,
+   0.095635
   ],
   "Chiralogy.the_recommendation_is_a_region": [
-   0.737403,
+   0.760528,
    0.313762
   ],
   "Chiralogy.the_return_is_to_a_supported_position": [
-   0.760528,
+   0.783653,
    0.313762
   ],
   "Chiralogy.the_reverse_cannot_reassign": [
@@ -4300,7 +4300,7 @@
    0.084362
   ],
   "Chiralogy.the_rule_opens_every_unsupported_cell": [
-   0.760528,
+   0.783653,
    0.358503
   ],
   "Chiralogy.the_run_carries_one_policy": [
@@ -4308,43 +4308,43 @@
    0.827496
   ],
   "Chiralogy.the_sharp_notions_are_exclusive": [
-   0.462746,
+   0.486708,
    0.380873
   ],
   "Chiralogy.the_stability_asymmetry": [
-   0.582554,
-   0.313762
+   0.462746,
+   0.291392
   ],
   "Chiralogy.the_supported_case_faces_neither_horn": [
    0.94992,
    0.035987
   ],
   "Chiralogy.the_supported_ground_never_lapses": [
-   0.783653,
-   0.358503
+   0.644904,
+   0.336133
   ],
   "Chiralogy.the_tops_are_distinct_when_the_region_never_affirms": [
-   0.491818,
-   0.056546
+   0.44279,
+   0.034777
   ],
   "Chiralogy.the_tops_are_distinct_when_the_region_never_denies": [
-   0.516333,
-   0.056546
+   0.467304,
+   0.034777
   ],
   "Chiralogy.the_trade_off_is_general": [
-   0.783653,
-   0.313762
-  ],
-  "Chiralogy.the_two_act_identically": [
    0.644904,
    0.291392
   ],
+  "Chiralogy.the_two_act_identically": [
+   0.668029,
+   0.291392
+  ],
   "Chiralogy.the_two_extremes_are_distinct_failures": [
-   0.581487,
+   0.605517,
    0.800694
   ],
   "Chiralogy.the_two_hold_the_same_cells": [
-   0.09457,
+   0.118653,
    0.761294
   ],
   "Chiralogy.the_two_maxima_shape_requires_a_biting_floor": [
@@ -4352,7 +4352,7 @@
    0.887686
   ],
   "Chiralogy.the_whole_can_be_total_iff_the_factors_are_present_on_the_region": [
-   0.605517,
+   0.629546,
    0.800694
   ],
   "Chiralogy.theory_legs_do_not_fabricate": [
@@ -4360,15 +4360,15 @@
    0.571005
   ],
   "Chiralogy.there_is_a_cycle": [
-   0.118653,
+   0.142735,
    0.761294
   ],
   "Chiralogy.they_are_independent": [
-   0.335399,
-   0.739226
+   0.046404,
+   0.717159
   ],
   "Chiralogy.thin_carriers_admit_no_separating_factors": [
-   0.467304,
+   0.491818,
    0.121853
   ],
   "Chiralogy.three_axiom_shapes": [
@@ -4380,31 +4380,31 @@
    0.887686
   ],
   "Chiralogy.three_sources_independent": [
-   0.828849,
-   0.468865
+   0.724995,
+   0.449486
   ],
   "Chiralogy.throwExcept": [
    0.239067,
-   0.442628
+   0.419495
   ],
   "Chiralogy.toPoint": [
-   0.605517,
+   0.629546,
    0.61726
   ],
   "Chiralogy.top_is_contradictory": [
-   0.118653,
-   0.257565
+   0.070487,
+   0.095635
   ],
   "Chiralogy.top_is_self_defeating": [
-   0.142735,
-   0.257565
+   0.09457,
+   0.095635
   ],
   "Chiralogy.total_comparability_complete": [
-   0.166818,
-   0.257565
+   0.118653,
+   0.095635
   ],
   "Chiralogy.total_never_abstains": [
-   0.335399,
+   0.142735,
    0.095635
   ],
   "Chiralogy.total_opening_is_the_limit_of_partialization": [
@@ -4412,7 +4412,7 @@
    0.605028
   ],
   "Chiralogy.total_opening_satisfies_the_kernel": [
-   0.701122,
+   0.724916,
    0.91718
   ],
   "Chiralogy.totalization": [
@@ -4420,7 +4420,7 @@
    0.403244
   ],
   "Chiralogy.totalization_bot_diagonal": [
-   0.414823,
+   0.486708,
    0.291392
   ],
   "Chiralogy.totalization_breaks_form": [
@@ -4448,19 +4448,19 @@
    0.034777
   ],
   "Chiralogy.totalization_commutes_realizable": [
-   0.046404,
-   0.072502
+   0.166818,
+   0.095635
   ],
   "Chiralogy.totalization_destroys_absence_carried": [
-   0.668029,
+   0.691154,
    0.291392
   ],
   "Chiralogy.totalization_exists": [
-   0.951642,
+   0.975246,
    0.451908
   ],
   "Chiralogy.totalization_fabricates": [
-   0.629546,
+   0.653576,
    0.685741
   ],
   "Chiralogy.totalization_falsifies_against_every_target": [
@@ -4472,11 +4472,11 @@
    0.845903
   ],
   "Chiralogy.totalization_hole": [
-   0.970389,
-   0.380873
+   0.842593,
+   0.358503
   ],
   "Chiralogy.totalization_irreversible": [
-   0.868153,
+   0.919271,
    0.291392
   ],
   "Chiralogy.totalization_isTotal": [
@@ -4484,7 +4484,7 @@
    0.845903
   ],
   "Chiralogy.totalization_is_self_defeating": [
-   0.893712,
+   0.94483,
    0.291392
   ],
   "Chiralogy.totalization_no_relation_off_compat": [
@@ -4492,32 +4492,32 @@
    0.034777
   ],
   "Chiralogy.totalization_not_faithful": [
-   0.842593,
+   0.868153,
    0.380873
   ],
   "Chiralogy.totalization_not_monotone": [
-   0.438785,
+   0.51067,
    0.291392
   ],
   "Chiralogy.totalization_separates_equal_rows": [
-   0.919271,
+   0.970389,
    0.291392
   ],
   "Chiralogy.totalization_totalizes": [
-   0.919271,
+   0.94483,
    0.403244
   ],
   "Chiralogy.totalizations_are_quotients": [
    0.190901,
-   0.257565
+   0.095635
   ],
   "Chiralogy.tower1": [
    0.772506,
    0.856667
   ],
   "Chiralogy.tower2": [
-   0.26315,
-   0.350097
+   0.09457,
+   0.280698
   ],
   "Chiralogy.tower_nests": [
    0.724916,
@@ -4536,7 +4536,7 @@
    0.616156
   ],
   "Chiralogy.transport_law": [
-   0.839021,
+   0.861801,
    0.744919
   ],
   "Chiralogy.transport_law_fill": [
@@ -4544,19 +4544,19 @@
    0.571005
   ],
   "Chiralogy.trust_register": [
-   0.724995,
+   0.750958,
    0.449486
   ],
   "Chiralogy.two_adjacent_arms": [
-   0.407681,
-   0.453323
+   0.506378,
+   0.474178
   ],
   "Chiralogy.two_inversions_share_center": [
-   0.605517,
+   0.629546,
    0.569672
   ],
   "Chiralogy.two_le_card_of_mem_diffSet": [
-   0.046404,
+   0.070487,
    0.717159
   ],
   "Chiralogy.typedCount": [
@@ -4564,20 +4564,20 @@
    0.827496
   ],
   "Chiralogy.typedCount_iff_eqTypedCount": [
-   0.287233,
+   0.311316,
    0.805429
   ],
   "Chiralogy.uOp": [
    0.26315,
-   0.442628
+   0.419495
   ],
   "Chiralogy.unary_and_binary_are_separable": [
    0.214984,
-   0.257565
+   0.095635
   ],
   "Chiralogy.unary_region_status": [
    0.239067,
-   0.257565
+   0.095635
   ],
   "Chiralogy.uniformExcept": [
    0.118653,
@@ -4596,19 +4596,19 @@
    0.358503
   ],
   "Chiralogy.uniform_blocks_present_support": [
-   0.644904,
+   0.668029,
    0.336133
   ],
   "Chiralogy.uniformity_forbids_discrimination": [
-   0.432355,
+   0.407681,
    0.453323
   ],
   "Chiralogy.unique_rest_gives_a_single_limit": [
-   0.486708,
+   0.51067,
    0.380873
   ],
   "Chiralogy.universeClassifier_ofEquiv": [
-   0.046404,
+   0.214984,
    0.465761
   ],
   "Chiralogy.unseparating_factors_admit_a_levelling_import": [
@@ -4616,16 +4616,16 @@
    0.976669
   ],
   "Chiralogy.upSetFor": [
-   0.287233,
-   0.350097
+   0.118653,
+   0.280698
   ],
   "Chiralogy.upstream_is_signature_change": [
    0.26315,
-   0.257565
+   0.095635
   ],
   "Chiralogy.valueCount_is_inert": [
-   0.070487,
-   0.072502
+   0.287233,
+   0.095635
   ],
   "Chiralogy.vector_buys_linearity": [
    0.64894,
@@ -4637,15 +4637,15 @@
   ],
   "Chiralogy.verdictSwap": [
    0.287233,
-   0.442628
+   0.419495
   ],
   "Chiralogy.verdict_ignores_the_case": [
-   0.506378,
-   0.495034
+   0.432355,
+   0.453323
   ],
   "Chiralogy.vshape": [
-   0.09457,
-   0.141901
+   0.142735,
+   0.280698
   ],
   "Chiralogy.what_it_does_not_give": [
    0.978997,
@@ -4653,7 +4653,7 @@
   ],
   "Chiralogy.what_needed_finiteness": [
    0.311316,
-   0.211299
+   0.095635
   ],
   "Chiralogy.what_operations_can_do": [
    0.959226,
@@ -4664,39 +4664,39 @@
    0.752041
   ],
   "Chiralogy.what_the_top_is": [
-   0.09457,
-   0.072502
+   0.335399,
+   0.095635
   ],
   "Chiralogy.what_would_make_it_longer": [
-   0.287233,
-   0.257565
+   0.046404,
+   0.072502
   ],
   "Chiralogy.when_is_the_count_preserved": [
-   0.118653,
+   0.070487,
    0.072502
   ],
   "Chiralogy.whichDiffer_value_count": [
-   0.142735,
+   0.09457,
    0.072502
   ],
   "Chiralogy.witnesses_split_by_algebraicity": [
-   0.311316,
-   0.257565
+   0.118653,
+   0.072502
   ],
   "Chiralogy.wreath": [
    0.311316,
-   0.442628
+   0.419495
   ],
   "Chiralogy.writerAbsence": [
    0.928039,
    0.500357
   ],
   "Chiralogy.writerLevel": [
-   0.239067,
-   0.188166
+   0.142735,
+   0.072502
   ],
   "Chiralogy.zeroP": [
-   0.070487,
+   0.239067,
    0.465761
   ],
   "Chiralogy.\ud835\udc9c": [
@@ -4704,7 +4704,7 @@
    0.983326
   ],
   "Chiralogy.\ud835\udc9c_canDiffer": [
-   0.629546,
+   0.653576,
    0.569672
   ],
   "Chiralogy.\ud835\udc9c_nondegenerate": [
@@ -4912,5 +4912,5 @@
    0.67706
   ]
  },
- "title": "Frozen positions, packed by territory and ordered by dependency depth."
+ "title": "Frozen positions, packed by territory and ordered by load bearing weight."
 }

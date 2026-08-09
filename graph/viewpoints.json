@@ -8,9 +8,11 @@
   "treatment wherever it appears. That is cross view consistency by construction rather than by care.",
   "",
   "If a viewpoint wants something no labeling carries, that is a missing labeling. Derive it; do not",
-  "write data here."
+  "write data here.",
+  "",
+  "A viewpoint names the frozen layout it uses. The authored choice is WHICH frozen layout, never the",
+  "positions themselves: no coordinate appears in this file, and the renderer computes none."
  ],
- "layout": "spine-force-seed1",
  "palettes": {
   "import-stratum": {
    "kernel": "#332288",
@@ -43,10 +45,23 @@
    "derived": "#888888",
    "specialisation": "#CC6677",
    "restatement": "#000000"
+  },
+  "territory-sharing": {
+   "private": "#44AA99",
+   "shared": "#DDCC77",
+   "unrooted": "#888888"
+  },
+  "edge-locality": {
+   "within": "#5566AA",
+   "cross": "#CC6677"
   }
  },
  "scales": {
-  "load-bearing-weight": { "kind": "sqrt", "min": 1.4, "max": 11.0 }
+  "load-bearing-weight": {
+   "kind": "sqrt",
+   "min": 1.4,
+   "max": 11.0
+  }
  },
  "brightness": {
   "lit": 1.0,
@@ -57,35 +72,109 @@
    "viewpoint": "strata",
    "title": "Where a declaration lives, sized by how much rests on it.",
    "nodeChannels": [
-    { "labeling": "import-stratum", "channel": "color" },
-    { "labeling": "load-bearing-weight", "channel": "size" }
+    {
+     "labeling": "import-stratum",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
    ],
    "edgeChannels": [
-    { "labeling": "edge-provenance", "channel": "color" }
+    {
+     "labeling": "edge-provenance",
+     "channel": "color"
+    }
    ],
-   "sweep": null
+   "sweep": null,
+   "layout": "territory-packed"
   },
   {
    "viewpoint": "conditionality",
    "title": "Which statements name a concrete carrier and which quantify over all.",
    "nodeChannels": [
-    { "labeling": "conditionality", "channel": "color" },
-    { "labeling": "load-bearing-weight", "channel": "size" }
+    {
+     "labeling": "conditionality",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
    ],
    "edgeChannels": [
-    { "labeling": "edge-provenance", "channel": "color" }
+    {
+     "labeling": "edge-provenance",
+     "channel": "color"
+    }
    ],
-   "sweep": null
+   "sweep": null,
+   "layout": "territory-packed"
   },
   {
    "viewpoint": "topology",
    "title": "The role each declaration plays in the dependency structure.",
    "nodeChannels": [
-    { "labeling": "dependency-topology", "channel": "color" },
-    { "labeling": "load-bearing-weight", "channel": "size" }
+    {
+     "labeling": "dependency-topology",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
    ],
    "edgeChannels": [
-    { "labeling": "edge-derivation", "channel": "color" }
+    {
+     "labeling": "edge-locality",
+     "channel": "color"
+    }
+   ],
+   "sweep": null,
+   "layout": "territory-packed"
+  },
+  {
+   "viewpoint": "territory",
+   "title": "The co-equal root territories, and which declarations lie in more than one.",
+   "layout": "territory-packed",
+   "nodeChannels": [
+    {
+     "labeling": "territory-sharing",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
+   ],
+   "edgeChannels": [
+    {
+     "labeling": "edge-locality",
+     "channel": "color"
+    }
+   ],
+   "sweep": null
+  },
+  {
+   "viewpoint": "weight",
+   "title": "The same territories, each ordered as a local weight gradient running to a region edge.",
+   "layout": "territory-weight",
+   "nodeChannels": [
+    {
+     "labeling": "import-stratum",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
+   ],
+   "edgeChannels": [
+    {
+     "labeling": "edge-locality",
+     "channel": "color"
+    }
    ],
    "sweep": null
   },
@@ -93,20 +182,36 @@
    "viewpoint": "instantiation",
    "title": "Sweep the registers. Only brightness moves; what stays lit is what survives every register.",
    "nodeChannels": [
-    { "labeling": "import-stratum", "channel": "color" },
-    { "labeling": "load-bearing-weight", "channel": "size" }
+    {
+     "labeling": "import-stratum",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
+     "channel": "size"
+    }
    ],
    "edgeChannels": [
-    { "labeling": "edge-provenance", "channel": "color" }
+    {
+     "labeling": "edge-provenance",
+     "channel": "color"
+    }
    ],
    "sweep": {
     "channel": "brightness",
     "_comment": "The members are named one by one because the schema has no notion of a labeling family indexed by a parameter. See the report and the open note in LABELINGS.md.",
     "members": [
-     { "labeling": "satisfaction-physics", "label": "physics" },
-     { "labeling": "satisfaction-type-system", "label": "type system" }
+     {
+      "labeling": "satisfaction-physics",
+      "label": "physics"
+     },
+     {
+      "labeling": "satisfaction-type-system",
+      "label": "type system"
+     }
     ]
-   }
+   },
+   "layout": "territory-packed"
   }
  ]
 }

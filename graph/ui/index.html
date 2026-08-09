@@ -2,41 +2,46 @@
 <meta charset="utf-8">
 <title>Chiralogy spine</title>
 <!--
-  The renderer. A pure function of (frozen layout, labelings, channel config): it reads data.js and
-  decides nothing. Every visual choice lives in graph/viewpoints.json. Two rules are enforced in code
+  The renderer. A pure function of (frozen layouts, labelings, channel config): it reads data.js and
+  decides nothing. Every visual choice lives in graph/viewpoints.json. Three rules are enforced in code
   rather than left to habit:
 
-    POSITIONS ARE READ, NEVER COMPUTED. There is no layout step here and no reflow. Changing viewpoint
-    or sweeping the registers changes channels only.
+    POSITIONS ARE READ, NEVER COMPUTED. There is no layout step here. A viewpoint names one of the frozen
+    layouts and the renderer looks it up.
 
-    THE SWEEP MOVES ONE CHANNEL. While sweeping, brightness alone varies; colour and size hold at the
-    values the viewpoint fixed. That is the only way a subset that never dims is legible as such.
+    POSITIONS ARE LOCKED WITHIN A VIEWPOINT. Filtering, focusing and sweeping the registers never move a
+    node. The one time a position changes is an explicit viewpoint switch that names a different frozen
+    layout, and then it is animated so the eye can follow what went where.
+
+    ONE CHANNEL PER BRUSH. Sweeping, focusing and filtering all move brightness alone. Colour and size
+    hold at the values the viewpoint fixed. A subset that never dims is only legible if it is the sole
+    thing not moving.
 -->
 <style>
   :root { color-scheme: dark; }
   html, body { margin: 0; height: 100%; background: #101014; color: #d8d8dc;
                font: 13px/1.5 ui-sans-serif, system-ui, sans-serif; }
-  #wrap { display: grid; grid-template-columns: 1fr 300px; height: 100%; }
+  #wrap { display: grid; grid-template-columns: 1fr 320px; height: 100%; }
   canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
   #side { border-left: 1px solid #2a2a32; padding: 14px 16px; overflow-y: auto; }
   h1 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8a8a96;
-       margin: 0 0 12px; font-weight: 600; }
+       margin: 0 0 10px; font-weight: 600; }
   h2 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6f6f7c;
-       margin: 18px 0 6px; font-weight: 600; }
+       margin: 16px 0 5px; font-weight: 600; }
   button { font: inherit; background: #1c1c24; color: #c8c8d0; border: 1px solid #33333e;
-           border-radius: 5px; padding: 5px 9px; margin: 0 4px 4px 0; cursor: pointer; }
+           border-radius: 5px; padding: 4px 8px; margin: 0 4px 4px 0; cursor: pointer; }
   button[aria-pressed="true"] { background: #33333e; color: #fff; border-color: #55556a; }
-  input[type=range] { width: 100%; }
-  #vpnote { color: #8a8a96; margin: 6px 0 0; min-height: 34px; }
+  select, input[type=range] { width: 100%; font: inherit; background: #1c1c24; color: #c8c8d0;
+           border: 1px solid #33333e; border-radius: 5px; padding: 3px; }
+  .note { color: #8a8a96; margin: 5px 0 0; }
   .legend { display: flex; align-items: center; gap: 7px; margin: 2px 0; }
   .sw { width: 11px; height: 11px; border-radius: 2px; flex: none; }
-  #tip { color: #9a9aa6; }
   #tip b { color: #e8e8ee; font-weight: 600; word-break: break-all; }
-  table { border-collapse: collapse; width: 100%; margin-top: 6px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 5px; }
   td { padding: 1px 0; vertical-align: top; }
   td:first-child { color: #6f6f7c; padding-right: 8px; white-space: nowrap; }
-  #counts { color: #8a8a96; margin-top: 6px; }
   #counts b { color: #DDCC77; }
+  small { color: #6f6f7c; }
 </style>
 <div id="wrap">
   <canvas id="c"></canvas>
@@ -45,74 +50,100 @@
     <div id="meta"></div>
     <h2>Viewpoint</h2>
     <div id="vps"></div>
-    <p id="vpnote"></p>
+    <p class="note" id="vpnote"></p>
     <div id="sweepbox" hidden>
       <h2>Register sweep</h2>
       <input type="range" id="sweep" min="0" max="1" step="0.01" value="0">
       <div id="sweeplab"></div>
-      <div id="counts"></div>
+      <div id="counts" class="note"></div>
     </div>
     <h2>Edges</h2>
     <div id="edgectl"></div>
+    <h2>Territory</h2>
+    <select id="terrsel"></select>
+    <div id="terrctl" style="margin-top:5px"></div>
+    <h2>Focus</h2>
+    <div id="focusbox" class="note">Click a node for its neighbours. Click empty space to clear.</div>
     <h2>Legend</h2>
     <div id="legend"></div>
     <h2>Inspect</h2>
-    <div id="tip">Hover a node.</div>
+    <div id="tip" class="note">Hover a node.</div>
   </div>
 </div>
 <script src="data.js"></script>
 <script>
 (function () {
-  const D = window.CHIRALOGY;
-  const CFG = D.viewpoints;
-  const POS = D.layout.positions;
-  const NODES = D.spine.nodes;
-  const EDGES = D.spine.edges;
-  const LAB = D.labelings;
-
-  const canvas = document.getElementById("c");
-  const ctx = canvas.getContext("2d");
-
-  let vpIndex = 0, sweepT = 0, showEdges = true, hover = null;
-  let view = { s: 1, tx: 0, ty: 0 };
+  const D = window.CHIRALOGY, CFG = D.viewpoints, LAB = D.labelings;
+  const NODES = D.spine.nodes, EDGES = D.spine.edges;
+  const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
   const val = (id, k) => (LAB[id] ? LAB[id].values[k] : undefined);
+  const ekey = e => e.source + "|" + e.target;
+
+  let vpIndex = 0, sweepT = 0, showEdges = true, hover = null, focus = null;
+  let view = { s: 1, tx: 0, ty: 0 };
+  let filt = { provenance: new Set(), derivation: new Set(), locality: new Set() };
+  let terr = { id: "", mode: "" };
+
+  // Animated positions. anim goes 0 to 1 after a viewpoint switch that names a different layout;
+  // nothing else ever touches them.
+  let fromL = CFG.viewpoints[0].layout, toL = fromL, anim = 1;
+  const P = (lid, n) => D.layouts[lid].positions[n];
+  const at = n => {
+    const a = P(fromL, n), b = P(toL, n);
+    if (!a || !b) return b || a;
+    return anim >= 1 ? b : [a[0] + (b[0] - a[0]) * anim, a[1] + (b[1] - a[1]) * anim];
+  };
+
+  const adj = new Map();
+  for (const n of NODES) adj.set(n, new Set());
+  for (const e of EDGES) { adj.get(e.source).add(e.target); adj.get(e.target).add(e.source); }
 
   function sizeOf(n, ch) {
     if (!ch) return 3;
-    const sc = CFG.scales[ch.labeling];
-    const L = LAB[ch.labeling], r = L.attribute.range;
+    const sc = CFG.scales[ch.labeling], L = LAB[ch.labeling], r = L.attribute.range;
     const v = L.values[n];
     if (v === undefined) return sc ? sc.min : 3;
     const t = (r.max > r.min) ? (v - r.min) / (r.max - r.min) : 0;
-    const f = sc.kind === "sqrt" ? Math.sqrt(t) : t;
-    return sc.min + f * (sc.max - sc.min);
+    return sc.min + (sc.kind === "sqrt" ? Math.sqrt(t) : t) * (sc.max - sc.min);
   }
-
-  function colorOf(n, ch, fallback) {
-    if (!ch) return fallback;
-    const pal = CFG.palettes[ch.labeling] || {};
-    return pal[val(ch.labeling, n)] || fallback;
+  function colorOf(n, ch, fb) {
+    if (!ch) return fb;
+    return (CFG.palettes[ch.labeling] || {})[val(ch.labeling, n)] || fb;
   }
-
-  // The sweep: brightness only. Interpolates between adjacent members so that persistence of the
-  // never dimming subset reads as continuity rather than as a jump between two pictures.
-  function brightnessOf(n, sweep) {
+  function sweepLit(n, sweep) {
     if (!sweep) return 1;
     const m = sweep.members, last = m.length - 1;
     const t = sweepT * last, i = Math.min(Math.floor(t), last - 1), f = t - i;
-    const a = val(m[i].labeling, n) ? 1 : 0;
-    const b = val(m[i + 1].labeling, n) ? 1 : 0;
-    const lit = a + (b - a) * f;
+    const a = val(m[i].labeling, n) ? 1 : 0, b = val(m[i + 1].labeling, n) ? 1 : 0;
+    return a + (b - a) * f;
+  }
+  // Brightness is the only channel any brush moves. Focus and sweep multiply into it; nothing else.
+  function brightOf(n, sweep) {
+    let lit = sweepLit(n, sweep);
+    if (focus && n !== focus && !adj.get(focus).has(n)) lit *= 0.15;
     const B = CFG.brightness;
     return B.dark + (B.lit - B.dark) * lit;
   }
-
   function mix(hex, b) {
     const v = parseInt(hex.slice(1), 16);
-    const r = Math.round(((v >> 16) & 255) * b), g = Math.round(((v >> 8) & 255) * b),
-          bl = Math.round((v & 255) * b);
-    return `rgb(${r},${g},${bl})`;
+    return `rgb(${Math.round(((v >> 16) & 255) * b)},${Math.round(((v >> 8) & 255) * b)},${Math.round((v & 255) * b)})`;
+  }
+
+  // The three edge filter axes, composable: an edge shows only if it passes all of them.
+  function edgeShown(e) {
+    if (!showEdges) return false;
+    const k = ekey(e);
+    if (filt.provenance.size && !filt.provenance.has(val("edge-provenance", k))) return false;
+    if (filt.derivation.size && !filt.derivation.has(val("edge-derivation", k))) return false;
+    if (filt.locality.size && !filt.locality.has(val("edge-locality", k))) return false;
+    if (terr.id && terr.mode) {
+      const ts = val("territory", e.source), tt = val("territory", e.target);
+      if (terr.mode === "within" && !(ts === terr.id && tt === terr.id)) return false;
+      if (terr.mode === "outward" && !((ts === terr.id) !== (tt === terr.id))) return false;
+    }
+    if (focus && e.source !== focus && e.target !== focus) return false;
+    return true;
   }
 
   function frame() {
@@ -121,65 +152,80 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     const pad = 26, side = Math.min(w, h) - pad * 2;
-    const X = n => (pad + POS[n][0] * side) * view.s + view.tx;
-    const Y = n => (pad + (1 - POS[n][1]) * side) * view.s + view.ty;
+    const SX = u => (pad + u * side) * view.s + view.tx;
+    const SY = u => (pad + (1 - u) * side) * view.s + view.ty;
 
     const vp = CFG.viewpoints[vpIndex];
-    const nodeCh = ch => vp.nodeChannels.find(c => c.channel === ch);
-    const colCh = nodeCh("color"), sizeCh = nodeCh("size");
+    const nch = c => vp.nodeChannels.find(x => x.channel === c);
+    const colCh = nch("color"), sizeCh = nch("size");
     const edgeCh = vp.edgeChannels && vp.edgeChannels[0];
     const sweep = vp.sweep;
 
-    if (showEdges) {
-      ctx.lineWidth = 0.55;
-      for (const e of EDGES) {
-        if (!POS[e.source] || !POS[e.target]) continue;
-        const c = edgeCh ? (CFG.palettes[edgeCh.labeling] || {})[
-          val(edgeCh.labeling, e.source + "|" + e.target)] : null;
-        const b = sweep
-          ? Math.min(brightnessOf(e.source, sweep), brightnessOf(e.target, sweep))
-          : 1;
-        ctx.strokeStyle = mix(c || "#5a5a6a", 0.30 * b + 0.05);
-        ctx.beginPath();
-        ctx.moveTo(X(e.source), Y(e.source));
-        ctx.lineTo(X(e.target), Y(e.target));
-        ctx.stroke();
+    // Region outlines and names, from the frozen layout's regions block. No region is emphasised.
+    const regions = D.layouts[toL].regions || {};
+    ctx.lineWidth = 1;
+    ctx.font = "10px ui-sans-serif, system-ui, sans-serif";
+    for (const t of Object.keys(regions).sort()) {
+      const [x, y, rw, rh] = regions[t];
+      const px = SX(x), py = SY(y + rh), pw = rw * side * view.s, ph = rh * side * view.s;
+      const sel = terr.id === t;
+      ctx.strokeStyle = sel ? "#8a8ad0" : "#2d2d38";
+      ctx.strokeRect(px, py, pw, ph);
+      if (ph > 16 && pw > 34) {
+        ctx.fillStyle = sel ? "#a8a8dc" : "#55555f";
+        ctx.fillText(t.replace(/^Chiralogy\./, ""), px + 4, py + 11);
       }
     }
 
-    for (const n of NODES) {
-      if (!POS[n]) continue;
-      const b = brightnessOf(n, sweep);
-      ctx.fillStyle = mix(colorOf(n, colCh, "#8888aa"), b);
+    ctx.lineWidth = 0.55;
+    for (const e of EDGES) {
+      if (!edgeShown(e)) continue;
+      const c = edgeCh ? (CFG.palettes[edgeCh.labeling] || {})[val(edgeCh.labeling, ekey(e))] : null;
+      const b = Math.min(brightOf(e.source, sweep), brightOf(e.target, sweep));
+      ctx.strokeStyle = mix(c || "#5a5a6a", 0.32 * b + 0.05);
       ctx.beginPath();
-      ctx.arc(X(n), Y(n), sizeOf(n, sizeCh) * view.s, 0, 6.2832);
-      ctx.fill();
+      const a = at(e.source), z = at(e.target);
+      ctx.moveTo(SX(a[0]), SY(a[1]));
+      ctx.lineTo(SX(z[0]), SY(z[1]));
+      ctx.stroke();
     }
 
-    if (hover && POS[hover]) {
-      ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.4;
+    for (const n of NODES) {
+      const p = at(n);
+      if (!p) continue;
+      ctx.fillStyle = mix(colorOf(n, colCh, "#8888aa"), brightOf(n, sweep));
       ctx.beginPath();
-      ctx.arc(X(hover), Y(hover), sizeOf(hover, sizeCh) * view.s + 3.5, 0, 6.2832);
+      ctx.arc(SX(p[0]), SY(p[1]), sizeOf(n, sizeCh) * view.s, 0, 6.2832);
+      ctx.fill();
+    }
+    for (const n of [focus, hover]) {
+      if (!n) continue;
+      const p = at(n);
+      ctx.strokeStyle = n === focus ? "#DDCC77" : "#fff";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(SX(p[0]), SY(p[1]), sizeOf(n, sizeCh) * view.s + 3.5, 0, 6.2832);
       ctx.stroke();
     }
 
     if (sweep) {
-      let litAlways = 0;
-      for (const n of NODES) if (sweep.members.every(m => val(m.labeling, n))) litAlways++;
+      let k = 0;
+      for (const n of NODES) if (sweep.members.every(m => val(m.labeling, n))) k++;
       document.getElementById("counts").innerHTML =
-        `lit under every register: <b>${litAlways}</b> of ${NODES.length}`;
+        `lit under every register: <b>${k}</b> of ${NODES.length}`;
     }
+    if (anim < 1) { anim = Math.min(1, anim + 0.045); requestAnimationFrame(frame); }
   }
 
   function pick(mx, my) {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     const pad = 26, side = Math.min(w, h) - pad * 2;
-    const vp = CFG.viewpoints[vpIndex], sizeCh = vp.nodeChannels.find(c => c.channel === "size");
+    const sizeCh = CFG.viewpoints[vpIndex].nodeChannels.find(c => c.channel === "size");
     let best = null, bd = 1e9;
     for (const n of NODES) {
-      if (!POS[n]) continue;
-      const x = (pad + POS[n][0] * side) * view.s + view.tx;
-      const y = (pad + (1 - POS[n][1]) * side) * view.s + view.ty;
+      const p = at(n);
+      if (!p) continue;
+      const x = (pad + p[0] * side) * view.s + view.tx, y = (pad + (1 - p[1]) * side) * view.s + view.ty;
       const d = (x - mx) ** 2 + (y - my) ** 2, r = sizeOf(n, sizeCh) * view.s + 4;
       if (d < r * r && d < bd) { bd = d; best = n; }
     }
@@ -193,31 +239,30 @@
     for (const id of Object.keys(LAB).sort()) {
       if (LAB[id].kind !== "node") continue;
       const v = LAB[id].values[n];
-      if (v !== undefined) rows += `<tr><td>${id}</td><td>${v}</td></tr>`;
+      if (v !== undefined) rows += `<tr><td>${id}</td><td>${String(v).replace(/^Chiralogy\./, "")}</td></tr>`;
     }
     el.innerHTML = `<b>${n}</b><table>${rows}</table>`;
   }
 
   function legend() {
     const vp = CFG.viewpoints[vpIndex];
-    const col = vp.nodeChannels.find(c => c.channel === "color");
-    const eg = vp.edgeChannels && vp.edgeChannels[0];
-    let h = "";
     const block = (title, id) => {
       const pal = CFG.palettes[id] || {};
       let s = `<div style="color:#6f6f7c;margin-top:6px">${title}: ${id}</div>`;
       for (const k of Object.keys(pal)) {
-        const c = (LAB[id] ? Object.values(LAB[id].values).filter(v => v === k).length : 0);
-        if (!c) continue;
-        s += `<div class="legend"><span class="sw" style="background:${pal[k]}"></span>${k} <span style="color:#5f5f6c">${c}</span></div>`;
+        const c = LAB[id] ? Object.values(LAB[id].values).filter(v => v === k).length : 0;
+        if (c) s += `<div class="legend"><span class="sw" style="background:${pal[k]}"></span>${k} <small>${c}</small></div>`;
       }
       return s;
     };
-    if (col) h += block("node colour", col.labeling);
+    const col = vp.nodeChannels.find(c => c.channel === "color");
+    const eg = vp.edgeChannels && vp.edgeChannels[0];
+    let h = col ? block("node colour", col.labeling) : "";
     if (eg) h += block("edge colour", eg.labeling);
     const sz = vp.nodeChannels.find(c => c.channel === "size");
     if (sz) h += `<div style="color:#6f6f7c;margin-top:8px">node size: ${sz.labeling}</div>`;
-    if (vp.sweep) h += `<div style="color:#6f6f7c;margin-top:8px">brightness: register satisfaction (swept)</div>`;
+    if (vp.sweep) h += `<div style="color:#6f6f7c;margin-top:6px">brightness: register satisfaction, swept</div>`;
+    h += `<div style="color:#6f6f7c;margin-top:8px">layout: ${vp.layout}</div>`;
     document.getElementById("legend").innerHTML = h;
   }
 
@@ -226,44 +271,85 @@
     document.getElementById("vpnote").textContent = vp.title;
     document.getElementById("sweepbox").hidden = !vp.sweep;
     if (vp.sweep) {
-      const m = vp.sweep.members, last = m.length - 1;
-      const t = sweepT * last, i = Math.round(t);
-      document.getElementById("sweeplab").textContent =
-        m.map((x, k) => (k === i ? "[" + x.label + "]" : x.label)).join("   ");
+      const m = vp.sweep.members, i = Math.round(sweepT * (m.length - 1));
+      document.getElementById("sweeplab").innerHTML =
+        m.map((x, k) => k === i ? `<b>${x.label}</b>` : `<small>${x.label}</small>`).join(" &nbsp; ");
     }
     for (const b of document.querySelectorAll("#vps button"))
       b.setAttribute("aria-pressed", String(+b.dataset.i === vpIndex));
+    document.getElementById("focusbox").innerHTML = focus
+      ? `<b>${focus.replace(/^Chiralogy\./, "")}</b><br><small>${adj.get(focus).size} neighbours lit</small>`
+      : "Click a node for its neighbours. Click empty space to clear.";
     legend();
   }
 
   document.getElementById("meta").innerHTML =
     `${NODES.length} declarations, ${EDGES.length} dependencies<br>` +
-    `<span style="color:#6f6f7c">layout ${D.layout.layout}, frozen</span>`;
+    `<small>${Object.keys(D.layouts).length} frozen layouts, ${Object.keys(LAB).length} labelings</small>`;
 
-  document.getElementById("vps").innerHTML = CFG.viewpoints
-    .map((v, i) => `<button data-i="${i}">${v.viewpoint}</button>`).join("");
+  document.getElementById("vps").innerHTML =
+    CFG.viewpoints.map((v, i) => `<button data-i="${i}">${v.viewpoint}</button>`).join("");
   document.getElementById("vps").onclick = e => {
     if (!e.target.dataset.i) return;
-    vpIndex = +e.target.dataset.i; chrome(); frame();
+    const next = +e.target.dataset.i, nl = CFG.viewpoints[next].layout;
+    if (nl !== toL) { fromL = toL; toL = nl; anim = 0; }
+    vpIndex = next; chrome(); frame();
   };
 
+  const axes = [
+    ["provenance", "edge-provenance"],
+    ["derivation", "edge-derivation"],
+    ["locality", "edge-locality"],
+  ];
   document.getElementById("edgectl").innerHTML =
-    `<button id="etog" aria-pressed="true">edges on</button>`;
-  document.getElementById("etog").onclick = e => {
-    showEdges = !showEdges;
-    e.target.setAttribute("aria-pressed", String(showEdges));
-    e.target.textContent = showEdges ? "edges on" : "edges off";
+    `<button id="etog" aria-pressed="true">edges on</button><br>` +
+    axes.map(([ax, id]) => {
+      const vals = Object.keys(CFG.palettes[id] || {}).filter(v =>
+        Object.values(LAB[id].values).includes(v));
+      return `<div style="margin-top:4px"><small>${id}</small><br>` +
+        vals.map(v => `<button data-ax="${ax}" data-v="${v}">${v}</button>`).join("") + `</div>`;
+    }).join("");
+  document.getElementById("edgectl").onclick = e => {
+    const t = e.target;
+    if (t.id === "etog") {
+      showEdges = !showEdges;
+      t.setAttribute("aria-pressed", String(showEdges));
+      t.textContent = showEdges ? "edges on" : "edges off";
+    } else if (t.dataset.ax) {
+      const s = filt[t.dataset.ax];
+      s.has(t.dataset.v) ? s.delete(t.dataset.v) : s.add(t.dataset.v);
+      t.setAttribute("aria-pressed", String(s.has(t.dataset.v)));
+    } else return;
     frame();
   };
 
-  document.getElementById("sweep").oninput = e => {
-    sweepT = +e.target.value; chrome(); frame();
+  const terrs = Object.keys(D.layouts[toL].regions).sort();
+  document.getElementById("terrsel").innerHTML =
+    `<option value="">no territory selected</option>` +
+    terrs.map(t => `<option value="${t}">${t.replace(/^Chiralogy\./, "")}</option>`).join("");
+  document.getElementById("terrsel").onchange = e => { terr.id = e.target.value; chrome(); frame(); };
+  document.getElementById("terrctl").innerHTML =
+    `<button data-m="within">internals</button><button data-m="outward">outward</button>`;
+  document.getElementById("terrctl").onclick = e => {
+    if (!e.target.dataset.m) return;
+    terr.mode = terr.mode === e.target.dataset.m ? "" : e.target.dataset.m;
+    for (const b of document.querySelectorAll("#terrctl button"))
+      b.setAttribute("aria-pressed", String(b.dataset.m === terr.mode));
+    frame();
   };
+
+  document.getElementById("sweep").oninput = e => { sweepT = +e.target.value; chrome(); frame(); };
 
   canvas.onmousemove = e => {
     const r = canvas.getBoundingClientRect();
     const n = pick(e.clientX - r.left, e.clientY - r.top);
     if (n !== hover) { hover = n; inspect(n); frame(); }
+  };
+  canvas.onclick = e => {
+    const r = canvas.getBoundingClientRect();
+    const n = pick(e.clientX - r.left, e.clientY - r.top);
+    focus = (n && n !== focus) ? n : null;
+    chrome(); frame();
   };
   canvas.onwheel = e => {
     e.preventDefault();
@@ -273,7 +359,7 @@
     frame();
   };
   let drag = null;
-  canvas.onmousedown = e => { drag = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty }; };
+  canvas.onmousedown = e => { drag = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty, moved: 0 }; };
   window.onmouseup = () => { drag = null; };
   window.onmousemove = e => {
     if (!drag) return;

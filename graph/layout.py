@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Compute the frozen layout once, from the spine and the derived territory decomposition.
+"""Compute the frozen layouts once, from the spine and the derived territory decomposition.
+
+Two layouts share one territory packing and differ only in the order within a region: by dependency
+depth from the territory root, or by load bearing weight. A viewpoint selects one of them by id; the
+renderer never computes positions.
 
 POSITION ENCODES STRUCTURE. A declaration sits inside the region of the territory it belongs to, and
 within that region its place is fixed by dependency depth from the territory's root. The territory
@@ -125,45 +129,66 @@ for i, c in enumerate(sorted(nx.connected_components(G), key=lambda c: (-len(c),
     for n in sorted(c):
         comp_index[n] = i
 
-pos = {}
-for t in regions:
-    ns = sorted(members[t])
-    x, y, w, h = rects[t]
-    mx, my = w * 0.09, h * 0.09
-    ix, iy, iw, ih = x + mx, y + my, max(w - 2 * mx, 1e-9), max(h - 2 * my, 1e-9)
-    # Order within a region is derived. A territory has a root, so its declarations are ordered by
-    # dependency depth from that root, then by how much rests on them. The unrooted region has no root
-    # to measure depth from, so its declarations are ordered by connected component instead.
-    if t == "unrooted":
-        order = sorted(ns, key=lambda n: (comp_index[n], -weight.get(n, 0), n))
-    else:
-        d = depth_from(t, ns)
-        order = sorted(ns, key=lambda n: (d.get(n, 10 ** 6), -weight.get(n, 0), n))
-    m = len(order)
-    cols = max(1, round((m * (iw / ih)) ** 0.5))
-    rows = -(-m // cols)
-    for i, n in enumerate(order):
-        r, c = divmod(i, cols)
-        pos[n] = [ix + ((c + 0.5) / cols) * iw, iy + (1 - (r + 0.5) / rows) * ih]
+def place(mode):
+    """Fill each region's grid in a derived order. Closed form: sort keys only, no embedding."""
+    pos = {}
+    for t in regions:
+        ns = sorted(members[t])
+        x, y, w, h = rects[t]
+        mx, my = w * 0.09, h * 0.09
+        ix, iy = x + mx, y + my
+        iw, ih = max(w - 2 * mx, 1e-9), max(h - 2 * my, 1e-9)
+        if mode == "weight":
+            order = sorted(ns, key=lambda n: (-weight.get(n, 0), n))
+        elif t == "unrooted":
+            order = sorted(ns, key=lambda n: (comp_index[n], -weight.get(n, 0), n))
+        else:
+            d = depth_from(t, ns)
+            order = sorted(ns, key=lambda n: (d.get(n, 10 ** 6), -weight.get(n, 0), n))
+        m = len(order)
+        cols = max(1, round((m * (iw / ih)) ** 0.5))
+        rows = -(-m // cols)
+        for i, n in enumerate(order):
+            r, c = divmod(i, cols)
+            pos[n] = [ix + ((c + 0.5) / cols) * iw, iy + (1 - (r + 0.5) / rows) * ih]
+    return pos
 
-out = {
-    "layout": "territory-packed",
-    "title": "Frozen positions, packed by territory, computed once and never reflowed.",
-    "derivedFrom": ["spine", "labeling:territory", "labeling:load-bearing-weight"],
-    "derivation": "Territories from the territory labeling, ordered by size then name, packed as a "
-                  "squarified treemap of the unit square with area proportional to territory size. "
-                  "Within a region the order is closed form and carries structure rather than an "
-                  "embedding: declarations are sorted by dependency depth from that territory's root, "
-                  "then by how much rests on them, then by name, and filled into a grid. The unrooted "
-                  "region has no root to measure depth from, so its declarations are ordered by "
-                  "connected component. No iterative embedding is used anywhere, so the result is "
-                  "reproducible across processes. Center free: no region is central, no radius is used, "
-                  "and distance from the middle carries no meaning. Declarations no root reaches form "
-                  "the unrooted region, packed alongside the others rather than set apart.",
-    "regions": {t: [round(v, 6) for v in rects[t]] for t in regions},
-    "positions": {n: [round(pos[n][0], 6), round(pos[n][1], 6)] for n in nodes},
+
+COMMON = ("Territories from the territory labeling, ordered by size then name, packed as a squarified "
+          "treemap of the unit square with area proportional to territory size. No iterative embedding "
+          "is used anywhere, so the result is reproducible across processes. Center free: no region is "
+          "central, no radius is used, and distance from the middle carries no meaning. Declarations no "
+          "root reaches form the unrooted region, packed alongside the others rather than set apart. ")
+
+LAYOUTS = {
+    "territory-packed": (
+        "Frozen positions, packed by territory and ordered by dependency depth.",
+        COMMON + "Within a region declarations are sorted by dependency depth from that territory's "
+                 "root, then by how much rests on them, then by name, and filled into a grid. The "
+                 "unrooted region has no root to measure depth from, so its declarations are ordered by "
+                 "connected component.",
+        "depth"),
+    "territory-weight": (
+        "Frozen positions, packed by territory and ordered by load bearing weight.",
+        COMMON + "Within a region declarations are sorted by how much rests on them, heaviest first, "
+                 "then by name, and filled into a grid, so each region reads as a local weight gradient. "
+                 "The gradient runs to a region EDGE and never to a middle, so nothing is made central "
+                 "by carrying weight and the acentricity of the whole is untouched.",
+        "weight"),
 }
-with open(os.path.join(GRAPH, "layout.json"), "w") as f:
-    json.dump(out, f, indent=1, sort_keys=True)
-    f.write("\n")
-print(f"layout: {len(nodes)} positions across {len(regions)} territory regions, frozen")
+
+for lid, (title, derivation, mode) in sorted(LAYOUTS.items()):
+    pos = place(mode)
+    out = {
+        "layout": lid,
+        "title": title,
+        "derivedFrom": ["spine", "labeling:territory", "labeling:load-bearing-weight"],
+        "derivation": derivation,
+        "regions": {t: [round(v, 6) for v in rects[t]] for t in regions},
+        "positions": {n: [round(pos[n][0], 6), round(pos[n][1], 6)] for n in nodes},
+    }
+    fn = "layout.json" if lid == "territory-packed" else "layout-weight.json"
+    with open(os.path.join(GRAPH, fn), "w") as f:
+        json.dump(out, f, indent=1, sort_keys=True)
+        f.write("\n")
+    print(f"layout {lid}: {len(nodes)} positions across {len(regions)} regions, frozen -> graph/{fn}")

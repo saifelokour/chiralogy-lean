@@ -19,9 +19,14 @@ for p in sorted(glob.glob(os.path.join(GRAPH, "labelings", "*.json"))):
     d = json.load(open(p))
     labelings[d["labeling"]] = d
 
+layouts = {}
+for p in sorted(glob.glob(os.path.join(GRAPH, "layout*.json"))):
+    d = json.load(open(p))
+    layouts[d["layout"]] = d
+
 bundle = {
     "spine": json.load(open(os.path.join(GRAPH, "spine.json"))),
-    "layout": json.load(open(os.path.join(GRAPH, "layout.json"))),
+    "layouts": layouts,
     "labelings": labelings,
     "viewpoints": json.load(open(os.path.join(GRAPH, "viewpoints.json"))),
 }
@@ -33,4 +38,5 @@ with open(out, "w") as f:
     f.write(";\n")
 
 print(f"bundle: {len(bundle['spine']['nodes'])} nodes, {len(bundle['spine']['edges'])} edges, "
-      f"{len(labelings)} labelings, {len(bundle['viewpoints']['viewpoints'])} viewpoints")
+      f"{len(labelings)} labelings, {len(layouts)} layouts, "
+      f"{len(bundle['viewpoints']['viewpoints'])} viewpoints")
