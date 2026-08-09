@@ -316,6 +316,75 @@ emit(labeling(
     "categorical", ["private", "shared", "unrooted"], sharing),
     os.path.join(LAB, "territory-sharing.json"))
 
+# --------------------------------- weight split by provenance, and the asymmetry
+# The load bearing weight above counts dependents over every edge. Restricting the walk to edges of one
+# provenance splits it: how many declarations MENTION a thing in their statements, and how many USE it
+# in their proofs without mentioning it. Paths must be of one kind throughout, so the two do not sum to
+# the total: a declaration reachable by a statement path and by a proof path counts in both.
+def weight_over(kind):
+    rv = defaultdict(list)
+    for s_, t_ in edges:
+        if edgekind_of(s_, t_) == kind:
+            rv[t_].append(s_)
+    w = {}
+    for n in names:
+        seen, stack = set(), list(rv[n])
+        while stack:
+            m = stack.pop()
+            if m in seen:
+                continue
+            seen.add(m)
+            stack.extend(rv[m])
+        w[n] = len(seen)
+    return w
+
+
+def edgekind_of(s_, t_):
+    return ekindraw.get(f"{s_}|{t_}")
+
+
+ekindraw = {}
+for e in G["edges"]:
+    if e["source"] in nodeset and e["target"] in nodeset:
+        ekindraw[f"{e['source']}|{e['target']}"] = (
+            "proof-only" if e["kind"] == "proofOnly" else "statement")
+
+wstat = weight_over("statement")
+wproof = weight_over("proof-only")
+emit(labeling(
+    "statement-weight", "How many declarations mention this one in their statements.",
+    ["labeling:edge-provenance"],
+    "Transitive dependents over statement edges only: paths made entirely of dependencies visible in "
+    "the depending statement.",
+    "scalar", {"min": min(wstat.values()), "max": max(wstat.values())}, wstat),
+    os.path.join(LAB, "statement-weight.json"))
+emit(labeling(
+    "proof-weight", "How many declarations use this one in proofs without mentioning it.",
+    ["labeling:edge-provenance"],
+    "Transitive dependents over proof-only edges only: paths made entirely of dependencies absent from "
+    "the depending statement and present in its proof.",
+    "scalar", {"min": min(wproof.values()), "max": max(wproof.values())}, wproof),
+    os.path.join(LAB, "proof-weight.json"))
+
+# Normalised rather than a difference or a ratio. A difference is dominated by scale, and a ratio is
+# undefined exactly where the interesting case lies, a declaration used everywhere and mentioned
+# nowhere. This form is scale free, reaches plus one precisely when nothing mentions it and something
+# uses it, and minus one in the mirror case. It is undefined only when nothing depends on it at all,
+# and those declarations are left unlabelled rather than given a made up value.
+asym = {}
+for n in names:
+    tot = wstat[n] + wproof[n]
+    if tot:
+        asym[n] = round((wproof[n] - wstat[n]) / tot, 6)
+emit(labeling(
+    "weight-asymmetry", "How far a declaration's load is borne by proofs rather than by statements.",
+    ["labeling:statement-weight", "labeling:proof-weight"],
+    "Proof weight minus statement weight over their sum. Plus one when nothing mentions it and "
+    "something uses it, minus one in the mirror case, zero when the two balance. Declarations nothing "
+    "depends on are left unlabelled rather than given a value.",
+    "scalar", {"min": -1.0, "max": 1.0}, asym),
+    os.path.join(LAB, "weight-asymmetry.json"))
+
 # ------------------------------------------- edge locality, projected from territory
 # A node labeling projected onto edges: the same generalization as a reduction over labelings, in the
 # other direction. Within when both ends sit in one territory, cross when the edge binds two.
