@@ -73,6 +73,7 @@ SeamNameability
 SelfCompletionAssemblage
 SeparationTops
 StanceSurvey
+SubclassLocality
 SyntaxSemanticsStructural
 TemporalOpens
 TheAttempt
