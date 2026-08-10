@@ -57,6 +57,9 @@
       <div id="sweeplab"></div>
       <div id="counts" class="note"></div>
     </div>
+    <h2>Size</h2>
+    <div id="sizectl"></div>
+    <p class="note" id="sizenote"></p>
     <h2>Edges</h2>
     <div id="edgectl"></div>
     <h2>Territory</h2>
@@ -82,6 +85,13 @@
   const ekey = e => e.source + "|" + e.target;
 
   let vpIndex = 0, sweepT = 0, showEdges = true, hover = null, focus = null;
+  // sizeMode overrides the viewpoint's declared size labeling and nothing else. null means the
+  // viewpoint's own default. legendSel holds selected VALUES of the active colour labeling; when it is
+  // non empty every node whose value is outside it dims. Both reset when the viewpoint changes,
+  // because both are stated in terms of that viewpoint's own labelings.
+  let sizeMode = null, legendSel = new Set();
+  const SIZE_MODES = ((CFG.sizeModes || {}).modes || []).filter(m => LAB[m] && CFG.scales[m]);
+  const clearSel = () => { legendSel = new Set(); };
   // focus is the SELECTED declaration: set by click, persistent. hover is transient and the inspector
   // falls back to the selection when the pointer leaves, so a neighbourhood can be read without losing it.
   let view = { s: 1, tx: 0, ty: 0 };
@@ -101,6 +111,10 @@
   const adj = new Map();
   for (const n of NODES) adj.set(n, new Set());
   for (const e of EDGES) { adj.get(e.source).add(e.target); adj.get(e.target).add(e.source); }
+
+  // The size channel a viewpoint declares, overridden by the selected mode when there is one. Only the
+  // labeling changes; the channel is still size and the positions are read from the frozen layout.
+  const effSize = ch => (sizeMode ? { labeling: sizeMode, channel: "size" } : ch);
 
   function sizeOf(n, ch) {
     if (!ch) return 3;
@@ -135,10 +149,12 @@
     const a = val(m[i].labeling, n) ? 1 : 0, b = val(m[i + 1].labeling, n) ? 1 : 0;
     return a + (b - a) * f;
   }
-  // Brightness is the only channel any brush moves. Focus and sweep multiply into it; nothing else.
-  function brightOf(n, sweep) {
+  // Brightness is the only channel any brush moves. Sweep, focus and legend selection all multiply
+  // into it and nothing else, so they compose without any of them needing to know about the others.
+  function brightOf(n, sweep, colCh) {
     let lit = sweepLit(n, sweep);
     if (focus && n !== focus && !adj.get(focus).has(n)) lit *= 0.15;
+    if (legendSel.size && colCh && !legendSel.has(val(colCh.labeling, n))) lit *= 0.15;
     const B = CFG.brightness;
     return B.dark + (B.lit - B.dark) * lit;
   }
@@ -174,7 +190,7 @@
 
     const vp = CFG.viewpoints[vpIndex];
     const nch = c => vp.nodeChannels.find(x => x.channel === c);
-    const colCh = nch("color"), sizeCh = nch("size");
+    const colCh = nch("color"), sizeCh = effSize(nch("size"));
     const edgeCh = vp.edgeChannels && vp.edgeChannels[0];
     const sweep = vp.sweep;
 
@@ -198,7 +214,7 @@
     for (const e of EDGES) {
       if (!edgeShown(e)) continue;
       const c = edgeCh ? (CFG.palettes[edgeCh.labeling] || {})[val(edgeCh.labeling, ekey(e))] : null;
-      const b = Math.min(brightOf(e.source, sweep), brightOf(e.target, sweep));
+      const b = Math.min(brightOf(e.source, sweep, colCh), brightOf(e.target, sweep, colCh));
       ctx.strokeStyle = mix(c || "#5a5a6a", 0.32 * b + 0.05);
       ctx.beginPath();
       const a = at(e.source), z = at(e.target);
@@ -210,7 +226,7 @@
     for (const n of NODES) {
       const p = at(n);
       if (!p) continue;
-      ctx.fillStyle = mix(colorOf(n, colCh, "#8888aa"), brightOf(n, sweep));
+      ctx.fillStyle = mix(colorOf(n, colCh, "#8888aa"), brightOf(n, sweep, colCh));
       ctx.beginPath();
       ctx.arc(SX(p[0]), SY(p[1]), sizeOf(n, sizeCh) * view.s, 0, 6.2832);
       ctx.fill();
@@ -237,7 +253,7 @@
   function pick(mx, my) {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     const pad = 26, side = Math.min(w, h) - pad * 2;
-    const sizeCh = CFG.viewpoints[vpIndex].nodeChannels.find(c => c.channel === "size");
+    const sizeCh = effSize(CFG.viewpoints[vpIndex].nodeChannels.find(c => c.channel === "size"));
     let best = null, bd = 1e9;
     for (const n of NODES) {
       const p = at(n);
@@ -263,12 +279,21 @@
 
   function legend() {
     const vp = CFG.viewpoints[vpIndex];
-    const block = (title, id) => {
+    // A legend entry for the node colour labeling is also a selector: clicking it lights every node
+    // carrying that value and dims the rest. Edge legends stay inert, since brightness there already
+    // follows the endpoints. Counts come from the labeling, never from a hand written list.
+    const block = (title, id, pick) => {
       const pal = CFG.palettes[id] || {};
       let s = `<div style="color:#6f6f7c;margin-top:6px">${title}: ${id}</div>`;
       for (const k of Object.keys(pal)) {
+        if (k.startsWith("_")) continue;
         const c = LAB[id] ? Object.values(LAB[id].values).filter(v => v === k).length : 0;
-        if (c) s += `<div class="legend"><span class="sw" style="background:${pal[k]}"></span>${k} <small>${c}</small></div>`;
+        if (!c) continue;
+        const on = pick && legendSel.has(k);
+        s += `<div class="legend"${pick ? ` data-lv="${k}" role="button" tabindex="0"` +
+              ` style="cursor:pointer;opacity:${!pick || !legendSel.size || on ? 1 : 0.4}"` : ""}>` +
+             `<span class="sw" style="background:${pal[k]}${on ? ";outline:2px solid #e8e8ee" : ""}"></span>` +
+             `${k} <small>${c}</small></div>`;
       }
       return s;
     };
@@ -280,13 +305,28 @@
       h += `<div style="color:#6f6f7c;margin-top:6px">node colour: ${col.labeling}</div>` +
         `<div style="height:10px;border-radius:2px;margin:3px 0;background:linear-gradient(90deg,${sc.colors[0]},${sc.colors[1]},${sc.colors[2]})"></div>` +
         `<div style="display:flex;justify-content:space-between"><small>${sc.domain[0]}</small><small>${sc.domain[1]}</small><small>+${sc.domain[2]}</small></div>`;
-    } else if (col) h += block("node colour", col.labeling);
-    if (eg) h += block("edge colour", eg.labeling);
+    } else if (col) h += block("node colour", col.labeling, true);
+    if (eg) h += block("edge colour", eg.labeling, false);
     const sz = vp.nodeChannels.find(c => c.channel === "size");
     if (sz) h += `<div style="color:#6f6f7c;margin-top:8px">node size: ${sz.labeling}</div>`;
     if (vp.sweep) h += `<div style="color:#6f6f7c;margin-top:6px">brightness: register satisfaction, swept</div>`;
+    if (col && !(CFG.colorScales || {})[col.labeling]) {
+      h += legendSel.size
+        ? `<div style="margin-top:6px"><button id="lclear">clear selection</button>` +
+          `<small> ${[...legendSel].join(", ")} lit</small></div>`
+        : `<div style="margin-top:6px"><small>Click a legend value to light every node carrying it.</small></div>`;
+    }
     h += `<div style="color:#6f6f7c;margin-top:8px">layout: ${vp.layout}</div>`;
-    document.getElementById("legend").innerHTML = h;
+    const box = document.getElementById("legend");
+    box.innerHTML = h;
+    box.onclick = e => {
+      if (e.target.id === "lclear") { clearSel(); chrome(); frame(); return; }
+      const row = e.target.closest("[data-lv]");
+      if (!row) return;
+      const v = row.dataset.lv;
+      if (legendSel.has(v)) legendSel.delete(v); else legendSel.add(v);
+      chrome(); frame();
+    };
   }
 
   function chrome() {
@@ -303,6 +343,7 @@
     document.getElementById("focusbox").innerHTML = focus
       ? `<b>${focus.replace(/^Chiralogy\./, "")}</b><br><small>${adj.get(focus).size} neighbours lit</small>`
       : "Click a node for its neighbours. Click empty space to clear.";
+    sizectl();
     legend();
   }
 
@@ -316,7 +357,27 @@
     if (!e.target.dataset.i) return;
     const next = +e.target.dataset.i, nl = CFG.viewpoints[next].layout;
     if (nl !== toL) { fromL = toL; toL = nl; anim = 0; }
-    vpIndex = next; chrome(); frame();
+    vpIndex = next; sizeMode = null; clearSel(); chrome(); frame();
+  };
+
+  // The size selector. Buttons come from the config's mode list; picking one overrides the size
+  // channel alone, and picking the active one again returns to the viewpoint's declared default.
+  function sizectl() {
+    const vp = CFG.viewpoints[vpIndex];
+    const dflt = (vp.nodeChannels.find(c => c.channel === "size") || {}).labeling;
+    document.getElementById("sizectl").innerHTML = SIZE_MODES.map(m =>
+      `<button data-sm="${m}" aria-pressed="${String((sizeMode || dflt) === m)}">${m.replace(/-weight$/, "")}</button>`
+    ).join("");
+    document.getElementById("sizenote").innerHTML = sizeMode
+      ? `<small>size: ${sizeMode}, overriding this viewpoint's ${dflt}. Positions unchanged.</small>`
+      : `<small>size: ${dflt}, this viewpoint's default.</small>`;
+  }
+  document.getElementById("sizectl").onclick = e => {
+    const m = e.target.dataset.sm;
+    if (!m) return;
+    const dflt = (CFG.viewpoints[vpIndex].nodeChannels.find(c => c.channel === "size") || {}).labeling;
+    sizeMode = (m === (sizeMode || dflt)) ? null : m;
+    chrome(); frame();
   };
 
   const axes = [

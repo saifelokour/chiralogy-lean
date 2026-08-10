@@ -423,6 +423,46 @@ emit(labeling(
     "categorical", sorted(set(kind_of.values())), kind_of),
     os.path.join(LAB, "node-kind.json"))
 
+# ------------------------------------ weight split by the DEPENDENT's node kind
+# The same reduction as load bearing weight, over the same reversed spine, but the reached set is
+# partitioned by what each dependent IS rather than by which edges the path used. So this is a split of
+# the DESTINATIONS, where statement weight and proof weight split the ROUTES: the two decompositions cut
+# the same total along different axes and are not variants of one another.
+#
+# NOT ADDITIVE IN THE USUAL SENSE, and the reason matters. A dependent lands in exactly one bucket, by
+# its own kind, so the buckets partition the reached set and the parts sum to the total. What they do
+# not do is measure the same thing: vocabulary weight counts how much LANGUAGE is built on a
+# declaration, theorem weight counts how many RESULTS rest on it, and the two answer different
+# questions. They are emitted separately so that neither is ever ranked against the other in one list,
+# which is how the taproots came to be compared with the diagonal on a single scale.
+VOCAB_KINDS = {"def", "abbrev", "structure", "inductive"}
+wtheorem, wvocab = {}, {}
+for n in names:
+    seen, stack = set(), list(rev[n])
+    while stack:
+        m = stack.pop()
+        if m in seen:
+            continue
+        seen.add(m)
+        stack.extend(rev[m])
+    wtheorem[n] = sum(1 for m in seen if kind_of[m] == "theorem")
+    wvocab[n] = sum(1 for m in seen if kind_of[m] in VOCAB_KINDS)
+emit(labeling(
+    "theorem-weight", "How many results rest on this one, directly or through others.",
+    ["labeling:node-kind"],
+    "Transitive dependents over the reversed spine, counting only those that are theorems. Measures "
+    "reach into the derived layer: how much of what canonical proves would have to move if this moved.",
+    "scalar", {"min": min(wtheorem.values()), "max": max(wtheorem.values())}, wtheorem),
+    os.path.join(LAB, "theorem-weight.json"))
+emit(labeling(
+    "vocabulary-weight", "How much language is built on this one, directly or through others.",
+    ["labeling:node-kind"],
+    "Transitive dependents over the reversed spine, counting only those that introduce vocabulary: a "
+    "def, abbrev, structure or inductive. Measures reach into the language rather than into the "
+    "results, and is not commensurable with theorem weight.",
+    "scalar", {"min": min(wvocab.values()), "max": max(wvocab.values())}, wvocab),
+    os.path.join(LAB, "vocabulary-weight.json"))
+
 # ----------------------------------------------------------------- character
 # The two hands, as the extraction already assigns them: from the declaring module's name. This is not
 # a community assignment. The dependency measurement found emergent communities aligning with this

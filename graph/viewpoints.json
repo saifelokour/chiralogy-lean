@@ -59,13 +59,23 @@
    "cross": "#CC6677"
   },
   "node-kind": {
-   "_comment": "Blues for the kinds that introduce vocabulary, teal for the kind that derives a consequence, red for the kind that asserts one without proof. The grouping is a visual choice made here in the authored layer; the six categories themselves come from the environment.",
-   "def": "#332288",
-   "abbrev": "#5566AA",
-   "structure": "#88CCEE",
-   "inductive": "#7788BB",
-   "theorem": "#44AA99",
-   "axiom": "#CC6677"
+   "_comment": [
+    "Six distinct HUES, not shades of one. The first attempt grouped the four vocabulary kinds as four",
+    "blues to signal that they belong together, and that failed: the closest pair sat at a perceptual",
+    "distance of 17, below the threshold of 20 that every other palette here clears, so abbrev and",
+    "inductive were not tellable apart on the canvas. Grouping by hue family and distinguishing values",
+    "are the same channel and cannot both be had; distinguishing wins, and the grouping is carried by",
+    "the legend and by the two weight labelings instead.",
+    "Theorem takes the lightest and least saturated colour on purpose, because it is 68 percent of the",
+    "nodes and a saturated majority drowns the rest. Axiom takes the loudest, being four nodes that",
+    "would otherwise vanish. The six categories come from the environment; only the colours are chosen."
+   ],
+   "def": "#3366CC",
+   "abbrev": "#66CCEE",
+   "structure": "#22AA55",
+   "inductive": "#DDAA33",
+   "theorem": "#C285A8",
+   "axiom": "#EE5544"
   },
   "character": {
    "apophatic": "#332288",
@@ -75,7 +85,19 @@
   }
  },
  "scales": {
+  "_comment": [
+   "One scale per weight labeling, all of the same shape, because size is compared WITHIN a mode and",
+   "never across modes. Each scale takes its domain from the range its own labeling declares, so two",
+   "modes with different maxima both fill the same radius band and a switch never rescales the frame.",
+   "That is deliberate: theorem weight and vocabulary weight are not commensurable, so a shared",
+   "absolute scale would invite exactly the comparison the split exists to prevent."
+  ],
   "load-bearing-weight": {
+   "kind": "sqrt",
+   "min": 1.4,
+   "max": 11.0
+  },
+  "statement-weight": {
    "kind": "sqrt",
    "min": 1.4,
    "max": 11.0
@@ -84,7 +106,34 @@
    "kind": "sqrt",
    "min": 1.4,
    "max": 11.0
+  },
+  "theorem-weight": {
+   "kind": "sqrt",
+   "min": 1.4,
+   "max": 11.0
+  },
+  "vocabulary-weight": {
+   "kind": "sqrt",
+   "min": 1.4,
+   "max": 11.0
   }
+ },
+ "sizeModes": {
+  "_comment": [
+   "The size channel is a CHOICE, offered here and switchable in the renderer. A viewpoint still",
+   "declares which mode drives size by default; selecting another overrides that one channel and",
+   "nothing else. Positions are frozen in the layout and no mode touches them.",
+   "Five modes along two independent decompositions of the same total: statement against proof splits",
+   "the ROUTES a dependency travelled, theorem against vocabulary splits the DESTINATIONS it reached.",
+   "The two are not variants of each other and are listed in that order."
+  ],
+  "modes": [
+   "load-bearing-weight",
+   "statement-weight",
+   "proof-weight",
+   "theorem-weight",
+   "vocabulary-weight"
+  ]
  },
  "brightness": {
   "lit": 1.0,
@@ -260,7 +309,8 @@
   },
   {
    "viewpoint": "kinds",
-   "title": "What each declaration is. Vocabulary is reached by naming, results are reached by use.",
+   "title": "What each declaration is, sized by how many results rest on it.",
+   "_sizeNote": "Default size is theorem weight rather than the total, so that reach into the derived layer is what shows here. One line to revert to load-bearing-weight, and the size selector overrides it either way.",
    "layout": "territory-packed",
    "nodeChannels": [
     {
@@ -268,7 +318,7 @@
      "channel": "color"
     },
     {
-     "labeling": "load-bearing-weight",
+     "labeling": "theorem-weight",
      "channel": "size"
     }
    ],
