@@ -404,6 +404,25 @@ emit(labeling(
     "categorical", ["within", "cross"], loc, keyed="edge"),
     os.path.join(LAB, "edge-locality.json"))
 
+# ----------------------------------------------------------------- node kind
+# A PROJECTION, not a computation. The extraction already records what each declaration IS in the
+# compiled environment, and this reads that field across and writes it out as a labeling. Nothing here
+# decides anything. The value set is whatever the environment distinguishes, reported rather than
+# reduced: a binary def against theorem would be an imposed reading, and the environment separates more
+# than two, so the extra categories are kept.
+kind_of = {n: byname[n]["kind"] for n in names}
+emit(labeling(
+    "node-kind", "What each declaration is in the compiled environment.",
+    "canonical",
+    "Read straight off the extraction's per declaration kind, which the environment fixes: a theorem "
+    "carries a proof of a proposition, an axiom asserts one without a proof, and a def, abbrev, "
+    "instance, structure or inductive introduces vocabulary. The categories are the ones the "
+    "environment makes and are not collapsed to a binary, because the split between introducing "
+    "vocabulary and deriving a consequence is a fact about the declaration while any coarser grouping "
+    "of the vocabulary kinds would be a reading laid over it.",
+    "categorical", sorted(set(kind_of.values())), kind_of),
+    os.path.join(LAB, "node-kind.json"))
+
 # ----------------------------------------------------------------- character
 # The two hands, as the extraction already assigns them: from the declaring module's name. This is not
 # a community assignment. The dependency measurement found emergent communities aligning with this

@@ -58,6 +58,15 @@
    "within": "#5566AA",
    "cross": "#CC6677"
   },
+  "node-kind": {
+   "_comment": "Blues for the kinds that introduce vocabulary, teal for the kind that derives a consequence, red for the kind that asserts one without proof. The grouping is a visual choice made here in the authored layer; the six categories themselves come from the environment.",
+   "def": "#332288",
+   "abbrev": "#5566AA",
+   "structure": "#88CCEE",
+   "inductive": "#7788BB",
+   "theorem": "#44AA99",
+   "axiom": "#CC6677"
+  },
   "character": {
    "apophatic": "#332288",
    "cataphatic": "#CC6677",
@@ -238,6 +247,28 @@
     },
     {
      "labeling": "proof-weight",
+     "channel": "size"
+    }
+   ],
+   "edgeChannels": [
+    {
+     "labeling": "edge-provenance",
+     "channel": "color"
+    }
+   ],
+   "sweep": null
+  },
+  {
+   "viewpoint": "kinds",
+   "title": "What each declaration is. Vocabulary is reached by naming, results are reached by use.",
+   "layout": "territory-packed",
+   "nodeChannels": [
+    {
+     "labeling": "node-kind",
+     "channel": "color"
+    },
+    {
+     "labeling": "load-bearing-weight",
      "channel": "size"
     }
    ],
