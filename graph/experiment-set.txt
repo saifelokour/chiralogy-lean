@@ -70,6 +70,7 @@ ScaleIndependence
 SeamNameability
 SelfCompletionAssemblage
 SeparationTops
+StanceSurvey
 SyntaxSemanticsStructural
 TemporalOpens
 TheAttempt
