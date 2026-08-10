@@ -46,6 +46,7 @@ MoveAlgebra
 MoveEffectTable
 NestingTopology
 OpenClosed
+OppositeNesting
 ParticipantStructure
 PersistenceRotation
 PhysicsImport
