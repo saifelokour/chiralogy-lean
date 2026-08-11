@@ -43,6 +43,7 @@ LawvereGirard
 MembershipBoundary
 MembershipRegion
 MoveAlgebra
+MoveAlgebraDeaths
 MoveEffectTable
 NestingTopology
 OpenClosed
