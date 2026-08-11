@@ -51,6 +51,7 @@ ParticipantStructure
 PersistenceRotation
 PhysicsImport
 PhysicsSeparation
+PocketDynamics
 PositionalChannel
 RealAssemblageImport
 ReconcileAndSelfRef
