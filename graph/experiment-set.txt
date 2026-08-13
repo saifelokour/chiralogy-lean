@@ -28,6 +28,7 @@ DepthFrontier
 DepthHierarchy
 DeterminationFlow
 FactorSpace
+FreeSlot
 FreeVarianceLocus
 GenerativeMove
 GraphView
