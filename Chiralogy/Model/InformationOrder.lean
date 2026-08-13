@@ -177,6 +177,16 @@ theorem partialization_le_c {X : Type} (w : X → X → Bool) (c : X → X → O
   · rw [if_pos hw]; exact Or.inl rfl
   · rw [if_neg hw]; exact optLE_refl _
 
+/-- **A fill does nothing where nothing is absent.** Totalization keeps present values, so at a
+classification that holds everywhere it returns that classification unchanged: the fill arm is the
+identity exactly on the total classifications. -/
+theorem totalization_fixes_the_total {X : Type} (s : X → Nat) {c : X → X → Option Bool}
+    (h : isTotal c) : totalization s c = c := by
+  funext x y
+  rcases hv : c x y with - | b
+  · exact absurd hv (h x y)
+  · simp [totalization, hv]
+
 /-- **Partialization IS monotone.** Unlike totalization, this arm is order-preserving. -/
 theorem partialization_monotone {X : Type} (w : X → X → Bool) {c d : X → X → Option Bool}
     (h : cLE c d) : cLE (partialization w c) (partialization w d) := by

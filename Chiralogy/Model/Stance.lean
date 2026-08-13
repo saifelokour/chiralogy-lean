@@ -420,6 +420,37 @@ theorem the_stability_asymmetry {c : Pt X → Pt X → Option Bool} {a b : Pt X}
   rw [step_takeAt_at a b c] at this
   exact h this.symm
 
+/-- **A run never leaves the down set of where it started.** Every iterate of a policy lies at or below
+the starting classification in the information order, so a rule with one direction confines the run to a
+cone from its starting point rather than merely to an acyclic path. -/
+theorem runPolicy_le_start (S : Policy X) (c : Pt X → Pt X → Option Bool) :
+    ∀ k, cLE (runPolicy S c k) c := by
+  intro k
+  induction k with
+  | zero => exact fun _ _ => optLE_refl _
+  | succ m ih =>
+      refine fun x y => optLE_trans ?_ (ih x y)
+      rw [runPolicy_succ]
+      exact step_deflationary S _ x y
+
+/-- **Every release pattern is available at a fixed classification.** For any classification and any
+assignment of releases to cells whatever, some stance fixes that classification and releases exactly
+where the assignment says. So no cell's release is constrained by any other's, and the pattern of what a
+fixed stance lets go carries no joint structure. -/
+theorem any_release_pattern_is_realized (c : Pt X → Pt X → Option Bool) (h : Pt X → Pt X → Bool) :
+    ∃ S : Stance X, applyStance S c = c ∧ ∀ x y, S.drop c x y = h x y := by
+  refine ⟨⟨fun _ x y => h x y, fun _ x y => c x y⟩, ?_, fun _ _ => rfl⟩
+  funext x y
+  by_cases hh : h x y = true
+  · exact applyStance_of_dropped (T := (⟨fun _ x y => h x y, fun _ x y => c x y⟩ : Stance X)) hh
+  · rw [Bool.not_eq_true] at hh
+    by_cases hv : c x y = none
+    · exact applyStance_of_kept_open
+        (T := (⟨fun _ x y => h x y, fun _ x y => c x y⟩ : Stance X)) hh hv
+    · rw [applyStance, if_neg, release_of_kept hh]
+      rw [release_of_kept hh]
+      exact hv
+
 end Poles
 
 /-! ## The mobile band, its two exits, and a period-two periodic orbit -/
@@ -613,6 +644,25 @@ theorem restoreTo_returns_from_anywhere (t c : Pt X → Pt X → Option Bool) :
       · exact absurd hb hv
       · rw [forming_is_powerless_at_a_held_cell (T := restoreTo t) (by simp [restoreTo, hne]) hb,
           ← hne, hb]
+
+/-- **A region is alive exactly where it carries a commitment.** Mobility of a region piece collapses to
+a single condition: the region holds something. The open half of mobility is free, because no point
+differs from itself in a coordinate and so the diagonal is withdrawn by every slice. The named point is a
+carrier inhabitedness side condition, and the criterion is unavailable on an empty carrier. -/
+theorem mobile_regionSlice_iff (i : Fin n) (A : Pt X → Pt X → Option Bool) (p : Pt X) :
+    Mobile (regionSlice i A) ↔ ∃ a b, differsInOne a b i ∧ A a b ≠ none := by
+  rw [mobile_iff]
+  constructor
+  · rintro ⟨⟨a, b, hab⟩, -⟩
+    rw [regionSlice_apply] at hab
+    by_cases h : differsInOne a b i
+    · exact ⟨a, b, h, by rwa [if_pos h] at hab⟩
+    · exact absurd (if_neg h) hab
+  · rintro ⟨a, b, hd, hv⟩
+    refine ⟨⟨a, b, by rwa [regionSlice_apply, if_pos hd]⟩, ⟨p, p, ?_⟩⟩
+    rw [regionSlice_apply, if_neg]
+    rintro ⟨h, -⟩
+    exact h rfl
 
 end Band
 

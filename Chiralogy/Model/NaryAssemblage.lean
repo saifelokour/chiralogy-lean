@@ -800,6 +800,28 @@ theorem crossSlice_apply (A : (∀ i, X i) → (∀ i, X i) → Option Bool) (a 
     simp only [crossSlice, partialization, hm, Bool.false_eq_true, if_false]
     rw [if_pos h]
 
+/-- **Taking a piece twice is taking it once.** The region slice is idempotent, so the piece
+decomposition has no depth of its own: a piece of a piece at the same region is that piece. -/
+theorem regionSlice_idempotent (i : Fin n) (A : (∀ i, X i) → (∀ i, X i) → Option Bool) :
+    regionSlice i (regionSlice i A) = regionSlice i A := by
+  funext a b
+  rw [regionSlice_apply, regionSlice_apply]
+  by_cases h : differsInOne a b i
+  · rw [if_pos h, if_pos h]
+  · rw [if_neg h, if_neg h]
+
+/-- **And two distinct regions share no cell, so their pieces annihilate.** A pair differs in at most one
+coordinate, so slicing at one region and then at another leaves nothing standing anywhere. The regions
+partition what they touch and the decomposition is flat rather than nested. -/
+theorem regionSlice_of_distinct_regions {i j : Fin n} (hij : i ≠ j)
+    (A : (∀ i, X i) → (∀ i, X i) → Option Bool) :
+    regionSlice j (regionSlice i A) = botC (∀ i, X i) := by
+  funext a b
+  rw [regionSlice_apply, regionSlice_apply]
+  by_cases hj : differsInOne a b j
+  · rw [if_pos hj, if_neg (fun hi => hij (differsInOne_unique hi hj))]; rfl
+  · rw [if_neg hj]; rfl
+
 /-- **And the pieces read the canonical assembly structure.** The region piece is the factor, by
 `nary_apply_differ`. This is content the archived version did not have: there the pieces were about an
 arbitrary classification. -/
