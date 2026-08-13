@@ -262,6 +262,7 @@ theorem step_fixed_iff (S : Policy X) (c : Pt X → Pt X → Option Bool) :
     · rw [step_preserves_absence hv, hv]
     · simp [step, partialization, h x y hv]
 
+omit [∀ i, Fintype (X i)] in
 theorem runPolicy_succ (S : Policy X) (c : Pt X → Pt X → Option Bool) (k : ℕ) :
     runPolicy S c (k + 1) = step S (runPolicy S c k) := rfl
 
@@ -277,6 +278,7 @@ theorem runPolicy_fixed {S : Policy X} {c : Pt X → Pt X → Option Bool} (h : 
   | zero => rfl
   | succ k ih => rw [runPolicy_succ, ih, h]
 
+omit [∀ i, Fintype (X i)] in
 theorem step_bot (S : Policy X) : step S (botC (Pt X)) = botC (Pt X) := by
   funext x y
   show step S (botC (Pt X)) x y = none
