@@ -34,6 +34,7 @@ GraphView
 HealthPathology
 HealthSpectrum
 HealthTopology
+HigherOrder
 HowManyIsOrbit
 ImportConstraint
 ImportFineStructureFamily
