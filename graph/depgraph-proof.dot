@@ -504,7 +504,7 @@ digraph SelfImage {
     "Chiralogy.totalization_not_monotone" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="totalization_not_monotone"];
     "Chiralogy.unique_rest_gives_a_single_limit" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="unique_rest_gives_a_single_limit"];
   }
-  subgraph cluster_root9 { label="presentCarried (50)"; color="#0077BB"; style=rounded; fontsize=13;
+  subgraph cluster_root9 { label="presentCarried (51)"; color="#0077BB"; style=rounded; fontsize=13;
     "Chiralogy.FullySupported" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.ReleasesWhatTheRuleReleases" [shape=box, fillcolor="#0077BB", penwidth=3, color="#886600", fontsize=8, label="ReleasesWhatTheRuleReleases"];
     "Chiralogy.a_self_examining_maintainer_is_order_detectable" [shape=box, fillcolor="#0077BB", penwidth=3, color="#886600", fontsize=8, label="a_self_examining_maintainer_is_order_detectable"];
@@ -522,6 +522,7 @@ digraph SelfImage {
     "Chiralogy.colCell_supported" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.colCell_unsupported" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.cross_absence_carried_of_absent_factor" [shape=box, fillcolor="#0077BB", penwidth=3, color="#886600", fontsize=8, label="cross_absence_carried_of_absent_factor"];
+    "Chiralogy.distinct_iff_present_or_absence_carried" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.dropUniform_le_keepSupported" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.dropUnsupported" [shape=point, width=0.07, color="#0077BB"];
     "Chiralogy.dropUnsupported_le_keepSupported" [shape=point, width=0.07, color="#0077BB"];
@@ -973,6 +974,7 @@ digraph SelfImage {
     "Chiralogy.Magma" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.Magma.ctorElimType" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.MarkingPassing" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.MoreDistinct" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.OpHom" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.OpHom.comp" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.OpHom.id" [shape=point, width=0.07, color="#DDDDDD"];
@@ -1051,6 +1053,7 @@ digraph SelfImage {
     "Chiralogy.dependence_adds_reasons" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.diagonal_factors_through_copy" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.distinctRows" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.distinct_iff_witnessed" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.does_the_pattern_hold_or_break" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.dummyClass" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.embedding_buys_in_rich_ambient" [shape=point, width=0.07, color="#DDDDDD"];
@@ -1130,6 +1133,8 @@ digraph SelfImage {
     "Chiralogy.mixed" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.mixing_not_closed" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.mk2" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.moreDistinct_refl" [shape=point, width=0.07, color="#DDDDDD"];
+    "Chiralogy.moreDistinct_trans" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.morphisms_do_not_preserve_absence" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.movePair" [shape=point, width=0.07, color="#DDDDDD"];
     "Chiralogy.movePair_spec_eq" [shape=point, width=0.07, color="#DDDDDD"];
@@ -2372,6 +2377,8 @@ digraph SelfImage {
   "Chiralogy.differsInOne_iff_diffSet" -> "Chiralogy.differsInOne" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.differsInOne_iff_diffSet" -> "Chiralogy.mem_diffSet" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.differsInOne_unique" -> "Chiralogy.differsInOne" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.distinct_iff_present_or_absence_carried" -> "Chiralogy.absenceCarried" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.distinct_iff_present_or_absence_carried" -> "Chiralogy.presentCarried" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.distinct_maxima_incomparable" -> "Chiralogy.cLE" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.distinct_maxima_incomparable" -> "Chiralogy.cLE_antisymm" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.distinct_maxima_incomparable" -> "Chiralogy.isTotal" [color="#E4E4E4", penwidth=0.25];
@@ -3149,6 +3156,8 @@ digraph SelfImage {
   "Chiralogy.monoid_buys_composition" -> "Chiralogy.compose" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.monoid_buys_composition" -> "Chiralogy.monoid_register" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.monoid_register" -> "Chiralogy.CataphaticConformant" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.moreDistinct_refl" -> "Chiralogy.MoreDistinct" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.moreDistinct_trans" -> "Chiralogy.MoreDistinct" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.movePair_spec_eq" -> "Chiralogy.movePair" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.movePair_spec_ne" -> "Chiralogy.exists_equiv_pair" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.movePair_spec_ne" -> "Chiralogy.movePair" [color="#E4E4E4", penwidth=0.25];

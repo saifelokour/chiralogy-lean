@@ -351,12 +351,12 @@
   },
   "Chiralogy.presentCarried": {
    "character": {
-    "apophatic": 0.3158,
-    "neutral": 0.6842
+    "apophatic": 0.3333,
+    "neutral": 0.6667
    },
    "root": "Chiralogy.presentCarried",
    "shared": 28,
-   "size": 38,
+   "size": 39,
    "stratum": {
     "model": 1.0
    }
@@ -399,19 +399,19 @@
   },
   "unrooted": {
    "character": {
-    "apophatic": 0.3322,
-    "cataphatic": 0.0526,
-    "neutral": 0.5855,
-    "seam": 0.0296
+    "apophatic": 0.3409,
+    "cataphatic": 0.0519,
+    "neutral": 0.5779,
+    "seam": 0.0292
    },
    "root": null,
    "shared": 0,
-   "size": 304,
+   "size": 308,
    "stratum": {
-    "kernel": 0.0921,
-    "model": 0.8651,
-    "protocol": 0.0164,
-    "register": 0.0263
+    "kernel": 0.0909,
+    "model": 0.8669,
+    "protocol": 0.0162,
+    "register": 0.026
    }
   }
  }

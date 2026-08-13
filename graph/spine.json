@@ -4461,6 +4461,14 @@
    "target": "Chiralogy.differsInOne"
   },
   {
+   "source": "Chiralogy.distinct_iff_present_or_absence_carried",
+   "target": "Chiralogy.absenceCarried"
+  },
+  {
+   "source": "Chiralogy.distinct_iff_present_or_absence_carried",
+   "target": "Chiralogy.presentCarried"
+  },
+  {
    "source": "Chiralogy.distinct_maxima_incomparable",
    "target": "Chiralogy.cLE"
   },
@@ -7567,6 +7575,14 @@
   {
    "source": "Chiralogy.monoid_register",
    "target": "Chiralogy.CataphaticConformant"
+  },
+  {
+   "source": "Chiralogy.moreDistinct_refl",
+   "target": "Chiralogy.MoreDistinct"
+  },
+  {
+   "source": "Chiralogy.moreDistinct_trans",
+   "target": "Chiralogy.MoreDistinct"
   },
   {
    "source": "Chiralogy.movePair_spec_eq",
@@ -13251,6 +13267,7 @@
   "Chiralogy.Member",
   "Chiralogy.Mobile",
   "Chiralogy.ModelChiasmStmt",
+  "Chiralogy.MoreDistinct",
   "Chiralogy.NonDegenerate",
   "Chiralogy.Obj",
   "Chiralogy.OpHom",
@@ -13610,6 +13627,8 @@
   "Chiralogy.differsInOne_iff_diffSet",
   "Chiralogy.differsInOne_unique",
   "Chiralogy.distinctRows",
+  "Chiralogy.distinct_iff_present_or_absence_carried",
+  "Chiralogy.distinct_iff_witnessed",
   "Chiralogy.distinct_maxima_incomparable",
   "Chiralogy.does_the_pattern_hold_or_break",
   "Chiralogy.double_chiasm_conjunction",
@@ -13892,6 +13911,8 @@
   "Chiralogy.model_center_is_the_none",
   "Chiralogy.monoid_buys_composition",
   "Chiralogy.monoid_register",
+  "Chiralogy.moreDistinct_refl",
+  "Chiralogy.moreDistinct_trans",
   "Chiralogy.morphisms_do_not_preserve_absence",
   "Chiralogy.movePair",
   "Chiralogy.movePair_spec_eq",
