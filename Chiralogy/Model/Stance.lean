@@ -266,12 +266,14 @@ omit [∀ i, Fintype (X i)] in
 theorem runPolicy_succ (S : Policy X) (c : Pt X → Pt X → Option Bool) (k : ℕ) :
     runPolicy S c (k + 1) = step S (runPolicy S c k) := rfl
 
+omit [∀ i, Fintype (X i)] in
 theorem runPolicy_shift (S : Policy X) (c : Pt X → Pt X → Option Bool) (k : ℕ) :
     runPolicy S c (k + 1) = runPolicy S (step S c) k := by
   induction k with
   | zero => rfl
   | succ k ih => rw [runPolicy_succ, ih, runPolicy_succ]
 
+omit [∀ i, Fintype (X i)] in
 theorem runPolicy_fixed {S : Policy X} {c : Pt X → Pt X → Option Bool} (h : step S c = c) (k : ℕ) :
     runPolicy S c k = c := by
   induction k with
@@ -284,6 +286,7 @@ theorem step_bot (S : Policy X) : step S (botC (Pt X)) = botC (Pt X) := by
   show step S (botC (Pt X)) x y = none
   exact step_preserves_absence rfl
 
+omit [∀ i, Fintype (X i)] in
 theorem runPolicy_bot (S : Policy X) (k : ℕ) : runPolicy S (botC (Pt X)) k = botC (Pt X) := by
   induction k with
   | zero => rfl
