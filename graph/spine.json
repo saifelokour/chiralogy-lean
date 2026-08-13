@@ -1741,6 +1741,34 @@
    "target": "Chiralogy.there_is_a_cycle"
   },
   {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.Pt"
+  },
+  {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.Stance"
+  },
+  {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.applyStance"
+  },
+  {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.applyStance_of_dropped"
+  },
+  {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.applyStance_of_kept_open"
+  },
+  {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.release"
+  },
+  {
+   "source": "Chiralogy.any_release_pattern_is_realized",
+   "target": "Chiralogy.release_of_kept"
+  },
+  {
    "source": "Chiralogy.apophatic_center_is_codomain",
    "target": "Chiralogy.no_reflexive_object"
   },
@@ -7457,6 +7485,34 @@
    "target": "Chiralogy.heldCells_nonempty_iff"
   },
   {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.Mobile"
+  },
+  {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.Pt"
+  },
+  {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.decDiffersInOne"
+  },
+  {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.differsInOne"
+  },
+  {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.mobile_iff"
+  },
+  {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.regionSlice"
+  },
+  {
+   "source": "Chiralogy.mobile_regionSlice_iff",
+   "target": "Chiralogy.regionSlice_apply"
+  },
+  {
    "source": "Chiralogy.model_arms_invert",
    "target": "Chiralogy.assertsFalse"
   },
@@ -9313,6 +9369,38 @@
    "target": "Chiralogy.regionSlice"
   },
   {
+   "source": "Chiralogy.regionSlice_idempotent",
+   "target": "Chiralogy.differsInOne"
+  },
+  {
+   "source": "Chiralogy.regionSlice_idempotent",
+   "target": "Chiralogy.regionSlice"
+  },
+  {
+   "source": "Chiralogy.regionSlice_idempotent",
+   "target": "Chiralogy.regionSlice_apply"
+  },
+  {
+   "source": "Chiralogy.regionSlice_of_distinct_regions",
+   "target": "Chiralogy.botC"
+  },
+  {
+   "source": "Chiralogy.regionSlice_of_distinct_regions",
+   "target": "Chiralogy.differsInOne"
+  },
+  {
+   "source": "Chiralogy.regionSlice_of_distinct_regions",
+   "target": "Chiralogy.differsInOne_unique"
+  },
+  {
+   "source": "Chiralogy.regionSlice_of_distinct_regions",
+   "target": "Chiralogy.regionSlice"
+  },
+  {
+   "source": "Chiralogy.regionSlice_of_distinct_regions",
+   "target": "Chiralogy.regionSlice_apply"
+  },
+  {
    "source": "Chiralogy.regionSlice_reads_factor",
    "target": "Chiralogy.differsInOne"
   },
@@ -9623,6 +9711,46 @@
   {
    "source": "Chiralogy.runPolicy_fixed",
    "target": "Chiralogy.step"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.Policy"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.Pt"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.cLE"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.optLE"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.optLE_refl"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.optLE_trans"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.runPolicy"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.runPolicy_succ"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.step"
+  },
+  {
+   "source": "Chiralogy.runPolicy_le_start",
+   "target": "Chiralogy.step_deflationary"
   },
   {
    "source": "Chiralogy.runPolicy_shift",
@@ -12457,6 +12585,14 @@
    "target": "Chiralogy.totalization"
   },
   {
+   "source": "Chiralogy.totalization_fixes_the_total",
+   "target": "Chiralogy.isTotal"
+  },
+  {
+   "source": "Chiralogy.totalization_fixes_the_total",
+   "target": "Chiralogy.totalization"
+  },
+  {
    "source": "Chiralogy.totalization_hole",
    "target": "Chiralogy.hole_uniform"
   },
@@ -13233,6 +13369,7 @@
   "Chiralogy.all_independent_bought_operations",
   "Chiralogy.an_identity_is_permanently_invisible",
   "Chiralogy.an_invariant_band_without_a_resting_place",
+  "Chiralogy.any_release_pattern_is_realized",
   "Chiralogy.apophatic_center_is_codomain",
   "Chiralogy.apophatic_uniformity_is_channel_uniformity",
   "Chiralogy.applyStance",
@@ -13750,6 +13887,7 @@
   "Chiralogy.mixing_not_closed",
   "Chiralogy.mk2",
   "Chiralogy.mobile_iff",
+  "Chiralogy.mobile_regionSlice_iff",
   "Chiralogy.model_arms_invert",
   "Chiralogy.model_center_is_the_none",
   "Chiralogy.monoid_buys_composition",
@@ -13948,6 +14086,8 @@
   "Chiralogy.regionMask.congr_simp",
   "Chiralogy.regionSlice",
   "Chiralogy.regionSlice_apply",
+  "Chiralogy.regionSlice_idempotent",
+  "Chiralogy.regionSlice_of_distinct_regions",
   "Chiralogy.regionSlice_reads_factor",
   "Chiralogy.region_verdict_factors_through_coord",
   "Chiralogy.register_at_a_level",
@@ -13975,6 +14115,7 @@
   "Chiralogy.runPolicy",
   "Chiralogy.runPolicy_bot",
   "Chiralogy.runPolicy_fixed",
+  "Chiralogy.runPolicy_le_start",
   "Chiralogy.runPolicy_shift",
   "Chiralogy.runPolicy_succ",
   "Chiralogy.runStance",
@@ -14154,6 +14295,7 @@
   "Chiralogy.totalization_fabricates",
   "Chiralogy.totalization_falsifies_against_every_target",
   "Chiralogy.totalization_fixed_iff_total",
+  "Chiralogy.totalization_fixes_the_total",
   "Chiralogy.totalization_hole",
   "Chiralogy.totalization_irreversible",
   "Chiralogy.totalization_isTotal",

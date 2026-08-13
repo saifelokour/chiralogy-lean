@@ -11,7 +11,7 @@ digraph SelfImage {
     "L_proof" [label="red dashed edge = proof-only (implicit)", shape=plaintext, fontcolor="#CC3311"];
     "L_root" -> "L_spine" [style=invis];
   }
-  subgraph cluster_root0 { label="Pt (318)"; color="#4477AA"; style=rounded; fontsize=13;
+  subgraph cluster_root0 { label="Pt (321)"; color="#4477AA"; style=rounded; fontsize=13;
     "Chiralogy.Fib" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.Fib_apply" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.Mobile" [shape=point, width=0.07, color="#4477AA"];
@@ -91,7 +91,7 @@ digraph SelfImage {
     "Chiralogy.uniformExcept_elsewhere" [shape=point, width=0.07, color="#4477AA"];
     "Chiralogy.uniformExcept_hole" [shape=point, width=0.07, color="#4477AA"];
   }
-  subgraph cluster_root1 { label="differsInOne (190)"; color="#EE7733"; style=rounded; fontsize=13;
+  subgraph cluster_root1 { label="differsInOne (193)"; color="#EE7733"; style=rounded; fontsize=13;
     "Chiralogy.Adjacent" [shape=point, width=0.07, color="#EE7733"];
     "Chiralogy.ArePeersIn" [shape=point, width=0.07, color="#EE7733"];
     "Chiralogy.ArePeersIn_irrefl" [shape=point, width=0.07, color="#EE7733"];
@@ -205,7 +205,7 @@ digraph SelfImage {
     "Chiralogy.the_tops_are_distinct_when_the_region_never_denies" [shape=point, width=0.07, color="#EE7733"];
     "Chiralogy.thin_carriers_admit_no_separating_factors" [shape=point, width=0.07, color="#EE7733"];
   }
-  subgraph cluster_root2 { label="partialization (150)"; color="#228833"; style=rounded; fontsize=13;
+  subgraph cluster_root2 { label="partialization (155)"; color="#228833"; style=rounded; fontsize=13;
     "Chiralogy.SingleLimit" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.absence_carried_factor_immune_to_mask" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.crossSlice" [shape=point, width=0.07, color="#228833"];
@@ -219,6 +219,7 @@ digraph SelfImage {
     "Chiralogy.mask_hom_iff" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.mediator_exists" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.minMask_least" [shape=point, width=0.07, color="#228833"];
+    "Chiralogy.mobile_regionSlice_iff" [shape=box, fillcolor="#228833", penwidth=3, color="#886600", fontsize=8, label="mobile_regionSlice_iff"];
     "Chiralogy.nary_partialization_commutation_forces_presence_coherence" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.nary_partialization_commutes_on_presences" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.open_operator_faithful" [shape=point, width=0.07, color="#228833"];
@@ -231,6 +232,7 @@ digraph SelfImage {
     "Chiralogy.prohibition_does_not_prescribe_abstention" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.regionSlice" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.regionSlice_apply" [shape=point, width=0.07, color="#228833"];
+    "Chiralogy.regionSlice_idempotent" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.regionSlice_reads_factor" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.runPolicy_fixed" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.runPolicy_shift" [shape=point, width=0.07, color="#228833"];
@@ -276,7 +278,7 @@ digraph SelfImage {
     "Chiralogy.uniformity_forbids_discrimination" [shape=point, width=0.07, color="#AA4499"];
     "Chiralogy.verdict_ignores_the_case" [shape=point, width=0.07, color="#AA4499"];
   }
-  subgraph cluster_root4 { label="optLE (69)"; color="#CCBB44"; style=rounded; fontsize=13;
+  subgraph cluster_root4 { label="optLE (70)"; color="#CCBB44"; style=rounded; fontsize=13;
     "Chiralogy.Deflationary" [shape=point, width=0.07, color="#CCBB44"];
     "Chiralogy.below_iff_partialization" [shape=point, width=0.07, color="#CCBB44"];
     "Chiralogy.cLE" [shape=point, width=0.07, color="#CCBB44"];
@@ -299,10 +301,11 @@ digraph SelfImage {
     "Chiralogy.partialization_le_c" [shape=point, width=0.07, color="#CCBB44"];
     "Chiralogy.partialization_monotone" [shape=point, width=0.07, color="#CCBB44"];
     "Chiralogy.rest_within" [shape=box, fillcolor="#CCBB44", penwidth=3, color="#886600", fontsize=8, label="rest_within"];
+    "Chiralogy.runPolicy_le_start" [shape=box, fillcolor="#CCBB44", penwidth=3, color="#886600", fontsize=8, label="runPolicy_le_start"];
     "Chiralogy.step_deflationary" [shape=box, fillcolor="#CCBB44", penwidth=3, color="#886600", fontsize=8, label="step_deflationary"];
     "Chiralogy.strict_descent" [shape=box, fillcolor="#CCBB44", penwidth=3, color="#886600", fontsize=8, label="strict_descent"];
   }
-  subgraph cluster_root5 { label="totalization (68)"; color="#66CCEE"; style=rounded; fontsize=13;
+  subgraph cluster_root5 { label="totalization (69)"; color="#66CCEE"; style=rounded; fontsize=13;
     "Chiralogy.ArePeersIn_transport_totalization" [shape=point, width=0.07, color="#66CCEE"];
     "Chiralogy.IsFactorAt_transport_totalization" [shape=point, width=0.07, color="#66CCEE"];
     "Chiralogy.Physics.gr_qm_boundary" [shape=point, width=0.07, color="#66CCEE"];
@@ -337,7 +340,7 @@ digraph SelfImage {
     "Chiralogy.totalization_separates_equal_rows" [shape=point, width=0.07, color="#66CCEE"];
     "Chiralogy.totalization_totalizes" [shape=point, width=0.07, color="#66CCEE"];
   }
-  subgraph cluster_root6 { label="Stance (66)"; color="#EE6677"; style=rounded; fontsize=13;
+  subgraph cluster_root6 { label="Stance (67)"; color="#EE6677"; style=rounded; fontsize=13;
     "Chiralogy.ConflictFree" [shape=point, width=0.07, color="#EE6677"];
     "Chiralogy.Conflicted" [shape=point, width=0.07, color="#EE6677"];
     "Chiralogy.FormsNothing" [shape=point, width=0.07, color="#EE6677"];
@@ -345,6 +348,7 @@ digraph SelfImage {
     "Chiralogy.a_change_requires_a_release" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="a_change_requires_a_release"];
     "Chiralogy.a_fixed_release_forces_a_conflict" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="a_fixed_release_forces_a_conflict"];
     "Chiralogy.an_invariant_band_without_a_resting_place" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="an_invariant_band_without_a_resting_place"];
+    "Chiralogy.any_release_pattern_is_realized" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="any_release_pattern_is_realized"];
     "Chiralogy.applyStance" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="applyStance"];
     "Chiralogy.applyStanceRev" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="applyStanceRev"];
     "Chiralogy.applyStanceRev_of_dropped" [shape=box, fillcolor="#EE6677", penwidth=3, color="#886600", fontsize=8, label="applyStanceRev_of_dropped"];
@@ -450,7 +454,7 @@ digraph SelfImage {
     "Chiralogy.totalization_commutes_on_absences" [shape=point, width=0.07, color="#997700"];
     "Chiralogy.totalization_no_relation_off_compat" [shape=box, fillcolor="#997700", penwidth=3, color="#886600", fontsize=8, label="totalization_no_relation_off_compat"];
   }
-  subgraph cluster_root8 { label="botC (53)"; color="#BBBBBB"; style=rounded; fontsize=13;
+  subgraph cluster_root8 { label="botC (54)"; color="#BBBBBB"; style=rounded; fontsize=13;
     "Chiralogy.HasNonBottomFixedPoint" [shape=point, width=0.07, color="#BBBBBB"];
     "Chiralogy.StandingRest" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="StandingRest"];
     "Chiralogy.a_single_limit_is_empty" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="a_single_limit_is_empty"];
@@ -484,6 +488,7 @@ digraph SelfImage {
     "Chiralogy.partialization_bot" [shape=point, width=0.07, color="#BBBBBB"];
     "Chiralogy.present_forces_coord_eq" [shape=point, width=0.07, color="#BBBBBB"];
     "Chiralogy.punctured_ne_bot" [shape=point, width=0.07, color="#BBBBBB"];
+    "Chiralogy.regionSlice_of_distinct_regions" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="regionSlice_of_distinct_regions"];
     "Chiralogy.runPolicy_bot" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="runPolicy_bot"];
     "Chiralogy.step_bot" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="step_bot"];
     "Chiralogy.step_takeAll" [shape=box, fillcolor="#BBBBBB", penwidth=3, color="#886600", fontsize=8, label="step_takeAll"];
@@ -696,7 +701,7 @@ digraph SelfImage {
     "Chiralogy.tgtObj" [shape=point, width=0.07, color="#882255"];
     "Chiralogy.what_the_adjoints_say" [shape=point, width=0.07, color="#882255"];
   }
-  subgraph cluster_root17 { label="isTotal (21)"; color="#44AA99"; style=rounded; fontsize=13;
+  subgraph cluster_root17 { label="isTotal (22)"; color="#44AA99"; style=rounded; fontsize=13;
     "Chiralogy.a_total_admissible_import_is_a_maximum" [shape=box, fillcolor="#44AA99", penwidth=3, color="#886600", fontsize=8, label="a_total_admissible_import_is_a_maximum"];
     "Chiralogy.a_vacuous_floor_has_at_least_three_maxima" [shape=box, fillcolor="#44AA99", penwidth=3, color="#886600", fontsize=8, label="a_vacuous_floor_has_at_least_three_maxima"];
     "Chiralogy.ascentPath_ceiling_isTotal" [shape=box, fillcolor="#44AA99", penwidth=3, color="#886600", fontsize=8, label="ascentPath_ceiling_isTotal"];
@@ -718,6 +723,7 @@ digraph SelfImage {
     "Chiralogy.totalization_commutation_not_necessary" [shape=box, fillcolor="#44AA99", penwidth=3, color="#886600", fontsize=8, label="totalization_commutation_not_necessary"];
     "Chiralogy.totalization_commutes_of_total" [shape=box, fillcolor="#44AA99", penwidth=3, color="#886600", fontsize=8, label="totalization_commutes_of_total"];
     "Chiralogy.totalization_fixed_iff_total" [shape=point, width=0.07, color="#44AA99"];
+    "Chiralogy.totalization_fixes_the_total" [shape=point, width=0.07, color="#44AA99"];
     "Chiralogy.totalization_isTotal" [shape=point, width=0.07, color="#44AA99"];
   }
   subgraph cluster_root18 { label="closeable (21)"; color="#999933"; style=rounded; fontsize=13;
@@ -1686,6 +1692,13 @@ digraph SelfImage {
   "Chiralogy.an_invariant_band_without_a_resting_place" -> "Chiralogy.oneCell_mobile" [color="#997700", penwidth=0.9];
   "Chiralogy.an_invariant_band_without_a_resting_place" -> "Chiralogy.swapBetween" [color="#997700", penwidth=0.9];
   "Chiralogy.an_invariant_band_without_a_resting_place" -> "Chiralogy.there_is_a_cycle" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.Pt" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.Stance" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.applyStance" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.applyStance_of_dropped" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.applyStance_of_kept_open" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.release" [color="#997700", penwidth=0.9];
+  "Chiralogy.any_release_pattern_is_realized" -> "Chiralogy.release_of_kept" [color="#997700", penwidth=0.9];
   "Chiralogy.apophatic_center_is_codomain" -> "Chiralogy.no_reflexive_object" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.apophatic_uniformity_is_channel_uniformity" -> "Chiralogy.guard_is_universal" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.apophatic_uniformity_is_channel_uniformity" -> "Chiralogy.hole_uniform" [color="#E4E4E4", penwidth=0.25];
@@ -3115,6 +3128,13 @@ digraph SelfImage {
   "Chiralogy.mobile_iff" -> "Chiralogy.fillableCells_nonempty_iff" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.mobile_iff" -> "Chiralogy.heldCells" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.mobile_iff" -> "Chiralogy.heldCells_nonempty_iff" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.Mobile" [color="#997700", penwidth=0.9];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.Pt" [color="#997700", penwidth=0.9];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.decDiffersInOne" [color="#997700", penwidth=0.9];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.differsInOne" [color="#997700", penwidth=0.9];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.mobile_iff" [color="#997700", penwidth=0.9];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.regionSlice" [color="#997700", penwidth=0.9];
+  "Chiralogy.mobile_regionSlice_iff" -> "Chiralogy.regionSlice_apply" [color="#997700", penwidth=0.9];
   "Chiralogy.model_arms_invert" -> "Chiralogy.assertsFalse" [color="#997700", penwidth=0.9];
   "Chiralogy.model_arms_invert" -> "Chiralogy.imprecise" [color="#997700", penwidth=0.9];
   "Chiralogy.model_arms_invert" -> "Chiralogy.partialization" [color="#997700", penwidth=0.9];
@@ -3579,6 +3599,14 @@ digraph SelfImage {
   "Chiralogy.regionSlice_apply" -> "Chiralogy.differsInOne" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.regionSlice_apply" -> "Chiralogy.regionMask" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.regionSlice_apply" -> "Chiralogy.regionSlice" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.regionSlice_idempotent" -> "Chiralogy.differsInOne" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.regionSlice_idempotent" -> "Chiralogy.regionSlice" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.regionSlice_idempotent" -> "Chiralogy.regionSlice_apply" [color="#CC3311", style=dashed, penwidth=0.4];
+  "Chiralogy.regionSlice_of_distinct_regions" -> "Chiralogy.botC" [color="#997700", penwidth=0.9];
+  "Chiralogy.regionSlice_of_distinct_regions" -> "Chiralogy.differsInOne" [color="#997700", penwidth=0.9];
+  "Chiralogy.regionSlice_of_distinct_regions" -> "Chiralogy.differsInOne_unique" [color="#997700", penwidth=0.9];
+  "Chiralogy.regionSlice_of_distinct_regions" -> "Chiralogy.regionSlice" [color="#997700", penwidth=0.9];
+  "Chiralogy.regionSlice_of_distinct_regions" -> "Chiralogy.regionSlice_apply" [color="#997700", penwidth=0.9];
   "Chiralogy.regionSlice_reads_factor" -> "Chiralogy.differsInOne" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.regionSlice_reads_factor" -> "Chiralogy.nary" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.regionSlice_reads_factor" -> "Chiralogy.nary_apply_differ" [color="#CC3311", style=dashed, penwidth=0.4];
@@ -3657,6 +3685,16 @@ digraph SelfImage {
   "Chiralogy.runPolicy_fixed" -> "Chiralogy.runPolicy" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.runPolicy_fixed" -> "Chiralogy.runPolicy_succ" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.runPolicy_fixed" -> "Chiralogy.step" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.Policy" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.Pt" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.cLE" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.optLE" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.optLE_refl" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.optLE_trans" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.runPolicy" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.runPolicy_succ" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.step" [color="#997700", penwidth=0.9];
+  "Chiralogy.runPolicy_le_start" -> "Chiralogy.step_deflationary" [color="#997700", penwidth=0.9];
   "Chiralogy.runPolicy_shift" -> "Chiralogy.Policy" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.runPolicy_shift" -> "Chiralogy.Pt" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.runPolicy_shift" -> "Chiralogy.runPolicy" [color="#E4E4E4", penwidth=0.25];
@@ -4365,6 +4403,8 @@ digraph SelfImage {
   "Chiralogy.totalization_falsifies_against_every_target" -> "Chiralogy.totalization" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.totalization_fixed_iff_total" -> "Chiralogy.isTotal" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.totalization_fixed_iff_total" -> "Chiralogy.totalization" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.totalization_fixes_the_total" -> "Chiralogy.isTotal" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.totalization_fixes_the_total" -> "Chiralogy.totalization" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.totalization_hole" -> "Chiralogy.hole_uniform" [color="#997700", penwidth=0.9];
   "Chiralogy.totalization_hole" -> "Chiralogy.totalization" [color="#997700", penwidth=0.9];
   "Chiralogy.totalization_irreversible" -> "Chiralogy.totalization" [color="#E4E4E4", penwidth=0.25];

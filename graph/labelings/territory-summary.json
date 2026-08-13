@@ -150,8 +150,8 @@
     "neutral": 1.0
    },
    "root": "Chiralogy.Stance",
-   "shared": 52,
-   "size": 53,
+   "shared": 53,
+   "size": 54,
    "stratum": {
     "model": 1.0
    }
@@ -196,8 +196,8 @@
     "neutral": 1.0
    },
    "root": "Chiralogy.botC",
-   "shared": 39,
-   "size": 45,
+   "shared": 40,
+   "size": 46,
    "stratum": {
     "model": 1.0
    }
@@ -230,8 +230,8 @@
     "neutral": 1.0
    },
    "root": "Chiralogy.differsInOne",
-   "shared": 55,
-   "size": 84,
+   "shared": 57,
+   "size": 86,
    "stratum": {
     "model": 1.0
    }
@@ -281,8 +281,8 @@
     "neutral": 1.0
    },
    "root": "Chiralogy.isTotal",
-   "shared": 18,
-   "size": 19,
+   "shared": 19,
+   "size": 20,
    "stratum": {
     "model": 1.0
    }
@@ -319,8 +319,8 @@
     "neutral": 1.0
    },
    "root": "Chiralogy.optLE",
-   "shared": 9,
-   "size": 19,
+   "shared": 10,
+   "size": 20,
    "stratum": {
     "model": 1.0
    }
