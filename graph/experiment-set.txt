@@ -27,6 +27,7 @@ Deconstruction
 DepthFrontier
 DepthHierarchy
 DeterminationFlow
+EntropySurvey
 FactorSpace
 FreeSlot
 FreeVarianceLocus
