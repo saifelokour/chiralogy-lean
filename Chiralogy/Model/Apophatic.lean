@@ -272,6 +272,43 @@ present, so `totalization` merges them. The complement of `presentCarried` among
 abbrev absenceCarried {X : Type} (c : X → X → Option Bool) (x x' : X) : Prop :=
   c x ≠ c x' ∧ ¬ presentCarried c x x'
 
+/-- **The distinction between two rows is witnessed by a column.** Two rows differ exactly when some column
+holds them apart, an existential over a shared witness. So content is about pairs and not a sum of single
+row facts: the only place a row meets itself, the diagonal, carries no distinction. -/
+theorem distinct_iff_witnessed {X : Type} (c : X → X → Option Bool) (x x' : X) :
+    c x ≠ c x' ↔ ∃ z, c x z ≠ c x' z := by
+  constructor
+  · intro h; by_contra hz; push_neg at hz; exact h (funext hz)
+  · rintro ⟨z, hz⟩ h; exact hz (congrFun h z)
+
+/-- **Distinctness splits into content and absence with no remainder.** Two rows differ exactly when they
+differ at a pair where both are present, or differ only through absence. The two named sources,
+`presentCarried` and `absenceCarried`, cover distinctness exhaustively. -/
+theorem distinct_iff_present_or_absence_carried {X : Type} (c : X → X → Option Bool) (x x' : X) :
+    c x ≠ c x' ↔ presentCarried c x x' ∨ absenceCarried c x x' := by
+  constructor
+  · intro h; by_cases hp : presentCarried c x x'
+    · exact Or.inl hp
+    · exact Or.inr ⟨h, hp⟩
+  · rintro (⟨y, u, v, hu, hv, hne⟩ | ⟨h, -⟩)
+    · intro heq; rw [heq] at hu; rw [hu] at hv; exact hne (Option.some.injEq _ _ ▸ hv)
+    · exact h
+
+/-- One classification is at least as distinct as another when its row partition refines the other's: it
+distinguishes every pair the other distinguishes. This is the order on the distinctness axis, orthogonal
+to the information order on commitment. -/
+def MoreDistinct {X : Type} (c d : X → X → Option Bool) : Prop :=
+  ∀ x x', c x = c x' → d x = d x'
+
+/-- **The distinctness order is reflexive.** A classification refines its own row partition. -/
+theorem moreDistinct_refl {X : Type} (c : X → X → Option Bool) : MoreDistinct c c := fun _ _ h => h
+
+/-- **And transitive.** So distinctness is a graded preorder, not a bare yes or no: there are intermediate
+levels between undistinguished and fully distinct. -/
+theorem moreDistinct_trans {X : Type} {c d e : X → X → Option Bool}
+    (h1 : MoreDistinct c d) (h2 : MoreDistinct d e) : MoreDistinct c e :=
+  fun x x' h => h2 x x' (h1 x x' h)
+
 /-- Absence-carried is symmetric. -/
 theorem absenceCarried_symm {X : Type} (c : X → X → Option Bool) {x x' : X} :
     absenceCarried c x x' → absenceCarried c x' x := by
