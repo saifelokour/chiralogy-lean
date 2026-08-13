@@ -48,6 +48,7 @@ MoveEffectTable
 NestingTopology
 OpenClosed
 OppositeNesting
+OverwriteProbe
 ParticipantStructure
 PersistenceRotation
 PhysicsImport
