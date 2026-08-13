@@ -45,6 +45,7 @@ ImportFineStructureFamily
 ImportFreedom
 ImportSpace
 ImportSyntaxSemantics
+InteractionSurvey
 LawvereGirard
 MembershipBoundary
 MembershipRegion
