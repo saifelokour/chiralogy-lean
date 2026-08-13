@@ -6,6 +6,7 @@ ArchetypeExposure
 AssemblageCoordinates
 AssemblagePairUniversal
 AssemblageSeam
+AssemblageStance
 AssemblageUniversal
 AssemblyUniversal
 AsymmetricCone
