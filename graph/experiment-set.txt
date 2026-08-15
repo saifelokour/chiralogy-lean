@@ -98,4 +98,5 @@ TypeRegister
 TypeSecondArgument
 TypeTwoPlaceImport
 TypedCountStructural
+ValidityContract
 VerdictSensitivity
