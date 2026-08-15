@@ -21,6 +21,7 @@ CombinedArrows
 CombinedCategory
 CombinedColimit
 Components
+ConditionalSurvey
 Configurations
 CostOnTheMove
 CrossStableGroup
