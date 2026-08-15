@@ -47,6 +47,7 @@ ImportFreedom
 ImportSpace
 ImportSyntaxSemantics
 InteractionSurvey
+InterfaceSignature
 LawvereGirard
 MembershipBoundary
 MembershipRegion
