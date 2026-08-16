@@ -95,6 +95,19 @@ theorem member_requires_a_kernel_condition (M : Member) :
     ¬ Function.Surjective M.classify ∨ NonDegenerate M.classify :=
   Or.inl (payload M)
 
+/-- **The floor is strictly stronger than the hole.** A classification that distinguishes any pair thereby
+has a value space with two distinct values, hence one carrying a fixed-point-free endomap, so its
+self-classification is not surjective: distinguishing anything entails the room to be incomplete. The two
+forced kernel conditions are nested, not independent, and `member_requires_a_kernel_condition` is entailed
+by its second disjunct alone. This is why `canDiffer` is redundant given `nondegenerate` on `Member`. -/
+theorem nondegenerate_implies_hole {X B : Type} {c : X → X → B} (h : NonDegenerate c) :
+    ¬ Function.Surjective c := by
+  obtain ⟨x, x', hxx⟩ := h
+  refine payload_uniform ?_ c
+  by_contra hz
+  push_neg at hz
+  exact hxx (funext fun z => hz (c x z) (c x' z))
+
 /-- **No total internal self-description of the object condition.** The founding hole (`no_reflexive_object`, the
 diagonal) applied to `Member`, the framework's own object condition: no `desc : Member → Member → Bool` is
 surjective onto `Member → Bool`. The framework proves the empty center governs itself, at the very predicate by
