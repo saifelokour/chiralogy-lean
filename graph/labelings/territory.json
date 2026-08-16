@@ -819,6 +819,7 @@
   "Chiralogy.non_commutation_is_the_norm": "unrooted",
   "Chiralogy.nondegeneracy_survives_every_fill": "Chiralogy.NonDegenerate",
   "Chiralogy.nondegenerate_iff_not_degenerate": "Chiralogy.NonDegenerate",
+  "Chiralogy.nondegenerate_implies_hole": "Chiralogy.NonDegenerate",
   "Chiralogy.none_and_surplus_are_distinct": "Chiralogy.imprecise",
   "Chiralogy.not_a_morphism": "Chiralogy.mzAppend",
   "Chiralogy.not_adjacent_self": "Chiralogy.differsInOne",

@@ -788,6 +788,7 @@
   "Chiralogy.non_commutation_is_the_norm": "unconditional",
   "Chiralogy.nondegeneracy_survives_every_fill": "conditional",
   "Chiralogy.nondegenerate_iff_not_degenerate": "unconditional",
+  "Chiralogy.nondegenerate_implies_hole": "unconditional",
   "Chiralogy.none_and_surplus_are_distinct": "conditional",
   "Chiralogy.not_a_morphism": "unconditional",
   "Chiralogy.not_adjacent_self": "unconditional",

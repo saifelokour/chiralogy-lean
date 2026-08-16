@@ -85,17 +85,17 @@
   },
   "Chiralogy.NonDegenerate": {
    "character": {
-    "apophatic": 0.25,
-    "neutral": 0.6667,
-    "seam": 0.0833
+    "apophatic": 0.24,
+    "neutral": 0.68,
+    "seam": 0.08
    },
    "root": "Chiralogy.NonDegenerate",
-   "shared": 17,
-   "size": 24,
+   "shared": 18,
+   "size": 25,
    "stratum": {
-    "kernel": 0.2083,
-    "model": 0.6667,
-    "protocol": 0.125
+    "kernel": 0.2,
+    "model": 0.64,
+    "protocol": 0.16
    }
   },
   "Chiralogy.Obj": {

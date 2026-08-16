@@ -40,6 +40,7 @@
   "Chiralogy.NonDegenerate|Chiralogy.Rep": 2,
   "Chiralogy.NonDegenerate|Chiralogy.assembleClassify": 3,
   "Chiralogy.NonDegenerate|Chiralogy.differsInOne": 25,
+  "Chiralogy.NonDegenerate|Chiralogy.fixedPoint_of_surjection": 1,
   "Chiralogy.NonDegenerate|Chiralogy.optCycle": 3,
   "Chiralogy.NonDegenerate|Chiralogy.optLE": 1,
   "Chiralogy.NonDegenerate|Chiralogy.totalization": 2,

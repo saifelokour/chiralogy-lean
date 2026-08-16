@@ -789,6 +789,7 @@
   "Chiralogy.non_commutation_is_the_norm": "unrooted",
   "Chiralogy.nondegeneracy_survives_every_fill": "shared",
   "Chiralogy.nondegenerate_iff_not_degenerate": "private",
+  "Chiralogy.nondegenerate_implies_hole": "shared",
   "Chiralogy.none_and_surplus_are_distinct": "private",
   "Chiralogy.not_a_morphism": "shared",
   "Chiralogy.not_adjacent_self": "shared",

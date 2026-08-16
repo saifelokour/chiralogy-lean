@@ -792,6 +792,7 @@
   "Chiralogy.non_commutation_is_the_norm": "theorem",
   "Chiralogy.nondegeneracy_survives_every_fill": "theorem",
   "Chiralogy.nondegenerate_iff_not_degenerate": "theorem",
+  "Chiralogy.nondegenerate_implies_hole": "theorem",
   "Chiralogy.none_and_surplus_are_distinct": "theorem",
   "Chiralogy.not_a_morphism": "theorem",
   "Chiralogy.not_adjacent_self": "theorem",

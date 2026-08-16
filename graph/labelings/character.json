@@ -790,6 +790,7 @@
   "Chiralogy.non_commutation_is_the_norm": "apophatic",
   "Chiralogy.nondegeneracy_survives_every_fill": "neutral",
   "Chiralogy.nondegenerate_iff_not_degenerate": "neutral",
+  "Chiralogy.nondegenerate_implies_hole": "neutral",
   "Chiralogy.none_and_surplus_are_distinct": "seam",
   "Chiralogy.not_a_morphism": "seam",
   "Chiralogy.not_adjacent_self": "neutral",

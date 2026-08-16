@@ -8245,6 +8245,14 @@
    "target": "Chiralogy.NonDegenerate"
   },
   {
+   "source": "Chiralogy.nondegenerate_implies_hole",
+   "target": "Chiralogy.NonDegenerate"
+  },
+  {
+   "source": "Chiralogy.nondegenerate_implies_hole",
+   "target": "Chiralogy.payload_uniform"
+  },
+  {
    "source": "Chiralogy.none_and_surplus_are_distinct",
    "target": "Chiralogy.imprecise"
   },
@@ -13965,6 +13973,7 @@
   "Chiralogy.non_commutation_is_the_norm",
   "Chiralogy.nondegeneracy_survives_every_fill",
   "Chiralogy.nondegenerate_iff_not_degenerate",
+  "Chiralogy.nondegenerate_implies_hole",
   "Chiralogy.none_and_surplus_are_distinct",
   "Chiralogy.not_a_morphism",
   "Chiralogy.not_adjacent_self",

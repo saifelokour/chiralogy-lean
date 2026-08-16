@@ -249,7 +249,7 @@ digraph SelfImage {
     "Chiralogy.the_run_carries_one_policy" [shape=point, width=0.07, color="#228833"];
     "Chiralogy.total_opening_is_the_limit_of_partialization" [shape=point, width=0.07, color="#228833"];
   }
-  subgraph cluster_root3 { label="fixedPoint_of_surjection (73)"; color="#AA4499"; style=rounded; fontsize=13;
+  subgraph cluster_root3 { label="fixedPoint_of_surjection (74)"; color="#AA4499"; style=rounded; fontsize=13;
     "Chiralogy.apophatic_center_is_codomain" [shape=point, width=0.07, color="#AA4499"];
     "Chiralogy.center_is_empty" [shape=point, width=0.07, color="#AA4499"];
     "Chiralogy.channel_capacity_is_zero" [shape=point, width=0.07, color="#AA4499"];
@@ -568,7 +568,7 @@ digraph SelfImage {
     "Chiralogy.saturated_morphism_available" [shape=point, width=0.07, color="#EE3377"];
     "Chiralogy.toPoint" [shape=point, width=0.07, color="#EE3377"];
   }
-  subgraph cluster_root11 { label="NonDegenerate (34)"; color="#009988"; style=rounded; fontsize=13;
+  subgraph cluster_root11 { label="NonDegenerate (35)"; color="#009988"; style=rounded; fontsize=13;
     "Chiralogy.LoadBearing" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.MaximalAdmissible" [shape=box, fillcolor="#009988", penwidth=3, color="#886600", fontsize=8, label="MaximalAdmissible"];
     "Chiralogy.NonDegenerate" [shape=ellipse, fillcolor="#009988", penwidth=1.8, color="#222222", fontsize=12, label="NonDegenerate"];
@@ -580,6 +580,7 @@ digraph SelfImage {
     "Chiralogy.no_false_destroyable" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.nondegeneracy_survives_every_fill" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.nondegenerate_iff_not_degenerate" [shape=point, width=0.07, color="#009988"];
+    "Chiralogy.nondegenerate_implies_hole" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.reflClassify_degenerate" [shape=point, width=0.07, color="#009988"];
     "Chiralogy.separating_factors_defeat_every_import" [shape=box, fillcolor="#009988", penwidth=3, color="#886600", fontsize=8, label="separating_factors_defeat_every_import"];
     "Chiralogy.the_carrier_forces_the_floor_iff_it_is_thin" [shape=box, fillcolor="#009988", penwidth=3, color="#886600", fontsize=8, label="the_carrier_forces_the_floor_iff_it_is_thin"];
@@ -3323,6 +3324,8 @@ digraph SelfImage {
   "Chiralogy.nondegeneracy_survives_every_fill" -> "Chiralogy.cResist" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.nondegeneracy_survives_every_fill" -> "Chiralogy.totalization" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.nondegenerate_iff_not_degenerate" -> "Chiralogy.NonDegenerate" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.nondegenerate_implies_hole" -> "Chiralogy.NonDegenerate" [color="#E4E4E4", penwidth=0.25];
+  "Chiralogy.nondegenerate_implies_hole" -> "Chiralogy.payload_uniform" [color="#CC3311", style=dashed, penwidth=0.4];
   "Chiralogy.none_and_surplus_are_distinct" -> "Chiralogy.imprecise" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.not_a_morphism" -> "Chiralogy.embed" [color="#E4E4E4", penwidth=0.25];
   "Chiralogy.not_a_morphism" -> "Chiralogy.loop_does_not_close" [color="#CC3311", style=dashed, penwidth=0.4];

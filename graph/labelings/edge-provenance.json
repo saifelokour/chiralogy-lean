@@ -2074,6 +2074,8 @@
   "Chiralogy.nondegeneracy_survives_every_fill|Chiralogy.cResist": "statement",
   "Chiralogy.nondegeneracy_survives_every_fill|Chiralogy.totalization": "statement",
   "Chiralogy.nondegenerate_iff_not_degenerate|Chiralogy.NonDegenerate": "statement",
+  "Chiralogy.nondegenerate_implies_hole|Chiralogy.NonDegenerate": "statement",
+  "Chiralogy.nondegenerate_implies_hole|Chiralogy.payload_uniform": "proof-only",
   "Chiralogy.none_and_surplus_are_distinct|Chiralogy.imprecise": "statement",
   "Chiralogy.not_a_morphism|Chiralogy.embed": "statement",
   "Chiralogy.not_a_morphism|Chiralogy.loop_does_not_close": "proof-only",

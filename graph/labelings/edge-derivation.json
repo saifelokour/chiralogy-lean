@@ -2075,6 +2075,8 @@
   "Chiralogy.nondegeneracy_survives_every_fill|Chiralogy.cResist": "derived",
   "Chiralogy.nondegeneracy_survives_every_fill|Chiralogy.totalization": "derived",
   "Chiralogy.nondegenerate_iff_not_degenerate|Chiralogy.NonDegenerate": "derived",
+  "Chiralogy.nondegenerate_implies_hole|Chiralogy.NonDegenerate": "derived",
+  "Chiralogy.nondegenerate_implies_hole|Chiralogy.payload_uniform": "derived",
   "Chiralogy.none_and_surplus_are_distinct|Chiralogy.imprecise": "derived",
   "Chiralogy.not_a_morphism|Chiralogy.embed": "derived",
   "Chiralogy.not_a_morphism|Chiralogy.loop_does_not_close": "derived",
