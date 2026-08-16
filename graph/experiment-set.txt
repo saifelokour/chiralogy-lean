@@ -99,6 +99,7 @@ TypeRegister
 TypeSecondArgument
 TypeTwoPlaceImport
 TypedCountStructural
+UnitaryEvolution
 ValidityContract
 VarianceImportHome
 VerdictSensitivity
