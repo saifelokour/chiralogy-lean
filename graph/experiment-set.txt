@@ -74,6 +74,7 @@ RegionStructure
 RegisterCategory
 RegisterColimits
 RegisterLimits
+RegisterLocation
 RegisterPlacement
 RegisterSample
 RegisterStructure
