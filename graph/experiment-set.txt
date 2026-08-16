@@ -43,6 +43,7 @@ HealthSpectrum
 HealthTopology
 HigherOrder
 HowManyIsOrbit
+ImportCombinatorics
 ImportConstraint
 ImportFineStructureFamily
 ImportFreedom
