@@ -62,6 +62,7 @@ NestingTopology
 OpenClosed
 OppositeNesting
 OverwriteProbe
+PartialInvariantLattice
 ParticipantStructure
 PersistenceRotation
 PhysicsImport
