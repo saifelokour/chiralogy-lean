@@ -82,6 +82,7 @@ RegisterVsAssemblage
 RelabelDynamics
 RelationCoordinates
 RelationalFreedom
+RelationalShape
 RungAwareHealth
 ScaleIndependence
 ScaleSurvey
