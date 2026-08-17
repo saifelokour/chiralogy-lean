@@ -59,6 +59,7 @@ MembershipRegion
 MoveAlgebra
 MoveAlgebraDeaths
 MoveEffectTable
+MultiScalePatterns
 NestingTopology
 OpenClosed
 OppositeNesting
