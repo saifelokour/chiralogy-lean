@@ -53,6 +53,7 @@ InteractionSurvey
 InterfaceSignature
 InvarianceVariance
 LawvereGirard
+LocalHealthDynamics
 MembershipBoundary
 MembershipRegion
 MoveAlgebra
