@@ -87,6 +87,7 @@ RelabelDynamics
 RelationCoordinates
 RelationalFreedom
 RelationalShape
+RepairHealing
 RungAwareHealth
 ScaleIndependence
 ScaleSurvey
