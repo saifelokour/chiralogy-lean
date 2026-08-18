@@ -547,6 +547,36 @@ theorem oneCell_mobile {a b : Pt X} (hab : a ≠ b) (v : Bool) :
   mobile_iff.mpr ⟨⟨a, b, by rw [oneCell_at]; exact Option.some_ne_none _⟩,
     ⟨a, a, oneCell_elsewhere a b v (fun hq => hab hq.2)⟩⟩
 
+/-- The committed-branch mechanism of `no_corner_is_a_trap`: from a total configuration, releasing one
+off-diagonal cell reopens it while every other cell stays held, landing back in the mobile band. Private, the
+lemma the trap theorem rests on, not a standing result. -/
+private theorem committed_corner_can_be_repaired {c : Pt X → Pt X → Option Bool} (h : isTotal c)
+    {a b : Pt X} (hab : a ≠ b) :
+    Mobile (partialization (fun x y => decide (x = a ∧ y = b)) c) := by
+  refine mobile_iff.mpr ⟨⟨a, a, ?_⟩, ⟨a, b, ?_⟩⟩
+  · have hw : (fun x y => decide (x = a ∧ y = b)) a a = false :=
+      decide_eq_false (fun hh => hab hh.2)
+    unfold partialization
+    rw [hw]
+    simpa using h a a
+  · have hw : (fun x y => decide (x = a ∧ y = b)) a b = true :=
+      decide_eq_true ⟨rfl, rfl⟩
+    unfold partialization
+    rw [hw]
+    simp
+
+/-- **NO CORNER IS A TRAP: HEALTH IS ALWAYS RE-REACHABLE.** A configuration that is not mobile is one of the
+two deaths, `the_band_has_two_exits`. From either, a single move reaches the mobile band: an upward one-cell
+fill from the empty death, a downward one-cell release from the committed death. So on any carrier with two
+distinct points there is no pathology from which the mobile band cannot be regained. Carrier-general. -/
+theorem no_corner_is_a_trap {c : Pt X → Pt X → Option Bool} (hcorner : ¬ Mobile c)
+    {a b : Pt X} (hab : a ≠ b) :
+    ∃ c' : Pt X → Pt X → Option Bool, (cLE c' c ∨ cLE c c') ∧ Mobile c' := by
+  rcases (the_band_has_two_exits c).mp hcorner with rfl | htot
+  · exact ⟨oneCell a b true, Or.inr (fun _ _ => Or.inl rfl), oneCell_mobile hab true⟩
+  · exact ⟨partialization (fun x y => decide (x = a ∧ y = b)) c,
+      Or.inl (partialization_le_c _ c), committed_corner_can_be_repaired htot hab⟩
+
 /-- Release everything, and form at one of two named cells according to which of them is held. -/
 def swapBetween (a b : Pt X) : Stance X :=
   ⟨fun _ _ _ => true,
