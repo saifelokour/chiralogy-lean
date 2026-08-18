@@ -1,7 +1,10 @@
 import Chiralogy.Model.InformationOrder
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Logic.Equiv.Prod
 
 /-! # The n-ary assemblage
 
@@ -3385,5 +3388,97 @@ theorem a_total_factor_and_an_absent_factor_separate (c : ∀ i, X i → X i →
   · intro k hk; exact Function.update_of_ne hk _ _
   · rw [Function.update_self, Function.update_self, hqi, hqj, habs]
     exact htot s t
+
+/-! ## The import slot count
+
+How many cross cells, the import slots belonging to no single factor, an n-ary assemblage has, as a function
+of the factor sizes. The region cells differing in exactly one coordinate are counted per coordinate and are
+disjoint across coordinates, so the cross cells are all pairs minus them: `N * (N - ∑ (nᵢ - 1))` with
+`N = ∏ nᵢ`. Carrier-general over every finite factor family. -/
+
+section SlotCount
+
+open Finset
+
+variable {k : ℕ} {Y : Fin k → Type} [∀ i, DecidableEq (Y i)] [∀ i, Fintype (Y i)]
+
+/-- For a fixed first point `a`, the second points differing from it in exactly coordinate `i` are exactly
+the values `v ≠ a i` at that coordinate, the rest forced to agree. -/
+def slotFiberEquiv (a : Pt Y) (i : Fin k) :
+    {b : Pt Y // differsInOne a b i} ≃ {v : Y i // a i ≠ v} where
+  toFun := fun ⟨b, h⟩ => ⟨b i, h.1⟩
+  invFun := fun ⟨v, hv⟩ =>
+    ⟨Function.update a i v,
+      ⟨(by rw [Function.update_self]; exact hv),
+       (fun j hj => (Function.update_of_ne hj v a).symm)⟩⟩
+  left_inv := by
+    rintro ⟨b, h⟩
+    apply Subtype.ext
+    show Function.update a i (b i) = b
+    funext j
+    by_cases hj : j = i
+    · subst hj; rw [Function.update_self]
+    · rw [Function.update_of_ne hj]; exact h.2 j hj
+  right_inv := by
+    rintro ⟨v, hv⟩
+    apply Subtype.ext
+    show Function.update a i v i = v
+    rw [Function.update_self]
+
+/-- **The second points differing from a fixed one in exactly `i` number `card (Y i) - 1`.** -/
+theorem slotFiber_card (a : Pt Y) (i : Fin k) :
+    Fintype.card {b : Pt Y // differsInOne a b i} = Fintype.card (Y i) - 1 := by
+  rw [Fintype.card_congr (slotFiberEquiv a i),
+      Fintype.card_subtype_compl (p := fun v => a i = v), Fintype.card_subtype_eq']
+
+/-- **The region cells differing in exactly coordinate `i` number `N * (nᵢ - 1)`.** A first point freely,
+`N` ways, then a differing value at `i`, `nᵢ - 1` ways, the rest forced. Carrier-general. -/
+theorem region_cell_count (i : Fin k) :
+    Fintype.card {p : Pt Y × Pt Y // differsInOne p.1 p.2 i}
+      = (∏ j, Fintype.card (Y j)) * (Fintype.card (Y i) - 1) := by
+  rw [Fintype.card_congr (Equiv.subtypeProdEquivSigmaSubtype (fun a b : Pt Y => differsInOne a b i)),
+      Fintype.card_sigma]
+  simp_rw [slotFiber_card]
+  rw [Finset.sum_const, Finset.card_univ, Fintype.card_pi]
+  rfl
+
+/-- The region sets partition the differ-in-some set, pairwise disjoint by uniqueness of the coordinate. -/
+theorem region_total_count :
+    Fintype.card {p : Pt Y × Pt Y // ∃ i, differsInOne p.1 p.2 i}
+      = ∑ i, Fintype.card {p : Pt Y × Pt Y // differsInOne p.1 p.2 i} := by
+  have hdisj : ∀ i ∈ (univ : Finset (Fin k)), ∀ j ∈ (univ : Finset (Fin k)), i ≠ j →
+      Disjoint (univ.filter (fun p : Pt Y × Pt Y => differsInOne p.1 p.2 i))
+               (univ.filter (fun p : Pt Y × Pt Y => differsInOne p.1 p.2 j)) := by
+    intro i _ j _ hij
+    rw [Finset.disjoint_left]
+    intro p hpi hpj
+    rw [Finset.mem_filter] at hpi hpj
+    exact hij (differsInOne_unique hpi.2 hpj.2)
+  rw [Fintype.card_subtype]
+  have hcover : (univ.filter (fun p : Pt Y × Pt Y => ∃ i, differsInOne p.1 p.2 i))
+      = univ.biUnion (fun i => univ.filter (fun p : Pt Y × Pt Y => differsInOne p.1 p.2 i)) := by
+    ext p; simp only [mem_filter, mem_biUnion, mem_univ, true_and]
+  rw [hcover, Finset.card_biUnion hdisj]
+  simp_rw [Fintype.card_subtype]
+
+/-- **THE IMPORT SLOT COUNT.** The cross cells, the pairs belonging to no single factor, number
+`N * (N - ∑ (nᵢ - 1))` with `N = ∏ nᵢ` the number of assembly points. They are all pairs, `N` squared,
+minus the region cells, which differ in exactly one coordinate and number `N * (nᵢ - 1)` disjointly across
+coordinates, so `N² - N * ∑ (nᵢ - 1) = N * (N - ∑ (nᵢ - 1))`. Carrier-general over every finite factor
+family, so the register does not choose how many import slots it has; the factor combinatorics fixes it. -/
+theorem cross_cell_count :
+    Fintype.card {p : Pt Y × Pt Y // IsCross p.1 p.2}
+      = (∏ i, Fintype.card (Y i))
+          * ((∏ i, Fintype.card (Y i)) - ∑ i, (Fintype.card (Y i) - 1)) := by
+  have hN : Fintype.card (Pt Y) = ∏ i, Fintype.card (Y i) := Fintype.card_pi
+  have hcompl : Fintype.card {p : Pt Y × Pt Y // IsCross p.1 p.2}
+      = Fintype.card (Pt Y × Pt Y)
+        - Fintype.card {p : Pt Y × Pt Y // ∃ i, differsInOne p.1 p.2 i} :=
+    Fintype.card_subtype_compl (p := fun p : Pt Y × Pt Y => ∃ i, differsInOne p.1 p.2 i)
+  rw [hcompl, region_total_count]
+  simp_rw [region_cell_count]
+  rw [Fintype.card_prod, hN, ← mul_sum, ← Nat.mul_sub]
+
+end SlotCount
 
 end Chiralogy
