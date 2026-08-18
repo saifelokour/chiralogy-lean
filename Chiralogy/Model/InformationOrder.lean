@@ -345,6 +345,13 @@ cell exactly as the originals do at the relabelled cells. -/
 theorem relabel_preserves_order {X : Type} (σ : X → X) (A B : X → X → Option Bool) (h : cLE A B) :
     cLE (relabel σ A) (relabel σ B) := fun a b => h (σ a) (σ b)
 
+/-- **Relabelling preserves symmetry.** Pulling a classification symmetric under argument-swap back along any
+carrier map leaves it symmetric, since it reads each swapped cell off the same swapped pair. The sibling of
+`relabel_preserves_order` for the argument-swap symmetry. Carrier-general. -/
+theorem relabel_preserves_symmetry {X : Type} (σ : X → X) (A : X → X → Option Bool)
+    (h : ∀ a b, A a b = A b a) : ∀ a b, relabel σ A a b = relabel σ A b a :=
+  fun a b => h (σ a) (σ b)
+
 /-- **The kernel of the arrow action, exactly.** Two combined arrows act identically on every classification
 iff their masks agree and their carrier maps agree wherever the mask does not fire. Where the mask fires the
 carrier map is invisible, which is why `action_not_faithful` holds. -/
