@@ -245,6 +245,31 @@ theorem external_judge_is_degenerate {X : Type} (j : X → Option Bool) :
     ¬ NonDegenerate (fun (_ : X) => j) := by
   rintro ⟨_, _, h⟩; exact h rfl
 
+/-- **A symmetric, irreflexive, transitive relation is empty.** If a true cell existed, symmetry would give
+its reverse, transitivity would then force a true diagonal cell, and irreflexivity forbids that. So no cell
+is true: the relation is constant false. Carrier-general, the mechanism behind the forbidden triple. -/
+theorem symm_irrefl_trans_forces_empty {X : Type} (c : X → X → Bool)
+    (hs : ∀ a b, c a b = c b a) (hi : ∀ a, c a a = false)
+    (ht : ∀ a b d, c a b = true → c b d = true → c a d = true) : ∀ a b, c a b = false := by
+  intro a b
+  by_contra hne
+  have hab : c a b = true := by cases h : c a b with | false => exact absurd h hne | true => rfl
+  have hba : c b a = true := (hs a b) ▸ hab
+  have haa : c a a = true := ht a b a hab hba
+  rw [hi a] at haa
+  exact absurd haa (by simp)
+
+/-- **So no nondegenerate register is symmetric, irreflexive and transitive at once.** The empty relation is
+constant, hence degenerate, so it fails the floor. These three relational properties cannot co-occur in a
+nondegenerate classification: a structural no-go, the properties interacting through non-degeneracy.
+Carrier-general. -/
+theorem symm_irrefl_trans_is_forbidden {X : Type} (c : X → X → Bool)
+    (hs : ∀ a b, c a b = c b a) (hi : ∀ a, c a a = false)
+    (ht : ∀ a b d, c a b = true → c b d = true → c a d = true) : ¬ NonDegenerate c := by
+  have hall := symm_irrefl_trans_forces_empty c hs hi ht
+  rintro ⟨x, x', hxx⟩
+  exact hxx (funext fun z => (hall x z).trans (hall x' z).symm)
+
 /-! ## Degeneracy for morphisms -/
 
 /-- The structureless point: a terminal object, its carrier and distinction space singletons. -/
