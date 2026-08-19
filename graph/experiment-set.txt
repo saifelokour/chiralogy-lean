@@ -38,6 +38,7 @@ FreeSlot
 FreeVarianceLocus
 GenerativeMove
 GraphView
+GrowthLoop
 HealthPathology
 HealthSpectrum
 HealthTopology
