@@ -47,6 +47,7 @@ ImportCombinatorics
 ImportConstraint
 ImportFineStructureFamily
 ImportFreedom
+ImportOverlay
 ImportSpace
 ImportSyntaxSemantics
 InteractionSurvey
