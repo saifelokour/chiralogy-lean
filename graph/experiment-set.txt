@@ -49,6 +49,7 @@ ImportFineStructureFamily
 ImportFreedom
 ImportOverlay
 ImportSpace
+ImportStructure
 ImportSyntaxSemantics
 InteractionSurvey
 InterfaceSignature
