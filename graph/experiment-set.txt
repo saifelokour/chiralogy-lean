@@ -97,6 +97,7 @@ SeamNameability
 SelfCompletionAssemblage
 SeparationTops
 StanceSurvey
+StructuralShadow
 SubclassLocality
 SymmetricProbe
 SyntaxSemanticsStructural
